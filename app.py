@@ -82,36 +82,48 @@ def load_data():
 @st.cache_data
 def load_microdata():
     files = ['Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
-    all_sexo = []
-    all_idade = []
+    all_sexo, all_idade, all_raca, all_renda = [], [], [], []
     
     for file in files:
         try:
             df_cursos = pd.read_excel(file, sheet_name='Cursos')
             df_enade = pd.read_excel(file, sheet_name='Enade')
-            df_sexo_raw = pd.read_excel(file, sheet_name='Arq_5')
-            df_idade_raw = pd.read_excel(file, sheet_name='Arq_6')
+            xls = pd.ExcelFile(file)
             
             # Map CO_CURSO to their actual Names and Campus
             curso_map = pd.merge(df_cursos[['CO_CURSO', 'CAMPUS']], df_enade[['Código do Curso', 'Área de Avaliação', 'Ano']], left_on='CO_CURSO', right_on='Código do Curso', how='inner')
             curso_map = curso_map.rename(columns={'Área de Avaliação': 'NOME DO CURSO', 'CAMPUS': 'CENTRO', 'Ano': 'ANO'})
             
-            df_sexo = pd.merge(df_sexo_raw, curso_map, on='CO_CURSO', how='inner')
-            if not df_sexo.empty: all_sexo.append(df_sexo)
-                
-            df_idade = pd.merge(df_idade_raw, curso_map, on='CO_CURSO', how='inner')
-            if not df_idade.empty: all_idade.append(df_idade)
+            # Aba Arq_5 (Sexo)
+            if 'Arq_5' in xls.sheet_names:
+                df_sexo = pd.merge(pd.read_excel(xls, sheet_name='Arq_5'), curso_map, on='CO_CURSO', how='inner')
+                if not df_sexo.empty: all_sexo.append(df_sexo)
+            # Aba Arq_6 (Idade)
+            if 'Arq_6' in xls.sheet_names:
+                df_idade = pd.merge(pd.read_excel(xls, sheet_name='Arq_6'), curso_map, on='CO_CURSO', how='inner')
+                if not df_idade.empty: all_idade.append(df_idade)
+            # Aba Arq_8 (Cor/Raça - QE_I02)
+            if 'Arq_8' in xls.sheet_names:
+                df_raca = pd.merge(pd.read_excel(xls, sheet_name='Arq_8'), curso_map, on='CO_CURSO', how='inner')
+                if not df_raca.empty: all_raca.append(df_raca)
+            # Aba Arq_14 (Renda Familiar - QE_I08)
+            if 'Arq_14' in xls.sheet_names:
+                df_renda = pd.merge(pd.read_excel(xls, sheet_name='Arq_14'), curso_map, on='CO_CURSO', how='inner')
+                if not df_renda.empty: all_renda.append(df_renda)
                 
         except Exception as e:
             continue
             
-    df_sexo_final = pd.concat(all_sexo, ignore_index=True) if all_sexo else pd.DataFrame()
-    df_idade_final = pd.concat(all_idade, ignore_index=True) if all_idade else pd.DataFrame()
-    return df_sexo_final, df_idade_final
+    return {
+        'sexo': pd.concat(all_sexo, ignore_index=True) if all_sexo else pd.DataFrame(),
+        'idade': pd.concat(all_idade, ignore_index=True) if all_idade else pd.DataFrame(),
+        'raca': pd.concat(all_raca, ignore_index=True) if all_raca else pd.DataFrame(),
+        'renda': pd.concat(all_renda, ignore_index=True) if all_renda else pd.DataFrame()
+    }
 
 try:
     data = load_data()
-    df_sexo_global, df_idade_global = load_microdata()
+    microdados = load_microdata()
 except Exception as e:
     st.error(f"Erro ao carregar os dados: {e}")
     st.stop()
@@ -307,38 +319,35 @@ def show_estudantes():
     """, unsafe_allow_html=True)
     st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
 
-    # 1. Obter o dataframe base das aplicacoes de filtros e descobrir o escopo
     filtered_data = render_filters(data)
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Extrair os identificadores dos cursos exatos que restaram no filtro
     cursos_filtrados = filtered_data['CO_CURSO'].unique().tolist()
     anos_filtrados = filtered_data['ANO'].unique().tolist()
     
-    if df_sexo_global.empty or df_idade_global.empty:
-        st.warning("Aviso: Falha ao cruzar as abas ocultas `Arq_5` e `Arq_6` dos microdados do INEP nas planilhas de base.")
-        st.stop()
-        
-    # Aplicar o espelhamento de Filtros nos Dataframes de Microdados usando Chave Estrangeira CO_CURSO
+    df_sexo_global = microdados['sexo']
+    df_idade_global = microdados['idade']
+    df_raca_global = microdados['raca']
+    df_renda_global = microdados['renda']
+    
+    # Aplicar o espelhamento de Filtros nos Dataframes de Microdados
     df_sexo = df_sexo_global[(df_sexo_global['CO_CURSO'].isin(cursos_filtrados)) & (df_sexo_global['ANO'].isin(anos_filtrados))]
     df_idade = df_idade_global[(df_idade_global['CO_CURSO'].isin(cursos_filtrados)) & (df_idade_global['ANO'].isin(anos_filtrados))]
+    df_raca = df_raca_global[(df_raca_global['CO_CURSO'].isin(cursos_filtrados)) & (df_raca_global['ANO'].isin(anos_filtrados))]
+    df_renda = df_renda_global[(df_renda_global['CO_CURSO'].isin(cursos_filtrados)) & (df_renda_global['ANO'].isin(anos_filtrados))]
 
+    # ----- LINHA 1 (Idade e Sexo) -----
     col_g1, col_g2 = st.columns(2, gap="large")
     
     with col_g1:
-        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição de Idade dos Estudantes</div>', unsafe_allow_html=True)
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição de Idade</div>', unsafe_allow_html=True)
         if not df_idade.empty and 'NU_IDADE' in df_idade.columns:
             df_idade['NU_IDADE'] = pd.to_numeric(df_idade['NU_IDADE'], errors='coerce')
             df_idade = df_idade.dropna(subset=['NU_IDADE'])
             
-            fig_idade = px.histogram(df_idade, x='NU_IDADE', nbins=15, 
-                                   color_discrete_sequence=['#32A041'],
-                                   labels={'NU_IDADE': 'Faixa Etária (Anos)'})
-            fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter",
-                                    yaxis_title="Qtd de Estudantes")
+            fig_idade = px.histogram(df_idade, x='NU_IDADE', nbins=15, color_discrete_sequence=['#32A041'], labels={'NU_IDADE': 'Faixa Etária (Anos)'})
+            fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title="Qtd de Estudantes")
             st.plotly_chart(fig_idade, use_container_width=True)
-            
-            # Sub-dados rápidos
             media = df_idade['NU_IDADE'].mean()
             if pd.notna(media):
                 st.markdown(f"<div style='text-align:center; color:#555;'>Média de Idade: <b>{media:.1f} anos</b></div>", unsafe_allow_html=True)
@@ -346,22 +355,53 @@ def show_estudantes():
             st.info("Sem dados etários nesse filtro.")
             
     with col_g2:
-        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição de Gênero Declarado</div>', unsafe_allow_html=True)
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição de Gênero</div>', unsafe_allow_html=True)
         if not df_sexo.empty and 'TP_SEXO' in df_sexo.columns:
-            # Aggregate to create Pie Chart
             sexo_counts = df_sexo['TP_SEXO'].value_counts().reset_index()
             sexo_counts.columns = ['Gênero', 'Quantidade']
-            # Mapear para PT-BR
             sexo_counts['Gênero'] = sexo_counts['Gênero'].map({'F': 'Feminino', 'M': 'Masculino'}).fillna(sexo_counts['Gênero'])
             
-            fig_sexo = px.pie(sexo_counts, values='Quantidade', names='Gênero', hole=0.4,
-                              color='Gênero', color_discrete_map={'Feminino': '#d45070', 'Masculino': '#2d539e'})
+            fig_sexo = px.pie(sexo_counts, values='Quantidade', names='Gênero', hole=0.4, color='Gênero', color_discrete_map={'Feminino': '#d45070', 'Masculino': '#2d539e'})
             fig_sexo.update_traces(textposition='inside', textinfo='percent+label')
             fig_sexo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False)
             st.plotly_chart(fig_sexo, use_container_width=True)
         else:
             st.info("Sem dados demográficos de sexo nesse filtro.")
 
+    st.markdown("<br><hr class='custom-divider'><br>", unsafe_allow_html=True)
+    
+    # ----- LINHA 2 (Raça e Renda Familiar) -----
+    col_g3, col_g4 = st.columns(2, gap="large")
+    with col_g3:
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição Cor/Raça</div>', unsafe_allow_html=True)
+        dict_raca = {'A': 'Branca', 'B': 'Preta', 'C': 'Amarela', 'D': 'Parda', 'E': 'Indígena', 'F': 'Não declarado'}
+        if not df_raca.empty and 'QE_I02' in df_raca.columns:
+            raca_counts = df_raca['QE_I02'].map(dict_raca).value_counts().reset_index()
+            raca_counts.columns = ['Cor/Raça', 'Quantidade']
+            raca_counts = raca_counts.sort_values(by='Quantidade', ascending=True) # Horizontal sort
+            
+            fig_raca = px.bar(raca_counts, y='Cor/Raça', x='Quantidade', orientation='h', color_discrete_sequence=['#1a5722'])
+            fig_raca.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes")
+            st.plotly_chart(fig_raca, use_container_width=True)
+        else:
+            st.info("Sem dados de Cor/Raça neste filtro.")
+            
+    with col_g4:
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Perfil de Renda Familiar</div>', unsafe_allow_html=True)
+        dict_renda = {'A': 'Até 1,5 SM', 'B': '1,5 a 3 SM', 'C': '3 a 4,5 SM', 'D': '4,5 a 6 SM', 'E': '6 a 10 SM', 'F': '10 a 30 SM', 'G': 'Acima 30 SM'}
+        if not df_renda.empty and 'QE_I08' in df_renda.columns:
+            renda_counts = df_renda['QE_I08'].map(dict_renda).value_counts().reset_index()
+            renda_counts.columns = ['Renda', 'Quantidade']
+            # Sort chronologically by standard wage logic
+            ordem_renda = ['Acima 30 SM', '10 a 30 SM', '6 a 10 SM', '4,5 a 6 SM', '3 a 4,5 SM', '1,5 a 3 SM', 'Até 1,5 SM']
+            renda_counts['Renda'] = pd.Categorical(renda_counts['Renda'], categories=ordem_renda, ordered=True)
+            renda_counts = renda_counts.sort_values('Renda')
+            
+            fig_renda = px.bar(renda_counts, y='Renda', x='Quantidade', orientation='h', color_discrete_sequence=['#32A041'])
+            fig_renda.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes")
+            st.plotly_chart(fig_renda, use_container_width=True)
+        else:
+            st.info("Sem dados de Renda Familiar neste filtro.")
 
 # --- ROUTER (GERENCIADOR DE ESTADO) ---
 if 'page' not in st.session_state:
@@ -371,7 +411,7 @@ if st.session_state.page == 'home':
     show_home()
 elif st.session_state.page == 'dashboard':
     show_dashboard()
-elif st.session_state.page == 'cursos':  # Corrigido label routing
+elif st.session_state.page == 'cursos':
     show_cursos()
 elif st.session_state.page == 'estudantes':
     show_estudantes()
