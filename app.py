@@ -33,6 +33,19 @@ st.markdown("""
     
     .filter-box { background: rgba(255,255,255,0.7); backdrop-filter: blur(16px); padding: 20px; border-radius: 16px; border: 1px solid rgba(50,160,65,0.15); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05); margin-bottom: 25px; }
     
+    [data-testid="stPlotlyChart"] {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        padding: 5px;
+        border: 1px solid rgba(0,0,0,0.04);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    [data-testid="stPlotlyChart"]:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
     .kpi-card { background: linear-gradient(145deg, #ffffff, #f0f7f2); border-left: 5px solid #32A041; border-radius: 12px; padding: 15px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: inline-block; min-width: 200px; text-align: center; margin: 10px auto; transition: transform 0.3s; }
     .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
     .kpi-title { font-size: 0.85rem; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
@@ -317,7 +330,7 @@ def show_cursos():
         if not avg_scores.empty:
             melted = avg_scores.melt(id_vars='NOME DO CURSO', value_vars=['NOTA_FG', 'NOTA_CE'], var_name='Tipo de Prova', value_name='Nota Média')
             fig1 = px.bar(melted, x='NOME DO CURSO', y='Nota Média', color='Tipo de Prova', barmode='group', color_discrete_sequence=['#1a5722', '#58c769'])
-            fig1.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter")
+            fig1.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter")
             st.plotly_chart(fig1, use_container_width=True)
         else:
             st.info("Sem dados de notas isoladas suficientes no filtro.")
@@ -336,7 +349,7 @@ def show_cursos():
             abs_data = abs_data.sort_values('Taxa de Abstenção (%)', ascending=False)
             fig2 = px.bar(abs_data, x='CENTRO', y='Taxa de Abstenção (%)', color='Taxa de Abstenção (%)', color_continuous_scale='Reds', text='Taxa de Abstenção (%)')
             fig2.update_traces(texttemplate='%{text}%', textposition='outside')
-            fig2.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", coloraxis_showscale=False)
+            fig2.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", coloraxis_showscale=False)
             fig2.update_yaxes(range=[0, max(abs_data['Taxa de Abstenção (%)']) * 1.25])
             st.plotly_chart(fig2, use_container_width=True)
         else:
@@ -385,7 +398,7 @@ def show_estudantes():
             
             fig_idade = px.histogram(df_idade, x='NU_IDADE', nbins=15, color_discrete_sequence=['#32A041'], labels={'NU_IDADE': 'Faixa Etária (Anos)'})
             fig_idade.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-            fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title="Qtd de Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#32A041"})
+            fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title="Qtd de Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#32A041"})
             st.plotly_chart(fig_idade, use_container_width=True)
             media = df_idade['NU_IDADE'].mean()
             if pd.notna(media):
@@ -402,7 +415,7 @@ def show_estudantes():
             
             fig_sexo = px.pie(sexo_counts, values='Quantidade', names='Gênero', hole=0.4, color='Gênero', color_discrete_map={'Feminino': '#d45070', 'Masculino': '#2d539e'})
             fig_sexo.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
-            fig_sexo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False, hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter"})
+            fig_sexo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False, hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter"})
             st.plotly_chart(fig_sexo, use_container_width=True)
         else:
             st.info("Sem dados demográficos de sexo nesse filtro.")
@@ -421,7 +434,7 @@ def show_estudantes():
             
             fig_raca = px.bar(raca_counts, y='Cor/Raça', x='Quantidade', orientation='h', color_discrete_sequence=['#1a5722'])
             fig_raca.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-            fig_raca.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#1a5722"})
+            fig_raca.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#1a5722"})
             st.plotly_chart(fig_raca, use_container_width=True)
         else:
             st.info("Sem dados de Cor/Raça neste filtro.")
@@ -439,7 +452,7 @@ def show_estudantes():
             
             fig_renda = px.bar(renda_counts, y='Renda', x='Quantidade', orientation='h', color_discrete_sequence=['#32A041'])
             fig_renda.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-            fig_renda.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#32A041"})
+            fig_renda.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#32A041"})
             st.plotly_chart(fig_renda, use_container_width=True)
         else:
             st.info("Sem dados de Renda Familiar neste filtro.")
@@ -491,7 +504,7 @@ def show_evasao():
         st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px;">Por Campus</div>', unsafe_allow_html=True)
         fig_campus = px.bar(df_taxa_campus, x='CENTRO', y='EVADIU', text='EVADIU', color='EVADIU', color_continuous_scale='Reds')
         fig_campus.update_traces(texttemplate='%{text}%', textposition='outside', marker_line_width=1.5, marker_line_color='white', opacity=0.95)
-        fig_campus.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", coloraxis_showscale=False, yaxis_title="% Evasão", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#d62828"})
+        fig_campus.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", coloraxis_showscale=False, yaxis_title="% Evasão", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#d62828"})
         fig_campus.update_yaxes(range=[0, max(df_taxa_campus['EVADIU'] + 5) if not df_taxa_campus.empty else 100])
         st.plotly_chart(fig_campus, use_container_width=True)
 
@@ -499,7 +512,7 @@ def show_evasao():
         st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px;">Por Curso (Top 15 Maiores do Filtro)</div>', unsafe_allow_html=True)
         fig_curso = px.bar(df_taxa_curso, x='NOME DO CURSO', y='EVADIU', text='EVADIU', color_discrete_sequence=['#e63946'])
         fig_curso.update_traces(texttemplate='%{text}%', textposition='outside', marker_line_width=1.5, marker_line_color='white', opacity=0.95)
-        fig_curso.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title="% Evasão", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#e63946"})
+        fig_curso.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title="% Evasão", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#e63946"})
         fig_curso.update_yaxes(range=[0, max(df_taxa_curso['EVADIU'] + 5) if not df_taxa_curso.empty else 100])
         st.plotly_chart(fig_curso, use_container_width=True)
 
@@ -523,7 +536,7 @@ def show_evasao():
             media_idade = idade_clean['NU_IDADE'].mean()
             fig_i = px.histogram(idade_clean, x='NU_IDADE', nbins=15, color_discrete_sequence=['#d62828'])
             fig_i.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-            fig_i.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Idade", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#d62828"})
+            fig_i.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Idade", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#d62828"})
             st.plotly_chart(fig_i, use_container_width=True)
             st.markdown(f'<div style="text-align:center;"><div class="kpi-card"><div class="kpi-title">Perfil Etário dos Evadidos</div><div class="kpi-value">{media_idade:.1f}<span class="kpi-unit">anos (Média)</span></div></div></div>', unsafe_allow_html=True)
         else:
@@ -542,7 +555,7 @@ def show_evasao():
         
         fig_r = px.bar(renda_counts, x='Qtd', y='Renda', orientation='h', color_discrete_sequence=['#f77f00'])
         fig_r.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-        fig_r.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#f77f00"})
+        fig_r.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#f77f00"})
         st.plotly_chart(fig_r, use_container_width=True)
 
     col_e3, col_e4 = st.columns(2, gap="large")
@@ -559,7 +572,7 @@ def show_evasao():
             media_tempo = df_tempo['TEMPO_EM'].mean()
             fig_t = px.histogram(df_tempo, x='TEMPO_EM', nbins=10, color_discrete_sequence=['#fcbf49'])
             fig_t.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-            fig_t.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Anos de Diferença", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#fcbf49"})
+            fig_t.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Anos de Diferença", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#fcbf49"})
             st.plotly_chart(fig_t, use_container_width=True)
             st.markdown(f'<div style="text-align:center;"><div class="kpi-card"><div class="kpi-title">Defasagem desde o Ens. Médio</div><div class="kpi-value">{media_tempo:.1f}<span class="kpi-unit">anos</span></div></div></div>', unsafe_allow_html=True)
         else:
@@ -575,7 +588,7 @@ def show_evasao():
         if not tipo_counts.empty:
             fig_tipo = px.pie(tipo_counts, values='Qtd', names='Tipo', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
             fig_tipo.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
-            fig_tipo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False, hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter"})
+            fig_tipo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False, hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter"})
             st.plotly_chart(fig_tipo, use_container_width=True)
         else:
             st.info("Sem dados de tipo de EM preenchidos.")
