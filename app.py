@@ -210,7 +210,7 @@ def show_home():
     # Logo and title row
     col_text, col_img = st.columns([3, 1], gap="large")
     with col_text:
-        st.markdown('<div class="home-inst-title">Instituto Federal do Espírito Santo</div>', unsafe_allow_html=True)
+        st.markdown('<div class="home-inst-title">INSTITUTO FEDERAL DO ESPÍRITO SANTO - IFES</div>', unsafe_allow_html=True)
         st.markdown('<div class="home-inst-subtitle">Campus Vitória</div>', unsafe_allow_html=True)
     with col_img:
         st.image('ifes-horizontal-cor.png', use_container_width=True)
