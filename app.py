@@ -211,7 +211,6 @@ def show_home():
     col_text, col_img = st.columns([3, 1], gap="large")
     with col_text:
         st.markdown('<div class="home-inst-title">Instituto Federal do Espírito Santo</div>', unsafe_allow_html=True)
-        st.markdown('<div class="home-inst-subtitle">Campus Vitória</div>', unsafe_allow_html=True)
     with col_img:
         st.image('ifes-horizontal-cor.png', use_container_width=True)
         
@@ -258,9 +257,9 @@ def show_dashboard():
     st.markdown("""
         <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
             <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Avaliação Institucional</p>
-            <h1 class="main-title">DASHBOARD ENADE</h1>
+            <h1 class="main-title">NOTAS ENADE</h1>
             <p style="color: #666; font-size: 1.15rem; margin: 0 auto; font-weight: 400; max-width: 600px;">
-                Cruzamento de dados contínuos e métricas de desempenho dos estudantes do <span style="color:#1a5722; font-weight:600;">IFES Campus Vitória</span>
+                Cruzamento de dados contínuos e métricas de desempenho dos estudantes do <span style="color:#1a5722; font-weight:600;">IFES</span>
             </p>
         </div>
     """, unsafe_allow_html=True)
