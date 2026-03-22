@@ -202,7 +202,7 @@ def show_home():
             st.rerun()
             
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("👥 INFORMAÇÕES DOS ALUNOS", use_container_width=True):
+        if st.button("👥 DADOS DOS CURSOS", use_container_width=True):
             st.session_state.page = 'alunos'
             st.rerun()
 
@@ -251,7 +251,7 @@ def show_alunos():
     st.markdown("""
         <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
             <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Análise Demográfica e Desempenho Isolado</p>
-            <h1 class="main-title" style="font-size: 3rem;">INFORMAÇÕES DOS ALUNOS</h1>
+            <h1 class="main-title" style="font-size: 3rem;">DADOS DOS CURSOS</h1>
         </div>
     """, unsafe_allow_html=True)
     st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
