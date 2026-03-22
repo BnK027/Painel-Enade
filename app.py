@@ -13,27 +13,43 @@ st.markdown("""
     html, body, [class*="st-"], .stMarkdown { font-family: 'Inter', sans-serif !important; }
     .stApp { background: linear-gradient(135deg, #f2f9f4 0%, #ffffff 100%); }
     
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    
     .home-inst-title { font-size: 2.8rem; font-weight: 900; color: #1a5722; margin-top: 1rem; line-height: 1.1; letter-spacing: -1.2px; }
     .home-inst-subtitle { font-size: 1.6rem; color: #32A041; margin-bottom: 1.5rem; font-weight: 600; letter-spacing: -0.5px; }
     
     .card-panel {
-        background-color: rgba(255, 255, 255, 0.9); padding: 2.5rem; border-radius: 16px;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.01);
-        border-top: 5px solid #32A041; backdrop-filter: blur(10px); height: 100%;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: rgba(255, 255, 255, 0.85); padding: 2.5rem; border-radius: 20px;
+        box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06), 0 8px 10px -6px rgba(0,0,0,0.02);
+        border-top: 5px solid #32A041; border-bottom: 1px solid rgba(50,160,65,0.1); border-left: 1px solid rgba(50,160,65,0.1); border-right: 1px solid rgba(50,160,65,0.1);
+        backdrop-filter: blur(12px); height: 100%; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .card-panel:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
-    .card-panel-dark { border-top: 5px solid #1a5722; background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(245,252,246,1) 100%); }
+    .card-panel:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1), 0 10px 15px -5px rgba(0,0,0,0.04); }
+    .card-panel-dark { border-top: 5px solid #1a5722; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(245,252,246,0.95) 100%); }
+    
+    .filter-box { background: rgba(255,255,255,0.7); backdrop-filter: blur(16px); padding: 20px; border-radius: 16px; border: 1px solid rgba(50,160,65,0.15); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05); margin-bottom: 25px; }
+    
+    .kpi-card { background: linear-gradient(145deg, #ffffff, #f0f7f2); border-left: 5px solid #32A041; border-radius: 12px; padding: 15px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: inline-block; min-width: 200px; text-align: center; margin: 10px auto; transition: transform 0.3s; }
+    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .kpi-title { font-size: 0.85rem; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+    .kpi-value { font-size: 2.2rem; font-weight: 900; color: #1a5722; line-height: 1; }
+    .kpi-unit { font-size: 1rem; color: #777; font-weight: 600; margin-left: 4px; }
     
     .home-info-title { font-size: 0.9rem; color: #777; text-transform: uppercase; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 0.2rem; }
     .home-info-name { font-size: 1.6rem; font-weight: 600; color: #111; margin-bottom: 1.8rem; }
     .indicadores-title { font-size: 1.8rem; font-weight: 800; color: #1a5722; margin-bottom: 1rem; letter-spacing: -0.5px; }
     
-    .main-title { text-align: center; background: linear-gradient(to right, #1a5722, #32A041); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; font-size: 4rem; margin-bottom: 5px; letter-spacing: -2px; }
+    .main-title { text-align: center; background: linear-gradient(135deg, #1a5722 0%, #32A041 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; font-size: 4rem; margin-bottom: 5px; letter-spacing: -2px; }
     .filter-header { font-size: 0.85rem; color: #1a5722; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; border-bottom: 2px solid rgba(50,160,65,0.2); padding-bottom: 4px; letter-spacing: 0.5px; }
     
-    .stButton>button { border-radius: 10px; font-weight: 800; padding: 0.6rem 1.2rem; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 4px 6px -1px rgba(50,160,65,0.2); letter-spacing: 0.5px; }
-    .stButton>button:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 15px -3px rgba(50,160,65,0.3); }
+    .stButton>button { border-radius: 12px; font-weight: 800; padding: 0.7rem 1.4rem; border: none; background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%); border: 1px solid #e0e0e0; color: #333; transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 10px -2px rgba(0,0,0,0.05); letter-spacing: 0.5px; }
+    .stButton>button:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 20px -3px rgba(50,160,65,0.25); border-color: #32A041; color: #1a5722; }
+    
+    /* Force primary button style strictly based on internal types if possible, but hover effects cover it all */
     
     .custom-divider { border: 0; height: 1px; background: linear-gradient(to right, rgba(50,160,65,0.0), rgba(50,160,65,0.4), rgba(50,160,65,0.0)); margin: 40px 0; }
 </style>
@@ -153,7 +169,8 @@ def get_options(df, column):
 
 # --- Helper de Filtros Global ---
 def render_filters(source_data):
-    st.markdown('<div style="margin-top: 2rem; margin-bottom: 1rem;"><span style="background: #32A041; color: white; padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px;">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="fade-in"><div style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="filter-box">', unsafe_allow_html=True)
     
     col_a, col_b, col_c = st.columns(3)
     with col_a:
@@ -196,6 +213,7 @@ def render_filters(source_data):
     if selected_modalidade != 'Todos':
         filtered_data = filtered_data[filtered_data['MODALIDADE'] == selected_modalidade]
 
+    st.markdown('</div></div>', unsafe_allow_html=True)  # Close filter-box and fade-in
     return filtered_data
 
 
@@ -258,7 +276,7 @@ def show_dashboard():
             st.rerun()
             
     st.markdown("""
-        <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+        <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
             <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Avaliação Institucional</p>
             <h1 class="main-title">NOTAS ENADE</h1>
             <p style="color: #666; font-size: 1.15rem; margin: 0 auto; font-weight: 400; max-width: 600px;">
@@ -281,7 +299,7 @@ def show_cursos():
             st.rerun()
             
     st.markdown("""
-        <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+        <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
             <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Análise de Provas e Evasão</p>
             <h1 class="main-title" style="font-size: 3rem;">DADOS DOS CURSOS</h1>
         </div>
@@ -368,11 +386,12 @@ def show_estudantes():
             df_idade = df_idade.dropna(subset=['NU_IDADE'])
             
             fig_idade = px.histogram(df_idade, x='NU_IDADE', nbins=15, color_discrete_sequence=['#32A041'], labels={'NU_IDADE': 'Faixa Etária (Anos)'})
-            fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title="Qtd de Estudantes")
+            fig_idade.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
+            fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title="Qtd de Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#32A041"})
             st.plotly_chart(fig_idade, use_container_width=True)
             media = df_idade['NU_IDADE'].mean()
             if pd.notna(media):
-                st.markdown(f"<div style='text-align:center; color:#555;'>Média de Idade: <b>{media:.1f} anos</b></div>", unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align:center;"><div class="kpi-card"><div class="kpi-title">Média Etária Geral</div><div class="kpi-value">{media:.1f}<span class="kpi-unit">anos</span></div></div></div>', unsafe_allow_html=True)
         else:
             st.info("Sem dados etários nesse filtro.")
             
@@ -384,8 +403,8 @@ def show_estudantes():
             sexo_counts['Gênero'] = sexo_counts['Gênero'].map({'F': 'Feminino', 'M': 'Masculino'}).fillna(sexo_counts['Gênero'])
             
             fig_sexo = px.pie(sexo_counts, values='Quantidade', names='Gênero', hole=0.4, color='Gênero', color_discrete_map={'Feminino': '#d45070', 'Masculino': '#2d539e'})
-            fig_sexo.update_traces(textposition='inside', textinfo='percent+label')
-            fig_sexo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False)
+            fig_sexo.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
+            fig_sexo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False, hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter"})
             st.plotly_chart(fig_sexo, use_container_width=True)
         else:
             st.info("Sem dados demográficos de sexo nesse filtro.")
@@ -403,7 +422,8 @@ def show_estudantes():
             raca_counts = raca_counts.sort_values(by='Quantidade', ascending=True) # Horizontal sort
             
             fig_raca = px.bar(raca_counts, y='Cor/Raça', x='Quantidade', orientation='h', color_discrete_sequence=['#1a5722'])
-            fig_raca.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes")
+            fig_raca.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
+            fig_raca.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#1a5722"})
             st.plotly_chart(fig_raca, use_container_width=True)
         else:
             st.info("Sem dados de Cor/Raça neste filtro.")
@@ -420,7 +440,8 @@ def show_estudantes():
             renda_counts = renda_counts.sort_values('Renda')
             
             fig_renda = px.bar(renda_counts, y='Renda', x='Quantidade', orientation='h', color_discrete_sequence=['#32A041'])
-            fig_renda.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes")
+            fig_renda.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
+            fig_renda.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#32A041"})
             st.plotly_chart(fig_renda, use_container_width=True)
         else:
             st.info("Sem dados de Renda Familiar neste filtro.")
@@ -471,16 +492,16 @@ def show_evasao():
     with col_c1:
         st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px;">Por Campus</div>', unsafe_allow_html=True)
         fig_campus = px.bar(df_taxa_campus, x='CENTRO', y='EVADIU', text='EVADIU', color='EVADIU', color_continuous_scale='Reds')
-        fig_campus.update_traces(texttemplate='%{text}%', textposition='outside')
-        fig_campus.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", coloraxis_showscale=False, yaxis_title="% Evasão")
+        fig_campus.update_traces(texttemplate='%{text}%', textposition='outside', marker_line_width=1.5, marker_line_color='white', opacity=0.95)
+        fig_campus.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", coloraxis_showscale=False, yaxis_title="% Evasão", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#d62828"})
         fig_campus.update_yaxes(range=[0, max(df_taxa_campus['EVADIU'] + 5) if not df_taxa_campus.empty else 100])
         st.plotly_chart(fig_campus, use_container_width=True)
 
     with col_c2:
         st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px;">Por Curso (Top 15 Maiores do Filtro)</div>', unsafe_allow_html=True)
         fig_curso = px.bar(df_taxa_curso, x='NOME DO CURSO', y='EVADIU', text='EVADIU', color_discrete_sequence=['#e63946'])
-        fig_curso.update_traces(texttemplate='%{text}%', textposition='outside')
-        fig_curso.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title="% Evasão")
+        fig_curso.update_traces(texttemplate='%{text}%', textposition='outside', marker_line_width=1.5, marker_line_color='white', opacity=0.95)
+        fig_curso.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title="% Evasão", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#e63946"})
         fig_curso.update_yaxes(range=[0, max(df_taxa_curso['EVADIU'] + 5) if not df_taxa_curso.empty else 100])
         st.plotly_chart(fig_curso, use_container_width=True)
 
@@ -503,9 +524,10 @@ def show_evasao():
         if not idade_clean.empty:
             media_idade = idade_clean['NU_IDADE'].mean()
             fig_i = px.histogram(idade_clean, x='NU_IDADE', nbins=15, color_discrete_sequence=['#d62828'])
-            fig_i.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Idade")
+            fig_i.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
+            fig_i.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Idade", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#d62828"})
             st.plotly_chart(fig_i, use_container_width=True)
-            st.markdown(f"<div style='text-align:center; color:#555;'>Média de Idade dos Evadidos: <b>{media_idade:.1f} anos</b></div>", unsafe_allow_html=True)
+            st.markdown(f'<div style="text-align:center;"><div class="kpi-card"><div class="kpi-title">Perfil Etário dos Evadidos</div><div class="kpi-value">{media_idade:.1f}<span class="kpi-unit">anos (Média)</span></div></div></div>', unsafe_allow_html=True)
         else:
             st.info("Sem dados de idade preenchidos.")
 
@@ -521,7 +543,8 @@ def show_evasao():
         renda_counts = renda_counts.sort_values('Renda')
         
         fig_r = px.bar(renda_counts, x='Qtd', y='Renda', orientation='h', color_discrete_sequence=['#f77f00'])
-        fig_r.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes")
+        fig_r.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
+        fig_r.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#f77f00"})
         st.plotly_chart(fig_r, use_container_width=True)
 
     col_e3, col_e4 = st.columns(2, gap="large")
@@ -537,9 +560,10 @@ def show_evasao():
         if not df_tempo.empty:
             media_tempo = df_tempo['TEMPO_EM'].mean()
             fig_t = px.histogram(df_tempo, x='TEMPO_EM', nbins=10, color_discrete_sequence=['#fcbf49'])
-            fig_t.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Anos de Diferença")
+            fig_t.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
+            fig_t.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Anos de Diferença", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#fcbf49"})
             st.plotly_chart(fig_t, use_container_width=True)
-            st.markdown(f"<div style='text-align:center; color:#555;'>Tempo Médio: <b>{media_tempo:.1f} anos</b></div>", unsafe_allow_html=True)
+            st.markdown(f'<div style="text-align:center;"><div class="kpi-card"><div class="kpi-title">Defasagem desde o Ens. Médio</div><div class="kpi-value">{media_tempo:.1f}<span class="kpi-unit">anos</span></div></div></div>', unsafe_allow_html=True)
         else:
             st.info("Sem dados de final de EM preenchidos.")
             
@@ -552,8 +576,8 @@ def show_evasao():
         
         if not tipo_counts.empty:
             fig_tipo = px.pie(tipo_counts, values='Qtd', names='Tipo', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
-            fig_tipo.update_traces(textposition='inside', textinfo='percent+label')
-            fig_tipo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False)
+            fig_tipo.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
+            fig_tipo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False, hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter"})
             st.plotly_chart(fig_tipo, use_container_width=True)
         else:
             st.info("Sem dados de tipo de EM preenchidos.")
