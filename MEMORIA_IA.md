@@ -3,12 +3,11 @@
 Este arquivo foi criado para manter a persistência do raciocínio e das decisões arquiteturais tomadas durante o desenvolvimento do projeto **Painel - ENADE**, garantindo que o progresso não se perca ao trocar de máquina.
 
 ## Decisões e Histórico Recente
-* **Divisão de Dashboards e Marquee:** A ideia levantada na última sessão de dividir o sistema em `dashboard_first.py` e `dashboard_second.py`, junto com a implementação de um `<marquee>` para a taxa de ausentes, foi **abandonada** pelo usuário.
-* **Estado Base:** O projeto continuará utilizando a estrutura atual e funcional concentrada no arquivo único `app.py` que está nesta máquina.
-* **Design e Tema (21/03/2026):** Foi configurado um tema explícito do Streamlit através do arquivo `.streamlit/config.toml` para forçar o fundo branco (Light Mode) permanentemente. Adicionado também o verde do IFES (`#32A041`) como a cor primária padrão dos componentes, menus e botões.
-* **Backup no GitHub (21/03/2026):** O projeto foi conectado ao repositório remoto sob a conta do usuário `Benincá`. Criado o arquivo `Salvar_No_Github.bat` para facilitar e automatizar os commits.
+* **Divisão de Dashboards:** A ideia levantada na última sessão de dividir o sistema em múltiplos arquivos foi **abandonada**. Mantemos tudo em `app.py`.
+* **Design e Tema (21/03/2026):** Foi configurado um tema explícito do Streamlit através do arquivo `.streamlit/config.toml` forçando o fundo branco e o verde base.
+* **Fita de Elementos (Marquee - 21/03/2026):** A fita de rolagem de abstenções, que faria parte da ideia original, foi reimplementada e adaptada diretamente na base estável do `app.py`. A lógica desenvolvida encontra as colunas 'Inscritos' e 'Participantes' ignorando espaços em branco nos cabeçalhos distorcidos do Inep. O componente injeta uma *div* HTML limpa processando (1 - Participantes/Inscritos).
 
 ## Estado Atual
-O painel está operando na base de código do `app.py` com o fundo branco configurado via Toml de Tema. Aguardando novo direcionamento de implementação de dados.
+O painel exibe um Marquee fluído no topo mostrando as abstenções. Ele está pronto para receber Deploy no 'share.streamlit.io'. Aguardando novas decisões e funcionalidades.
 
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada para salvar seu raciocínio no OneDrive)*

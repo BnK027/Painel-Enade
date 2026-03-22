@@ -92,6 +92,10 @@ def load_data():
         df_enade = pd.read_excel(file, sheet_name='Enade')
         df_cursos = pd.read_excel(file, sheet_name='Cursos')
         
+        # Encontra colunas de inscritos e participantes dinamicamente (ignora espaços extras/modificações)
+        col_inscritos = next((c for c in df_enade.columns if 'Inscrito' in str(c)), None)
+        col_participantes = next((c for c in df_enade.columns if 'Participante' in str(c)), None)
+        
         # Merge Enade and Cursos to get Campus information
         df_merged = pd.merge(
             df_enade, 
@@ -101,8 +105,7 @@ def load_data():
             how='left'
         )
         
-        # Rename columns to match the requested output
-        df_final = df_merged.rename(columns={
+        rename_dict = {
             'Área de Avaliação': 'NOME DO CURSO',
             'CAMPUS': 'CENTRO',
             'Município do Curso': 'MUNICÍPIO',
@@ -113,12 +116,21 @@ def load_data():
             'Modalidade de Ensino': 'MODALIDADE',
             'Categoria Administrativa': 'CATEGORIA',
             'Grau Acadêmico': 'PROGRAMA'
-        })
+        }
+        
+        if col_inscritos:
+            rename_dict[col_inscritos] = 'INSCRITOS'
+        if col_participantes:
+            rename_dict[col_participantes] = 'PRESENTES'
+            
+        # Rename columns to match the requested output
+        df_final = df_merged.rename(columns=rename_dict)
         
         # Select only relevant columns for display and filtering
         cols_to_keep = [
             'NOME DO CURSO', 'CENTRO', 'MUNICÍPIO', 'ANO', 
-            'ENADE CONTÍNUO', 'ENADE FAIXA', 'MODALIDADE'
+            'ENADE CONTÍNUO', 'ENADE FAIXA', 'MODALIDADE',
+            'INSCRITOS', 'PRESENTES'
         ]
         
         # Keep only the columns that actually exist (to be safe)
@@ -139,6 +151,43 @@ try:
 except Exception as e:
     st.error(f"Erro ao carregar os dados: {e}")
     st.stop()
+
+# --- MARQUEE DE AUSENTES ---
+if 'INSCRITOS' in data.columns and 'PRESENTES' in data.columns:
+    # Converter para numérico para somar com segurança
+    data['INSCRITOS_NUM'] = pd.to_numeric(data['INSCRITOS'], errors='coerce')
+    data['PRESENTES_NUM'] = pd.to_numeric(data['PRESENTES'], errors='coerce')
+    
+    # Agrupar por ano e calcular ausentes (inscritos - presentes)
+    abs_data = data.groupby('ANO').agg({'INSCRITOS_NUM': 'sum', 'PRESENTES_NUM': 'sum'}).reset_index()
+    abs_data = abs_data.dropna(subset=['ANO'])
+    
+    # Ordenar por ano propriamente
+    try:
+        abs_data['ANO_SORT'] = abs_data['ANO'].astype(str).str.extract(r'(\d{4})').astype(float)
+        abs_data = abs_data.sort_values('ANO_SORT')
+    except:
+        abs_data = abs_data.sort_values('ANO')
+        
+    marquee_items = []
+    for _, row in abs_data.iterrows():
+        insc = row['INSCRITOS_NUM']
+        pres = row['PRESENTES_NUM']
+        if pd.notnull(insc) and pd.notnull(pres) and insc > 0:
+            tx = (1 - (pres / insc)) * 100
+            ano_formatado = str(row['ANO']).replace('.0', '')
+            marquee_items.append(f"👨‍🎓 <b>ENADE {ano_formatado}</b>: {tx:.1f}% de Ausentes")
+            
+    if marquee_items:
+        marquee_html = f"""
+        <div style="background-color: #ffeaea; border-left: 5px solid #e12d39; padding: 10px; border-radius: 4px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-size: 0.85rem; color: #e12d39; margin-bottom: 5px; font-weight: bold; text-transform: uppercase;">📊 Taxa de Abstenção por Ano:</div>
+            <marquee behavior="scroll" direction="left" scrollamount="6" style="font-size: 1.2rem; color: #333; font-weight: 500; font-family: sans-serif;">
+                {' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; '.join(marquee_items)}
+            </marquee>
+        </div>
+        """
+        st.markdown(marquee_html, unsafe_allow_html=True)
 
 # Helper function to get unique sorted values including 'Todos'
 def get_options(df, column):
