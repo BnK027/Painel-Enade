@@ -169,8 +169,7 @@ def get_options(df, column):
 
 # --- Helper de Filtros Global ---
 def render_filters(source_data):
-    st.markdown('<div class="fade-in"><div style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
-    st.markdown('<div class="filter-box">', unsafe_allow_html=True)
+    st.markdown('<div class="fade-in" style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
     
     col_a, col_b, col_c = st.columns(3)
     with col_a:
@@ -213,7 +212,6 @@ def render_filters(source_data):
     if selected_modalidade != 'Todos':
         filtered_data = filtered_data[filtered_data['MODALIDADE'] == selected_modalidade]
 
-    st.markdown('</div></div>', unsafe_allow_html=True)  # Close filter-box and fade-in
     return filtered_data
 
 
