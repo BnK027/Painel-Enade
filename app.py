@@ -491,7 +491,6 @@ def show_estudantes():
             if not df_cota.empty:
                 cota_c = df_cota['QE_I15'].map(lambda x: dict_cota.get(x, 'Outros')).value_counts().reset_index()
                 cota_c.columns = ['Critério', 'Total']
-                fig_cota = px.bar(cota_c, x='Relevância', y='Critério', orientation='h', color='Total', color_continuous_scale='Greens')
                 cota_c = cota_c.sort_values('Total', ascending=True)
                 fig_cota = px.bar(cota_c, y='Critério', x='Total', orientation='h', color_discrete_sequence=['#32A041'])
                 fig_cota.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
