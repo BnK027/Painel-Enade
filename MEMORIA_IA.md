@@ -26,9 +26,18 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * Extraímos as antigas centenas de linhas de sub-rótulos e filtros repetidos de cada página em prol de uma Função Helper arquitetural de ponta batizada `render_filters()`.
 * Desta forma, o App inteiro filtra o dado global antes mesmo das sub-telas o renderizar, ou seja, filtrar o curso impacta diretamente todos os três novos painéis nativos de uma única vez. Código sem repetições. Limpo e eficiente!
 
+### 5. Super-Página de Estudantes e Abas Analíticas (23/03/2026)
+* A página **INFOS ESTUDANTE** foi inteiramente re-arquitetada visando suportar dezenas de gráficos em um sistema de "Abas" (`st.tabs()`), compartimentando a inteligência para não poluir a interface.
+* Integramos 8 novas partições de Microdados ENADE (`Arq_10`, `Arq_11`, `Arq_16`, `Arq_17`, `Arq_21`, `Arq_29`, `Arq_31`, `Arq_32`) traduzindo fielmente as chaves do dicionário oficial estruturado pelo INEP.
+* **Perfil Socioeconômico:** Implementado cruzamento de capital cultural (Escolaridade Parental nas categorias `QE_I04` e `QE_I05`) e dedicação profissional concorrente (Situação de Trabalho em `QE_I10`).
+* **Acesso e Permanência:** Plotadas estatísticas vitais validando eficácia de Cotas/Ações Afirmativas (`QE_I15`) e dependência de Bolsas/Financiamentos Acadêmicos (`QE_I11`).
+* **Rotina e Engajamento:** Comprovamos a intensidade acadêmica via Horas de Estudo extraclasse (`QE_I23`) unida aos motivadores originais de busca pela carreira técnica (`QE_I25`).
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
-* Como o sistema base contendo o Hub Principal, os Módulos Avaliativos, Desempenho Isolado e o Observatório do Estudante estão 100% integrados e bonitos, ele já possui plenas ferramentas visuais comerciais para o usuário final.
-* A recomendação oficial de continuidade técnica: **Deixar de rodar no localHost**. Realizar o deploy profissionalmente apontando a Master do respositório (GitHub) para uma infraestrutura gratuita como a *Streamlit Community Cloud*.
+* Como o sistema base contendo o Hub Principal e os 4 módulos verticais encontram-se 100% integrados, analíticos e estáveis, a aplicação possui agora nível pleno de maturidade *(Production-Ready)*.
+* A infraestrutura de versionamento (**Git** e **GitHub Desktop**) já foi devidamente instalada na máquina (Winget).
+* O próximo passo oficial é **realizar o controle de versão**, efetuando um *Commit* total do Painel ENADE utilizando a interface do GitHub Desktop.
+* Finalmente, efetuar o **Deploy Master**: conectar este repositório git recém criado à infraestrutura de servidores da **Streamlit Community Cloud**, abolindo o uso exclusivo de *localhost* e gerando um link público acessível.
 
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada pelo usuário)*
