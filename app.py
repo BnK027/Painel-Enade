@@ -297,16 +297,18 @@ def show_dashboard():
             st.session_state.page = 'home'
             st.rerun()
             
-    st.markdown("""
-        <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
-            <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Avaliação Institucional</p>
-            <h1 class="main-title">NOTAS ENADE</h1>
-            <p style="color: #666; font-size: 1.15rem; margin: 0 auto; font-weight: 400; max-width: 600px;">
-                Cruzamento de dados contínuos e métricas de desempenho dos estudantes do <span style="color:#1a5722; font-weight:600;">IFES</span>
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
+    with st.container():    
+        st.markdown("""
+            <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+                <!-- home-dash -->
+                <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Avaliação Institucional</p>
+                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">NOTAS ENADE</h1>
+                <p style="color: #666; font-size: 1.15rem; margin: 0 auto; font-weight: 400; max-width: 600px;">
+                    Cruzamento de dados contínuos e métricas de desempenho dos estudantes do <span style="color:#1a5722; font-weight:600;">IFES</span>
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
 
     filtered_data = render_filters(data)
 
@@ -320,13 +322,15 @@ def show_cursos():
             st.session_state.page = 'home'
             st.rerun()
             
-    st.markdown("""
-        <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
-            <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Análise de Provas</p>
-            <h1 class="main-title" style="font-size: 3rem;">DADOS DOS CURSOS</h1>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
+    with st.container():
+        st.markdown("""
+            <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+                <!-- cursos-dash -->
+                <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Análise de Provas</p>
+                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">DADOS DOS CURSOS</h1>
+            </div>
+        """, unsafe_allow_html=True)
+        st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
 
     filtered_data = render_filters(data)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -353,13 +357,15 @@ def show_estudantes():
             st.session_state.page = 'home'
             st.rerun()
             
-    st.markdown('''
-        <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
-            <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Microdados Sociodemográficos INEP</p>
-            <h1 class="main-title" style="font-size: 3rem;">INFORMAÇÕES DO ESTUDANTE</h1>
-        </div>
-    ''', unsafe_allow_html=True)
-    st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
+    with st.container():
+        st.markdown('''
+            <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+                <!-- estudantes-dash -->
+                <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Microdados Sociodemográficos INEP</p>
+                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">INFORMAÇÕES DO ESTUDANTE</h1>
+            </div>
+        ''', unsafe_allow_html=True)
+        st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
 
     filtered_data = render_filters(data)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -524,13 +530,15 @@ def show_questionario():
             st.session_state.page = 'home'
             st.rerun()
             
-    st.markdown("""
-        <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
-            <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Avaliação do Processo Formativo</p>
-            <h1 class="main-title" style="font-size: 3rem;">QUESTIONÁRIO DO ESTUDANTE</h1>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
+    with st.container():
+        st.markdown("""
+            <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+                <!-- quest-dash -->
+                <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Avaliação do Processo Formativo</p>
+                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">QUESTIONÁRIO DO ESTUDANTE</h1>
+            </div>
+        """, unsafe_allow_html=True)
+        st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
 
     filtered_data = render_filters(data)
     st.markdown("<br>", unsafe_allow_html=True)
