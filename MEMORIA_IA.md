@@ -34,11 +34,17 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Rotina e Engajamento:** Comprovamos a intensidade acadêmica via Horas de Estudo extraclasse (`QE_I23`) unida aos motivadores originais de busca pela carreira técnica (`QE_I25`).
 * **Resolução de Bug Crítico (Gráfico de Cotas):** Durante a criação da aba de Acesso e Permanência no `app.py`, um erro visual onde a biblioteca Plotly tentava buscar uma coluna Inexistente chamada `Relevância` quebrou a Tela de Estudantes *(ValueError)*. Removemos e refatoramos instantaneamente a linha de código duplicada (em tempo-real) e restauramos 100% da visualização e estabilidade do sistema local.
 
+### 6. Painel: Questionário do Estudante (Processo Formativo) (28/03/2026)
+* Adicionamos a aba **QUEST. ESTUDANTE**, conectada à extração de dados da partição `Arq_4` dos microdados.
+* Mapeamos as questões socioeducacionais em formato Likert (1 a 6) para medir as percepções sobre professores, infraestrutura e formação cidadã.
+* Implementamos o dicionário de variáveis via código, incorporando enunciados oficiais (ex: *QE_I27 a QE_I33*, *QE_I39* e *QE_I41*) extraídos do questionário.
+* Desenvolvemos a interface baseada no modelo original: *BarChart* em Plotly (azul `#103d6d`), *tooltips* com percentuais convertidos das escalas Likert, e cartões de métricas dinâmicos (Inscritos e Participantes).
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
-* Como o sistema base contendo o Hub Principal e os 4 módulos verticais encontram-se 100% integrados, analíticos e estáveis, a aplicação possui agora nível pleno de maturidade *(Production-Ready)*.
+* Como o sistema base contendo o Hub Principal e os 5 módulos verticais encontram-se 100% integrados, analíticos e estáveis, a aplicação possui agora nivel pleno de maturidade *(Production-Ready)*.
 * A infraestrutura de versionamento (**Git** e **GitHub Desktop**) já foi devidamente instalada na máquina (Winget).
 * O próximo passo oficial é **realizar o controle de versão**, efetuando um *Commit* total do Painel ENADE utilizando a interface do GitHub Desktop.
-* Finalmente, efetuar o **Deploy Master**: conectar este repositório git recém criado à infraestrutura de servidores da **Streamlit Community Cloud**, abolindo o uso exclusivo de *localhost* e gerando um link público acessível.
+* Finalmente, efetuar o **Deploy Master**: conectar este repositório git recém criado à infraestrutura de servidores da **Streamlit Community Cloud**, gerando um link público acessível.
 
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada pelo usuário)*

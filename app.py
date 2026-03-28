@@ -112,7 +112,7 @@ def load_data():
 def load_microdata():
     files = ['Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
     all_sexo, all_idade, all_raca, all_renda, all_evasao = [], [], [], [], []
-    all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i = [], [], [], [], [], [], [], []
+    all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4 = [], [], [], [], [], [], [], [], []
     
     for file in files:
         try:
@@ -141,8 +141,8 @@ def load_microdata():
                 df_renda = pd.merge(pd.read_excel(xls, sheet_name='Arq_14'), curso_map, on='CO_CURSO', how='inner')
                 if not df_renda.empty: all_renda.append(df_renda)
 
-            for arq, lst in zip(['Arq_10','Arq_11','Arq_16','Arq_17','Arq_21','Arq_29','Arq_31','Arq_32'], 
-                                [all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i]):
+            for arq, lst in zip(['Arq_10','Arq_11','Arq_16','Arq_17','Arq_21','Arq_29','Arq_31','Arq_32', 'Arq_4'], 
+                                [all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4]):
                 if arq in xls.sheet_names:
                     df_temp = pd.merge(pd.read_excel(xls, sheet_name=arq), curso_map, on='CO_CURSO', how='inner')
                     if not df_temp.empty: lst.append(df_temp)
@@ -180,7 +180,8 @@ def load_microdata():
         'cota': pd.concat(all_cota, ignore_index=True) if all_cota else pd.DataFrame(),
         'estudo': pd.concat(all_estudo, ignore_index=True) if all_estudo else pd.DataFrame(),
         'motiv_c': pd.concat(all_motiv_c, ignore_index=True) if all_motiv_c else pd.DataFrame(),
-        'motiv_i': pd.concat(all_motiv_i, ignore_index=True) if all_motiv_i else pd.DataFrame()
+        'motiv_i': pd.concat(all_motiv_i, ignore_index=True) if all_motiv_i else pd.DataFrame(),
+        'arq4': pd.concat(all_arq4, ignore_index=True) if all_arq4 else pd.DataFrame()
     }
 
 try:
@@ -276,22 +277,26 @@ def show_home():
         """, unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
-        col_b1, col_b2, col_b3, col_b4 = st.columns(4)
+        col_b1, col_b2, col_b3, col_b4, col_b5 = st.columns(5)
         with col_b1:
-            if st.button("🚀 NOTAS ENADE", use_container_width=True, type="primary"):
+            if st.button("🚀 NOTAS", use_container_width=True, type="primary"):
                 st.session_state.page = 'dashboard'
                 st.rerun()
         with col_b2:
-            if st.button("👥 DADOS DOS CURSOS", use_container_width=True):
+            if st.button("👥 CURSOS", use_container_width=True):
                 st.session_state.page = 'cursos'
                 st.rerun()
         with col_b3:
-            if st.button("🎓 INFOS ESTUDANTE", use_container_width=True):
+            if st.button("🎓 ESTUDANTE", use_container_width=True):
                 st.session_state.page = 'estudantes'
                 st.rerun()
         with col_b4:
-            if st.button("⚠️ ANÁLISE DE EVASÃO", use_container_width=True):
+            if st.button("⚠️ EVASÃO", use_container_width=True):
                 st.session_state.page = 'evasao'
+                st.rerun()
+        with col_b5:
+            if st.button("📝 QUEST. ESTUDANTE", use_container_width=True):
+                st.session_state.page = 'questionario'
                 st.rerun()
 
 def show_dashboard():
@@ -677,6 +682,142 @@ def show_evasao():
             st.info("Sem dados de tipo de EM preenchidos.")
 
 
+def show_questionario():
+    col_back, _ = st.columns([1, 6])
+    with col_back:
+        if st.button("⬅ Voltar ao Início", use_container_width=True, key='back_bt_quest'):
+            st.session_state.page = 'home'
+            st.rerun()
+            
+    st.markdown("""
+        <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+            <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Avaliação do Processo Formativo</p>
+            <h1 class="main-title" style="font-size: 3rem;">QUESTIONÁRIO DO ESTUDANTE</h1>
+        </div>
+    """, unsafe_allow_html=True)
+    st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
+
+    filtered_data = render_filters(data)
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    cursos_filtrados = filtered_data['CO_CURSO'].unique().tolist()
+    anos_filtrados = filtered_data['ANO'].unique().tolist()
+    
+    df_arq4 = microdados.get('arq4', pd.DataFrame())
+    if df_arq4.empty:
+        st.warning("Sem dados pré-processados de Arq_4 disponíveis.")
+        return
+        
+    df_arq4 = df_arq4[(df_arq4['CO_CURSO'].isin(cursos_filtrados)) & (df_arq4['ANO'].isin(anos_filtrados))]
+    
+    if df_arq4.empty:
+        st.info("Nenhum dado do questionário disponível neste filtro.")
+        return
+
+    # Dicionário Extraído das Imagens fornecidas pelo usuário
+    dict_questoes = {
+        'QE_I27': 'As disciplinas cursadas contribuíram para sua formação integral, como cidadão e profissional.',
+        'QE_I28': 'Os conteúdos abordados nas disciplinas do curso favoreceram sua atuação em estágios ou em atividades de iniciação profissional.',
+        'QE_I29': 'As metodologias de ensino utilizadas no curso desafiaram você a aprofundar conhecimentos e desenvolver competências reflexivas e críticas.',
+        'QE_I30': 'O curso propiciou experiências de aprendizagem inovadoras.',
+        'QE_I31': 'O curso contribuiu para o desenvolvimento da sua consciência ética para o exercício profissional.',
+        'QE_I32': 'No curso você teve oportunidade de aprender a trabalhar em equipe.',
+        'QE_I33': 'O curso possibilitou aumentar sua capacidade de reflexão e argumentação.',
+        'QE_I39': 'Os professores demonstraram domínio dos conteúdos abordados nas disciplinas.',
+        'QE_I41': "Os professores utilizaram tecnologias da informação e comunicação (TIC's) como estratégia de ensino..."
+    }
+
+    # Discover all QE_I columns available in Arq_4 (Likert scale 1-6)
+    qe_cols = [str(c) for c in df_arq4.columns if str(c).startswith('QE_I')]
+    qe_cols.sort()
+    
+    # Montar dropdown customizado
+    opcoes = []
+    for c in qe_cols:
+        texto = dict_questoes.get(c, f"Questão {c.replace('QE_I', '')} (Sem enunciado cadastrado)")
+        opcoes.append(f"{c} - {texto}")
+        
+    st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem;">QUESTÕES</div>', unsafe_allow_html=True)
+    selecionada = st.selectbox("Selecione a Pergunta do Questionário", opcoes, label_visibility="collapsed")
+    col_var = selecionada.split(" - ")[0]
+    
+    # Calcula os KPIs
+    inscritos = filtered_data['INSCRITOS'].sum()
+    participantes = filtered_data['PRESENTES'].sum()
+
+    col_q1, col_kpi = st.columns([3, 1], gap="large")
+    
+    with col_q1:
+        st.markdown('<div style="background-color: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.04);">', unsafe_allow_html=True)
+        st.markdown('<div class="filter-header" style="color: #103d6d; font-size: 1.2rem; border-bottom: 2px solid rgba(16,61,109,0.2);">RESPOSTA DOS PARTICIPANTES PARA A QUESTÃO:</div>', unsafe_allow_html=True)
+        texto_selecionada = selecionada.split(" - ", 1)[1]
+        st.markdown(f'<p style="color: #666; font-size: 1.05rem; margin-bottom: 30px;">{texto_selecionada}</p>', unsafe_allow_html=True)
+        
+        # Mapeamento Likert
+        dict_likert = {
+            1: 'DISCORDO TOTALMENTE',
+            2: 'DISCORDO',
+            3: 'DISCORDO PARCIALMENTE',
+            4: 'CONCORDO PARCIALMENTE',
+            5: 'CONCORDO',
+            6: 'CONCORDO TOTALMENTE'
+        }
+        
+        df_arq4[col_var] = pd.to_numeric(df_arq4[col_var], errors='coerce')
+        # Filtra apenas respostas de 1 a 6
+        df_resp = df_arq4[df_arq4[col_var].isin([1, 2, 3, 4, 5, 6])].copy()
+        
+        if df_resp.empty:
+            st.info("Sem respostas válidas (1 a 6) para este filtro.")
+        else:
+            contagem = df_resp[col_var].value_counts().reset_index()
+            contagem.columns = ['Resposta', 'Quantidade']
+            contagem['Resposta_Texto'] = contagem['Resposta'].map(dict_likert)
+            
+            # Garantir todas as alternativas de 1 a 6
+            para_plot = pd.DataFrame({'Resposta': [1,2,3,4,5,6], 'Resposta_Texto': [dict_likert[i] for i in range(1,7)]})
+            para_plot = pd.merge(para_plot, contagem[['Resposta', 'Quantidade']], on='Resposta', how='left').fillna(0)
+            para_plot['Percentual'] = (para_plot['Quantidade'] / para_plot['Quantidade'].sum()) * 100
+            para_plot['Texto_Eixo'] = para_plot['Resposta_Texto'].str.replace(' ', '<br>')
+            
+            fig = px.bar(para_plot, x='Texto_Eixo', y='Percentual', text='Percentual')
+            fig.update_traces(
+                marker_color='#103d6d',
+                texttemplate='%{text:.0f}%',
+                textposition='outside',
+                textfont_size=15,
+                textfont_color='#103d6d'
+            )
+            fig.update_layout(
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font_family="Inter",
+                yaxis_title=None,
+                xaxis_title=None,
+                showlegend=False,
+                margin=dict(t=30, b=0, l=0, r=0)
+            )
+            fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
+            fig.update_xaxes(tickfont=dict(size=12, color='#103d6d', weight='bold'))
+            st.plotly_chart(fig, use_container_width=True)
+            
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    with col_kpi:
+        st.markdown(f'''
+        <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 25px; border-top: 5px solid #103d6d;">
+            <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>INSCRITOS</div>
+            <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(inscritos)}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+        
+        st.markdown(f'''
+        <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-top: 5px solid #103d6d;">
+            <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>PARTICIPANTES</div>
+            <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(participantes)}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+
 # --- ROUTER (GERENCIADOR DE ESTADO) ---
 
 if 'page' not in st.session_state:
@@ -692,3 +833,5 @@ elif st.session_state.page == 'estudantes':
     show_estudantes()
 elif st.session_state.page == 'evasao':
     show_evasao()
+elif st.session_state.page == 'questionario':
+    show_questionario()
