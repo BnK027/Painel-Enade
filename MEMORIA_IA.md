@@ -32,6 +32,7 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Perfil Socioeconômico:** Implementado cruzamento de capital cultural (Escolaridade Parental nas categorias `QE_I04` e `QE_I05`) e dedicação profissional concorrente (Situação de Trabalho em `QE_I10`).
 * **Acesso e Permanência:** Plotadas estatísticas vitais validando eficácia de Cotas/Ações Afirmativas (`QE_I15`) e dependência de Bolsas/Financiamentos Acadêmicos (`QE_I11`).
 * **Rotina e Engajamento:** Comprovamos a intensidade acadêmica via Horas de Estudo extraclasse (`QE_I23`) unida aos motivadores originais de busca pela carreira técnica (`QE_I25`).
+* **Resolução de Bug Crítico (Gráfico de Cotas):** Durante a criação da aba de Acesso e Permanência no `app.py`, um erro visual onde a biblioteca Plotly tentava buscar uma coluna Inexistente chamada `Relevância` quebrou a Tela de Estudantes *(ValueError)*. Removemos e refatoramos instantaneamente a linha de código duplicada (em tempo-real) e restauramos 100% da visualização e estabilidade do sistema local.
 
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
