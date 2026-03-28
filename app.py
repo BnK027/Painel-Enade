@@ -753,42 +753,53 @@ def show_questionario():
         texto_selecionada = selecionada.split(" - ", 1)[1]
         st.markdown(f'<p style="color: #222; font-size: 1.5rem; font-weight: 600; line-height: 1.4; margin-top: 15px; margin-bottom: 30px;">{texto_selecionada}</p>', unsafe_allow_html=True)
         
-        # Mapeamento Likert
+        # Mapeamento Likert expandido
         dict_likert = {
             1: 'DISCORDO TOTALMENTE',
             2: 'DISCORDO',
             3: 'DISCORDO PARCIALMENTE',
             4: 'CONCORDO PARCIALMENTE',
             5: 'CONCORDO',
-            6: 'CONCORDO TOTALMENTE'
+            6: 'CONCORDO TOTALMENTE',
+            7: 'NÃO SEI RESPONDER',
+            8: 'NÃO SE APLICA',
+            9: 'NÃO RESPONDEU'
         }
         
-        df_arq4[col_var] = pd.to_numeric(df_arq4[col_var], errors='coerce')
-        # Filtra apenas respostas de 1 a 6
-        df_resp = df_arq4[df_arq4[col_var].isin([1, 2, 3, 4, 5, 6])].copy()
+        # Converte nulos, '.' ou espaços em branco para código 9
+        df_arq4[col_var] = pd.to_numeric(df_arq4[col_var], errors='coerce').fillna(9)
+        # Filtra respostas catalogadas (1 a 9)
+        df_resp = df_arq4[df_arq4[col_var].isin([1, 2, 3, 4, 5, 6, 7, 8, 9])].copy()
         
         if df_resp.empty:
-            st.info("Sem respostas válidas (1 a 6) para este filtro.")
+            st.info("Sem dados disponíveis para este filtro.")
         else:
             contagem = df_resp[col_var].value_counts().reset_index()
             contagem.columns = ['Resposta', 'Quantidade']
-            contagem['Resposta_Texto'] = contagem['Resposta'].map(dict_likert)
             
-            # Garantir todas as alternativas de 1 a 6
-            para_plot = pd.DataFrame({'Resposta': [1,2,3,4,5,6], 'Resposta_Texto': [dict_likert[i] for i in range(1,7)]})
+            # Garantir opções essenciais: 1 a 6 e 9 (Não respondeu) sempre. 7 e 8 se houver respostas.
+            opcoes_exibir = [1, 2, 3, 4, 5, 6, 9]
+            for opc in [7, 8]:
+                if opc in contagem['Resposta'].values and contagem[contagem['Resposta'] == opc]['Quantidade'].iloc[0] > 0:
+                    opcoes_exibir.append(opc)
+            opcoes_exibir.sort()
+            
+            para_plot = pd.DataFrame({'Resposta': opcoes_exibir, 'Resposta_Texto': [dict_likert[i] for i in opcoes_exibir]})
             para_plot = pd.merge(para_plot, contagem[['Resposta', 'Quantidade']], on='Resposta', how='left').fillna(0)
             
             total_alunos = len(df_arq4)
             para_plot['Percentual'] = (para_plot['Quantidade'] / total_alunos) * 100 if total_alunos > 0 else 0
             para_plot['Texto_Eixo'] = para_plot['Resposta_Texto'].str.replace(' ', '<br>')
+            para_plot['Rotulo'] = para_plot.apply(lambda row: f"<b>{row['Percentual']:.0f}%</b><br><span style='font-size:11px'>({int(row['Quantidade'])})</span>", axis=1)
             
-            fig = px.bar(para_plot, x='Texto_Eixo', y='Percentual', text='Percentual')
+            fig = px.bar(para_plot, x='Texto_Eixo', y='Percentual', text='Rotulo')
             fig.update_traces(
                 marker_color='#103d6d',
-                texttemplate='%{text:.0f}%',
                 textposition='outside',
-                textfont_size=15,
-                textfont_color='#103d6d'
+                textfont_size=13,
+                textfont_color='#103d6d',
+                hovertemplate="<b>%{x}</b><br>Quantidade: %{customdata[0]}<br>Percentual: %{y:.1f}%<extra></extra>",
+                customdata=para_plot[['Quantidade']]
             )
             fig.update_layout(
                 plot_bgcolor='rgba(0,0,0,0)',
