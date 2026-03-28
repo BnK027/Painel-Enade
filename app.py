@@ -737,8 +737,8 @@ def show_questionario():
         texto = dict_questoes.get(c, f"Questão {c.replace('QE_I', '')} (Sem enunciado cadastrado)")
         opcoes.append(f"{c} - {texto}")
         
-    st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem;">QUESTÕES</div>', unsafe_allow_html=True)
-    selecionada = st.selectbox("Selecione a Pergunta do Questionário", opcoes, label_visibility="collapsed")
+    st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem;">QUESTÕES DO ESTUDANTE</div>', unsafe_allow_html=True)
+    selecionada = st.selectbox("Selecione a pergunta para visualizar o detalhamento:", opcoes)
     col_var = selecionada.split(" - ")[0]
     
     # Calcula os KPIs
@@ -749,9 +749,9 @@ def show_questionario():
     
     with col_q1:
         st.markdown('<div style="background-color: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.04);">', unsafe_allow_html=True)
-        st.markdown('<div class="filter-header" style="color: #103d6d; font-size: 1.2rem; border-bottom: 2px solid rgba(16,61,109,0.2);">RESPOSTA DOS PARTICIPANTES PARA A QUESTÃO:</div>', unsafe_allow_html=True)
+        st.markdown('<div class="filter-header" style="color: #103d6d; font-size: 1.2rem; border-bottom: 2px solid rgba(16,61,109,0.2);">ENUNCIADO DA QUESTÃO:</div>', unsafe_allow_html=True)
         texto_selecionada = selecionada.split(" - ", 1)[1]
-        st.markdown(f'<p style="color: #666; font-size: 1.05rem; margin-bottom: 30px;">{texto_selecionada}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #222; font-size: 1.5rem; font-weight: 600; line-height: 1.4; margin-top: 15px; margin-bottom: 30px;">{texto_selecionada}</p>', unsafe_allow_html=True)
         
         # Mapeamento Likert
         dict_likert = {
@@ -777,7 +777,9 @@ def show_questionario():
             # Garantir todas as alternativas de 1 a 6
             para_plot = pd.DataFrame({'Resposta': [1,2,3,4,5,6], 'Resposta_Texto': [dict_likert[i] for i in range(1,7)]})
             para_plot = pd.merge(para_plot, contagem[['Resposta', 'Quantidade']], on='Resposta', how='left').fillna(0)
-            para_plot['Percentual'] = (para_plot['Quantidade'] / para_plot['Quantidade'].sum()) * 100
+            
+            total_alunos = len(df_arq4)
+            para_plot['Percentual'] = (para_plot['Quantidade'] / total_alunos) * 100 if total_alunos > 0 else 0
             para_plot['Texto_Eixo'] = para_plot['Resposta_Texto'].str.replace(' ', '<br>')
             
             fig = px.bar(para_plot, x='Texto_Eixo', y='Percentual', text='Percentual')
