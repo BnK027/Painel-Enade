@@ -8,9 +8,9 @@ st.set_page_config(page_title="Painel - ENADE", layout="wide", initial_sidebar_s
 # 2. Premium Global CSS
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
     
-    html, body, [class*="st-"], .stMarkdown { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+    html, body, [class*="st-"], .stMarkdown { font-family: 'Inter', sans-serif !important; }
     .stApp { background: linear-gradient(135deg, #f4f7f6 0%, #ffffff 100%); }
     
     /* Animations */
@@ -761,10 +761,13 @@ def show_questionario():
     col_q1, col_kpi = st.columns([3, 1], gap="large")
     
     with col_q1:
-        st.markdown('<div style="background-color: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.04);">', unsafe_allow_html=True)
-        st.markdown('<div class="filter-header" style="color: #103d6d; font-size: 1.2rem; border-bottom: 2px solid rgba(16,61,109,0.2);">ENUNCIADO DA QUESTÃO:</div>', unsafe_allow_html=True)
         texto_selecionada = selecionada.split(" - ", 1)[1]
-        st.markdown(f'<p style="color: #222; font-size: 1.5rem; font-weight: 600; line-height: 1.4; margin-top: 15px; margin-bottom: 30px;">{texto_selecionada}</p>', unsafe_allow_html=True)
+        st.markdown(f'''
+        <div style="background-color: white; border-radius: 16px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.03);">
+            <div class="filter-header" style="color: #103d6d; font-size: 1.1rem; border-bottom: 2px solid rgba(16,61,109,0.1); padding-bottom: 10px; margin-bottom: 15px;">ENUNCIADO DA QUESTÃO:</div>
+            <div style="color: #111; font-size: 1.4rem; font-weight: 600; line-height: 1.5;">{texto_selecionada}</div>
+        </div>
+        ''', unsafe_allow_html=True)
         
         # Mapeamento Likert expandido
         dict_likert = {
@@ -821,14 +824,13 @@ def show_questionario():
                 yaxis_title=None,
                 xaxis_title=None,
                 showlegend=False,
-                margin=dict(t=30, b=0, l=0, r=0)
+                margin=dict(t=30, b=40, l=0, r=0),
+                height=450
             )
             fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
-            fig.update_xaxes(tickfont=dict(size=12, color='#103d6d', weight='bold'))
+            fig.update_xaxes(tickfont=dict(size=11, color='#103d6d', weight='bold'), automargin=True)
             st.plotly_chart(fig, use_container_width=True)
             
-        st.markdown('</div>', unsafe_allow_html=True)
-        
     with col_kpi:
         st.markdown(f'''
         <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 25px; border-top: 5px solid #103d6d;">
