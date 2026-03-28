@@ -49,9 +49,16 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
   1. Corrigimos um erro onde as caixas de seleção (*Selectbox*) estavam achatando os textos horizontalmente na base das letras: ao remover de nosso CSS o `padding` minúsculo e fixar um `line-height: 1.6`, o *Streamlit* voltou a escalar naturalmente as listas com textos longos sem decepá-los.
   2. Impedimos o Plotly de ocultar finais de rótulos muito grandes contendo quebra de linha embutida (Ex: "NÃO SEI RESPONDER"). Injetando margens base irredutíveis (`b=100`), expandindo a altura do layout (`height=500`) e zerando ângulos textuais (`tickangle=0`), o Plotly passou a dispor até três ou quatro linhas perfeitamente legíveis na métrica de Respostas do Estudante.
 
+### 8. Recuperação Avançada do Dicionário do Questionário do Estudante (28/03/2026)
+* Como percebido durante a análise dos microdados, a aba `DICIONÁRIO_ARQUIVOS` não possuía o enunciado individualizado das questões formativas de Escala Likert (partindo de `QE_I27` em diante), agrupando-as sob o mesmo rótulo genérico.
+* **Solução e Raciocínio (Metadados Ocultos):** Vasculhamos todos os arquivos locais do ENADE e descobrimos que **a aba `Microdados` contém o verdadeiro mapa de legendas na Coluna A e Coluna D**.
+* Construimos um script iterativo de extração automatizado (`extract_missing_qe.py`) isolando e varrendo os metadados da Coluna A (onde os códigos `QE_I27` ao `QE_I82` residiam em linhas perdidas) conectando as chaves à Coluna D (onde residia o texto original do formulário lido pelo aluno).
+* Exportamos as chaves recuperadas validando que as turmas contavam com exatas 68 questões oficiais nas versões padrão, pulando para 92 questões em 2021 (devido a perguntas sobre a pandemia). Todo esse conjunto léxico foi extraído com segurança para o repositório como um módulo utilizável (`qe_dictionary.py`).
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
 * Como o sistema base contendo o Hub Principal e os 5 módulos verticais encontram-se 100% integrados, analíticos e estáveis, a aplicação possui agora nivel pleno de maturidade *(Production-Ready)*.
+* Integrar as chaves de dicionário recuperadas (`qe_dictionary.py`) às tooltips e aos rótulos de gráfico na tela `show_questionario` do Painel do Estudante, substituindo chaves numéricas por enunciados textuais definitivos.
 * A infraestrutura de versionamento (**Git** e **GitHub Desktop**) já foi devidamente instalada na máquina (Winget).
 * O próximo passo oficial é **realizar o controle de versão**, efetuando um *Commit* total do Painel ENADE utilizando a interface do GitHub Desktop.
 * Finalmente, efetuar o **Deploy Master**: conectar este repositório git recém criado à infraestrutura de servidores da **Streamlit Community Cloud**, gerando um link público acessível.
