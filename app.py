@@ -46,9 +46,9 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         font-weight: 500;
         color: #103d6d;
-        padding: 4px;
         transition: all 0.3s ease;
     }
+    div[data-baseweb="select"] * { line-height: 1.6; }
     div[data-baseweb="select"] > div:hover {
         border-color: #103d6d; box-shadow: 0 6px 16px rgba(16,61,109,0.1);
     }
@@ -824,11 +824,11 @@ def show_questionario():
                 yaxis_title=None,
                 xaxis_title=None,
                 showlegend=False,
-                margin=dict(t=30, b=40, l=0, r=0),
-                height=450
+                margin=dict(t=30, b=100, l=0, r=0),
+                height=500
             )
             fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
-            fig.update_xaxes(tickfont=dict(size=11, color='#103d6d', weight='bold'), automargin=True)
+            fig.update_xaxes(tickfont=dict(size=11, color='#103d6d', weight='bold'), tickangle=0, automargin=True)
             st.plotly_chart(fig, use_container_width=True)
             
     with col_kpi:
