@@ -557,18 +557,11 @@ def show_questionario():
         st.info("Nenhum dado do questionário disponível neste filtro.")
         return
 
-    # Dicionário Extraído das Imagens fornecidas pelo usuário
-    dict_questoes = {
-        'QE_I27': 'As disciplinas cursadas contribuíram para sua formação integral, como cidadão e profissional.',
-        'QE_I28': 'Os conteúdos abordados nas disciplinas do curso favoreceram sua atuação em estágios ou em atividades de iniciação profissional.',
-        'QE_I29': 'As metodologias de ensino utilizadas no curso desafiaram você a aprofundar conhecimentos e desenvolver competências reflexivas e críticas.',
-        'QE_I30': 'O curso propiciou experiências de aprendizagem inovadoras.',
-        'QE_I31': 'O curso contribuiu para o desenvolvimento da sua consciência ética para o exercício profissional.',
-        'QE_I32': 'No curso você teve oportunidade de aprender a trabalhar em equipe.',
-        'QE_I33': 'O curso possibilitou aumentar sua capacidade de reflexão e argumentação.',
-        'QE_I39': 'Os professores demonstraram domínio dos conteúdos abordados nas disciplinas.',
-        'QE_I41': "Os professores utilizaram tecnologias da informação e comunicação (TIC's) como estratégia de ensino..."
-    }
+    # Dicionário Extraído Integralmente dos Microdados do INEP
+    try:
+        from qe_dictionary import qe_dict as dict_questoes
+    except ImportError:
+        dict_questoes = {}
 
     # Discover all QE_I columns available in Arq_4 (Likert scale 1-6)
     qe_cols = [str(c) for c in df_arq4.columns if str(c).startswith('QE_I')]
