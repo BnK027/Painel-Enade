@@ -8,63 +8,76 @@ st.set_page_config(page_title="Painel - ENADE", layout="wide", initial_sidebar_s
 # 2. Premium Global CSS
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     
-    html, body, [class*="st-"], .stMarkdown { font-family: 'Inter', sans-serif !important; }
-    .stApp { background: linear-gradient(135deg, #f2f9f4 0%, #ffffff 100%); }
+    html, body, [class*="st-"], .stMarkdown { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+    .stApp { background: linear-gradient(135deg, #f4f7f6 0%, #ffffff 100%); }
     
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(15px); }
-        to { opacity: 1; transform: translateY(0); }
+    /* Animations */
+    @keyframes fadeInScale {
+        from { opacity: 0; transform: translateY(20px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
     }
-    .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .fade-in { animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     
-    .home-inst-title { font-size: 2.8rem; font-weight: 900; color: #1a5722; margin-top: 1rem; line-height: 1.1; letter-spacing: -1.2px; }
-    .home-inst-subtitle { font-size: 1.6rem; color: #32A041; margin-bottom: 1.5rem; font-weight: 600; letter-spacing: -0.5px; }
+    /* Typography */
+    .home-inst-title { font-size: 3.2rem; font-weight: 800; color: #0f2c16; margin-top: 1rem; line-height: 1.1; letter-spacing: -1.5px; }
+    .home-inst-subtitle { font-size: 1.5rem; color: #2c8c44; margin-bottom: 2rem; font-weight: 600; letter-spacing: -0.5px; }
+    .indicadores-title { font-size: 2rem; font-weight: 800; color: #103d6d; margin-bottom: 1.5rem; letter-spacing: -1px; text-transform: uppercase; }
+    .filter-header { font-size: 0.9rem; color: #103d6d; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; border-bottom: 2px solid rgba(16, 61, 109, 0.15); padding-bottom: 6px; letter-spacing: 0.5px; }
     
+    /* Premium Cards & Glassmorphism */
     .card-panel {
-        background-color: rgba(255, 255, 255, 0.85); padding: 2.5rem; border-radius: 20px;
-        box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06), 0 8px 10px -6px rgba(0,0,0,0.02);
-        border-top: 5px solid #32A041; border-bottom: 1px solid rgba(50,160,65,0.1); border-left: 1px solid rgba(50,160,65,0.1); border-right: 1px solid rgba(50,160,65,0.1);
-        backdrop-filter: blur(12px); height: 100%; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        background-color: rgba(255, 255, 255, 0.75); padding: 2.5rem; border-radius: 24px;
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), 0 8px 16px -6px rgba(0,0,0,0.02);
+        border: 1px solid rgba(255,255,255,0.6); border-top: 6px solid #2c8c44;
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        height: 100%; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .card-panel:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1), 0 10px 15px -5px rgba(0,0,0,0.04); }
-    .card-panel-dark { border-top: 5px solid #1a5722; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(245,252,246,0.95) 100%); }
-    
-    .filter-box { background: rgba(255,255,255,0.7); backdrop-filter: blur(16px); padding: 20px; border-radius: 16px; border: 1px solid rgba(50,160,65,0.15); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05); margin-bottom: 25px; }
-    
-    [data-testid="stPlotlyChart"] {
-        background-color: white;
+    .card-panel:hover { transform: translateY(-8px); box-shadow: 0 30px 60px -12px rgba(44, 140, 68, 0.15); }
+    .card-panel-dark { border-top: 6px solid #103d6d; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,244,248,0.95) 100%); }
+    .card-panel-dark:hover { box-shadow: 0 30px 60px -12px rgba(16, 61, 109, 0.15); }
+
+    /* Streamlit Input Overrides (Fixing White Bars) */
+    div[data-baseweb="select"] > div {
+        background-color: #ffffff;
         border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-        padding: 5px;
-        border: 1px solid rgba(0,0,0,0.04);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e0e6ed;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        font-weight: 500;
+        color: #103d6d;
+        padding: 4px;
+        transition: all 0.3s ease;
+    }
+    div[data-baseweb="select"] > div:hover {
+        border-color: #103d6d; box-shadow: 0 6px 16px rgba(16,61,109,0.1);
+    }
+    
+    /* Plotly Charts Premium Look */
+    [data-testid="stPlotlyChart"] {
+        background-color: rgba(255,255,255,0.9);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+        padding: 10px;
+        border: 1px solid rgba(0,0,0,0.03);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
     }
     [data-testid="stPlotlyChart"]:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.08);
     }
 
-    .kpi-card { background: linear-gradient(145deg, #ffffff, #f0f7f2); border-left: 5px solid #32A041; border-radius: 12px; padding: 15px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: inline-block; min-width: 200px; text-align: center; margin: 10px auto; transition: transform 0.3s; }
-    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-    .kpi-title { font-size: 0.85rem; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-    .kpi-value { font-size: 2.2rem; font-weight: 900; color: #1a5722; line-height: 1; }
-    .kpi-unit { font-size: 1rem; color: #777; font-weight: 600; margin-left: 4px; }
+    /* KPI Cards */
+    .kpi-card { background: linear-gradient(135deg, #ffffff, #fdfdfd); border-left: 6px solid #103d6d; border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); text-align: center; margin: 10px auto; transition: transform 0.3s; border-right: 1px solid #f0f0f0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; }
+    .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(16,61,109,0.12); }
+    .kpi-title { font-size: 0.85rem; color: #888; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+    .kpi-value { font-size: 2.8rem; font-weight: 800; color: #103d6d; line-height: 1; letter-spacing: -1px; }
+
+    /* Button Styling */
+    .stButton>button { border-radius: 14px; font-weight: 700; padding: 0.8rem 1.5rem; border: none; background: #ffffff; color: #103d6d; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e8e8e8; }
+    .stButton>button:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 24px rgba(16,61,109,0.15); background: #103d6d; color: #ffffff; border-color: #103d6d; }
     
-    .home-info-title { font-size: 0.9rem; color: #777; text-transform: uppercase; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 0.2rem; }
-    .home-info-name { font-size: 1.6rem; font-weight: 600; color: #111; margin-bottom: 1.8rem; }
-    .indicadores-title { font-size: 1.8rem; font-weight: 800; color: #1a5722; margin-bottom: 1rem; letter-spacing: -0.5px; }
-    
-    .main-title { text-align: center; background: linear-gradient(135deg, #1a5722 0%, #32A041 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; font-size: 4rem; margin-bottom: 5px; letter-spacing: -2px; }
-    .filter-header { font-size: 0.85rem; color: #1a5722; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; border-bottom: 2px solid rgba(50,160,65,0.2); padding-bottom: 4px; letter-spacing: 0.5px; }
-    
-    .stButton>button { border-radius: 12px; font-weight: 800; padding: 0.7rem 1.4rem; border: none; background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%); border: 1px solid #e0e0e0; color: #333; transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 10px -2px rgba(0,0,0,0.05); letter-spacing: 0.5px; }
-    .stButton>button:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 20px -3px rgba(50,160,65,0.25); border-color: #32A041; color: #1a5722; }
-    
-    /* Force primary button style strictly based on internal types if possible, but hover effects cover it all */
-    
-    .custom-divider { border: 0; height: 1px; background: linear-gradient(to right, rgba(50,160,65,0.0), rgba(50,160,65,0.4), rgba(50,160,65,0.0)); margin: 40px 0; }
+    .custom-divider { border: 0; height: 1px; background: linear-gradient(to right, transparent, rgba(16,61,109,0.2), transparent); margin: 40px 0; }
 </style>
 """, unsafe_allow_html=True)
 

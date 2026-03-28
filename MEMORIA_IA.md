@@ -40,6 +40,13 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * Implementamos o dicionário de variáveis via código, incorporando enunciados oficiais (ex: *QE_I27 a QE_I33*, *QE_I39* e *QE_I41*) extraídos do questionário.
 * Desenvolvemos a interface baseada no modelo original: *BarChart* em Plotly (azul `#103d6d`), *tooltips* com percentuais convertidos das escalas Likert, e cartões de métricas dinâmicos (Inscritos e Participantes).
 
+### 7. Overhaul Visual e CSS Premium (28/03/2026)
+* A aplicação inteira recebeu uma injeção de CSS em nível de produção focado em *Glassmorphism*.
+* A tipografia global foi migrada para **Plus Jakarta Sans**, trazendo mais leveza e sofisticação às leituras.
+* Refatoramos os contornos e sombras (*drop-shadows*) de todos os painéis e gráficos nativos do Plotly para parecerem componentes "flutuantes".
+* Neutralizamos a "Barra Branca" anômala da caixa de seleção (*selectbox*) por meio de uma varredura nas propriedades CSS-in-JS nativas do Streamlit `[data-baseweb="select"]`, integrando completamente o seletor à paleta da página sem quebrar o fundo.
+* Aumentamos as respostas dos enunciados e adicionamos a categoria interativa (NÃO RESPONDEU) junto aos rótulos numéricos combinados aos valores em porcentagens (`74% (14)`).
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
 * Como o sistema base contendo o Hub Principal e os 5 módulos verticais encontram-se 100% integrados, analíticos e estáveis, a aplicação possui agora nivel pleno de maturidade *(Production-Ready)*.
