@@ -124,7 +124,7 @@ def load_data():
 @st.cache_data
 def load_microdata():
     files = ['Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
-    all_sexo, all_idade, all_raca, all_renda, all_evasao = [], [], [], [], []
+    all_sexo, all_idade, all_raca, all_renda = [], [], [], []
     all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4 = [], [], [], [], [], [], [], [], []
     
     for file in files:
@@ -160,23 +160,6 @@ def load_microdata():
                     df_temp = pd.merge(pd.read_excel(xls, sheet_name=arq), curso_map, on='CO_CURSO', how='inner')
                     if not df_temp.empty: lst.append(df_temp)
                 
-            # Dataset Integrado de Evasão (Arq_2, Arq_3, Arq_5, Arq_6, Arq_14, Arq_23)
-            req_sheets = ['Arq_2', 'Arq_3', 'Arq_5', 'Arq_6', 'Arq_14', 'Arq_23']
-            if all(s in xls.sheet_names for s in req_sheets):
-                df_a2 = pd.read_excel(xls, sheet_name='Arq_2')[['ANO_FIM_EM']]
-                df_a3 = pd.read_excel(xls, sheet_name='Arq_3')[['TP_PRES', 'CO_CURSO']]
-                df_a5 = pd.read_excel(xls, sheet_name='Arq_5')[['TP_SEXO']]
-                df_a6 = pd.read_excel(xls, sheet_name='Arq_6')[['NU_IDADE']]
-                df_a14 = pd.read_excel(xls, sheet_name='Arq_14')[['QE_I08']]
-                df_a23 = pd.read_excel(xls, sheet_name='Arq_23')[['QE_I17']]
-                
-                df_concat = pd.concat([df_a3, df_a2, df_a5, df_a6, df_a14, df_a23], axis=1)
-                df_ev = pd.merge(df_concat, curso_map, on='CO_CURSO', how='inner')
-                
-                # Marcar Evasão: alunos que não têm presença confirmada (diferente de 555 ou 333)
-                df_ev['EVADIU'] = df_ev['TP_PRES'].apply(lambda x: True if str(x) not in ['555', '333', '555.0', '333.0'] else False)
-                if not df_ev.empty: all_evasao.append(df_ev)
-                
         except Exception as e:
             continue
             
@@ -185,7 +168,6 @@ def load_microdata():
         'idade': pd.concat(all_idade, ignore_index=True) if all_idade else pd.DataFrame(),
         'raca': pd.concat(all_raca, ignore_index=True) if all_raca else pd.DataFrame(),
         'renda': pd.concat(all_renda, ignore_index=True) if all_renda else pd.DataFrame(),
-        'evasao': pd.concat(all_evasao, ignore_index=True) if all_evasao else pd.DataFrame(),
         'pai': pd.concat(all_pai, ignore_index=True) if all_pai else pd.DataFrame(),
         'mae': pd.concat(all_mae, ignore_index=True) if all_mae else pd.DataFrame(),
         'trab': pd.concat(all_trab, ignore_index=True) if all_trab else pd.DataFrame(),
@@ -290,7 +272,7 @@ def show_home():
         """, unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
-        col_b1, col_b2, col_b3, col_b4, col_b5 = st.columns(5)
+        col_b1, col_b2, col_b3, col_b4 = st.columns(4)
         with col_b1:
             if st.button("🚀 NOTAS", use_container_width=True, type="primary"):
                 st.session_state.page = 'dashboard'
@@ -304,10 +286,6 @@ def show_home():
                 st.session_state.page = 'estudantes'
                 st.rerun()
         with col_b4:
-            if st.button("⚠️ EVASÃO", use_container_width=True):
-                st.session_state.page = 'evasao'
-                st.rerun()
-        with col_b5:
             if st.button("📝 QUEST. ESTUDANTE", use_container_width=True):
                 st.session_state.page = 'questionario'
                 st.rerun()
@@ -344,7 +322,7 @@ def show_cursos():
             
     st.markdown("""
         <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
-            <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Análise de Provas e Evasão</p>
+            <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Análise de Provas</p>
             <h1 class="main-title" style="font-size: 3rem;">DADOS DOS CURSOS</h1>
         </div>
     """, unsafe_allow_html=True)
@@ -368,26 +346,6 @@ def show_cursos():
         else:
             st.info("Sem dados de notas isoladas suficientes no filtro.")
             
-    st.markdown("<br><hr class='custom-divider'><br>", unsafe_allow_html=True)
-    st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem;">Taxa de Abstenção por Campus (Evasão no Exame)</div>', unsafe_allow_html=True)
-    if 'INSCRITOS' in df_calc.columns and 'PRESENTES' in df_calc.columns:
-        df_calc['INSCRITOS'] = pd.to_numeric(df_calc['INSCRITOS'], errors='coerce')
-        df_calc['PRESENTES'] = pd.to_numeric(df_calc['PRESENTES'], errors='coerce')
-        abs_data = df_calc.groupby('CENTRO').agg({'INSCRITOS':'sum', 'PRESENTES':'sum'}).reset_index()
-        abs_data = abs_data[abs_data['INSCRITOS'] > 0]
-        try: abs_data['Taxa de Abstenção (%)'] = ((1 - abs_data['PRESENTES'] / abs_data['INSCRITOS']) * 100).round(1)
-        except: pass
-        abs_data = abs_data.dropna()
-        if not abs_data.empty:
-            abs_data = abs_data.sort_values('Taxa de Abstenção (%)', ascending=False)
-            fig2 = px.bar(abs_data, x='CENTRO', y='Taxa de Abstenção (%)', color='Taxa de Abstenção (%)', color_continuous_scale='Reds', text='Taxa de Abstenção (%)')
-            fig2.update_traces(texttemplate='%{text}%', textposition='outside')
-            fig2.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", coloraxis_showscale=False)
-            fig2.update_yaxes(range=[0, max(abs_data['Taxa de Abstenção (%)']) * 1.25])
-            st.plotly_chart(fig2, use_container_width=True)
-        else:
-            st.info("Sem dados de abstenção suficientes no filtro.")
-
 def show_estudantes():
     col_back, _ = st.columns([1, 6])
     with col_back:
@@ -556,143 +514,7 @@ def show_estudantes():
                 fig_m.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title=None)
                 st.plotly_chart(fig_m, use_container_width=True)
                 
-# Keep evasao as is
 
-def show_evasao():
-    col_back, _ = st.columns([1, 6])
-    with col_back:
-        if st.button("⬅ Voltar ao Início", use_container_width=True, key='back_bt_evs'):
-            st.session_state.page = 'home'
-            st.rerun()
-            
-    st.markdown("""
-        <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
-            <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Cruzamento Demográfico e Abstenção</p>
-            <h1 class="main-title" style="font-size: 3rem;">ANÁLISE DE EVASÃO</h1>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
-
-    filtered_data = render_filters(data)
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    cursos_filtrados = filtered_data['CO_CURSO'].unique().tolist()
-    anos_filtrados = filtered_data['ANO'].unique().tolist()
-    
-    df_ev = microdados['evasao']
-    if df_ev.empty:
-        st.warning("Sem dados pré-processados de evasão disponíveis para esta visão.")
-        return
-        
-    df_ev = df_ev[(df_ev['CO_CURSO'].isin(cursos_filtrados)) & (df_ev['ANO'].isin(anos_filtrados))]
-    
-    if df_ev.empty:
-        st.info("Nenhum dado de evasão disponível neste filtro.")
-        return
-
-    df_taxa_campus = df_ev.groupby('CENTRO')['EVADIU'].mean().reset_index()
-    df_taxa_campus['EVADIU'] = (df_taxa_campus['EVADIU'] * 100).round(1)
-    df_taxa_campus = df_taxa_campus.sort_values('EVADIU', ascending=False)
-    
-    df_taxa_curso = df_ev.groupby('NOME DO CURSO')['EVADIU'].mean().reset_index()
-    df_taxa_curso['EVADIU'] = (df_taxa_curso['EVADIU'] * 100).round(1)
-    df_taxa_curso = df_taxa_curso.sort_values('EVADIU', ascending=False).head(15) # Top 15 maiores evasões
-
-    st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem;">Taxa Global de Evasão (%)</div>', unsafe_allow_html=True)
-    col_c1, col_c2 = st.columns(2, gap="large")
-    
-    with col_c1:
-        st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px;">Por Campus</div>', unsafe_allow_html=True)
-        fig_campus = px.bar(df_taxa_campus, x='CENTRO', y='EVADIU', text='EVADIU', color='EVADIU', color_continuous_scale='Reds')
-        fig_campus.update_traces(texttemplate='%{text}%', textposition='outside', marker_line_width=1.5, marker_line_color='white', opacity=0.95)
-        fig_campus.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", coloraxis_showscale=False, yaxis_title="% Evasão", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#d62828"})
-        fig_campus.update_yaxes(range=[0, max(df_taxa_campus['EVADIU'] + 5) if not df_taxa_campus.empty else 100])
-        st.plotly_chart(fig_campus, use_container_width=True)
-
-    with col_c2:
-        st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px;">Por Curso (Top 15 Maiores do Filtro)</div>', unsafe_allow_html=True)
-        fig_curso = px.bar(df_taxa_curso, x='NOME DO CURSO', y='EVADIU', text='EVADIU', color_discrete_sequence=['#e63946'])
-        fig_curso.update_traces(texttemplate='%{text}%', textposition='outside', marker_line_width=1.5, marker_line_color='white', opacity=0.95)
-        fig_curso.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title="% Evasão", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#e63946"})
-        fig_curso.update_yaxes(range=[0, max(df_taxa_curso['EVADIU'] + 5) if not df_taxa_curso.empty else 100])
-        st.plotly_chart(fig_curso, use_container_width=True)
-
-    st.markdown("<br><hr class='custom-divider'><br>", unsafe_allow_html=True)
-    st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem;">Perfil dos Estudantes Evadidos</div>', unsafe_allow_html=True)
-    
-    # Filtrar apenas alunos evadidos para os gráficos de perfil
-    df_evadidos = df_ev[df_ev['EVADIU'] == True].copy()
-    
-    if df_evadidos.empty:
-        st.success("Não houve nenhum registro de evasão sob este filtro!")
-        return
-
-    col_e1, col_e2 = st.columns(2, gap="large")
-    
-    with col_e1:
-        st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px;">Idade dos Alunos (Frequência)</div>', unsafe_allow_html=True)
-        df_evadidos['NU_IDADE'] = pd.to_numeric(df_evadidos['NU_IDADE'], errors='coerce')
-        idade_clean = df_evadidos.dropna(subset=['NU_IDADE'])
-        if not idade_clean.empty:
-            media_idade = idade_clean['NU_IDADE'].mean()
-            fig_i = px.histogram(idade_clean, x='NU_IDADE', nbins=15, color_discrete_sequence=['#d62828'])
-            fig_i.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-            fig_i.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Idade", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#d62828"})
-            st.plotly_chart(fig_i, use_container_width=True)
-            st.markdown(f'<div style="text-align:center;"><div class="kpi-card"><div class="kpi-title">Perfil Etário dos Evadidos</div><div class="kpi-value">{media_idade:.1f}<span class="kpi-unit">anos (Média)</span></div></div></div>', unsafe_allow_html=True)
-        else:
-            st.info("Sem dados de idade preenchidos.")
-
-    with col_e2:
-        st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px;">Situação Financeira (Frequência)</div>', unsafe_allow_html=True)
-        dict_renda = {'A': 'Até 1,5 SM', 'B': '1,5 a 3 SM', 'C': '3 a 4,5 SM', 'D': '4,5 a 6 SM', 'E': '6 a 10 SM', 'F': '10 a 30 SM', 'G': 'Acima 30 SM'}
-        df_evadidos['Renda'] = df_evadidos['QE_I08'].map(dict_renda)
-        renda_counts = df_evadidos['Renda'].value_counts().reset_index()
-        renda_counts.columns = ['Renda', 'Qtd']
-        
-        ordem_renda = ['Acima 30 SM', '10 a 30 SM', '6 a 10 SM', '4,5 a 6 SM', '3 a 4,5 SM', '1,5 a 3 SM', 'Até 1,5 SM']
-        renda_counts['Renda'] = pd.Categorical(renda_counts['Renda'], categories=ordem_renda, ordered=True)
-        renda_counts = renda_counts.sort_values('Renda')
-        
-        fig_r = px.bar(renda_counts, x='Qtd', y='Renda', orientation='h', color_discrete_sequence=['#f77f00'])
-        fig_r.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-        fig_r.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#f77f00"})
-        st.plotly_chart(fig_r, use_container_width=True)
-
-    col_e3, col_e4 = st.columns(2, gap="large")
-    
-    with col_e3:
-        st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px; margin-top:20px;">Tempo desde a conclusão do Ens. Médio</div>', unsafe_allow_html=True)
-        df_evadidos['ANO_FIM_EM'] = pd.to_numeric(df_evadidos['ANO_FIM_EM'], errors='coerce')
-        df_evadidos['ANO'] = pd.to_numeric(df_evadidos['ANO'], errors='coerce')
-        
-        df_tempo = df_evadidos.dropna(subset=['ANO_FIM_EM', 'ANO']).copy()
-        df_tempo['TEMPO_EM'] = (df_tempo['ANO'] - df_tempo['ANO_FIM_EM']).clip(lower=0)
-        
-        if not df_tempo.empty:
-            media_tempo = df_tempo['TEMPO_EM'].mean()
-            fig_t = px.histogram(df_tempo, x='TEMPO_EM', nbins=10, color_discrete_sequence=['#fcbf49'])
-            fig_t.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-            fig_t.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Anos de Diferença", hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter", "bordercolor": "#fcbf49"})
-            st.plotly_chart(fig_t, use_container_width=True)
-            st.markdown(f'<div style="text-align:center;"><div class="kpi-card"><div class="kpi-title">Defasagem desde o Ens. Médio</div><div class="kpi-value">{media_tempo:.1f}<span class="kpi-unit">anos</span></div></div></div>', unsafe_allow_html=True)
-        else:
-            st.info("Sem dados de final de EM preenchidos.")
-            
-    with col_e4:
-        st.markdown('<div style="text-align:center; font-weight:600; margin-bottom: 10px; margin-top:20px;">Tipo de Escola no Ens. Médio</div>', unsafe_allow_html=True)
-        dict_tipo = {'A':'Toda em Escola Pública', 'B':'Toda em Escola Privada', 'C':'Toda no exterior', 'D':'Maior parte em Pública', 'E':'Maior parte em Privada', 'F':'Parte no Brasil e exterior'}
-        df_evadidos['Tipo_EM'] = df_evadidos['QE_I17'].map(dict_tipo)
-        tipo_counts = df_evadidos['Tipo_EM'].value_counts().reset_index()
-        tipo_counts.columns = ['Tipo', 'Qtd']
-        
-        if not tipo_counts.empty:
-            fig_tipo = px.pie(tipo_counts, values='Qtd', names='Tipo', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
-            fig_tipo.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
-            fig_tipo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False, hoverlabel={"bgcolor": "white", "font_size": 13, "font_family": "Inter"})
-            st.plotly_chart(fig_tipo, use_container_width=True)
-        else:
-            st.info("Sem dados de tipo de EM preenchidos.")
 
 
 def show_questionario():
@@ -859,7 +681,5 @@ elif st.session_state.page == 'cursos':
     show_cursos()
 elif st.session_state.page == 'estudantes':
     show_estudantes()
-elif st.session_state.page == 'evasao':
-    show_evasao()
 elif st.session_state.page == 'questionario':
     show_questionario()

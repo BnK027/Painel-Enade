@@ -42,10 +42,12 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 
 ### 7. Overhaul Visual e CSS Premium (28/03/2026)
 * A aplicação inteira recebeu uma injeção de CSS em nível de produção focado em *Glassmorphism*.
-* A tipografia global foi migrada para **Plus Jakarta Sans**, trazendo mais leveza e sofisticação às leituras.
+* A tipografia global foi revertida para **Inter** após testes, por conferir um aspecto mais sóbrio e tipicamente analítico ao dashboard em comparação à *Plus Jakarta Sans*.
 * Refatoramos os contornos e sombras (*drop-shadows*) de todos os painéis e gráficos nativos do Plotly para parecerem componentes "flutuantes".
-* Neutralizamos a "Barra Branca" anômala da caixa de seleção (*selectbox*) por meio de uma varredura nas propriedades CSS-in-JS nativas do Streamlit `[data-baseweb="select"]`, integrando completamente o seletor à paleta da página sem quebrar o fundo.
-* Aumentamos as respostas dos enunciados e adicionamos a categoria interativa (NÃO RESPONDEU) junto aos rótulos numéricos combinados aos valores em porcentagens (`74% (14)`).
+* Neutralizamos a "Barra Branca" anômala isolando o componente *ENUNCIADO DA QUESTÃO* em uma moldura/card sólida e válida, o que também evitou o corte do texto de enunciados longos.
+* **Resolução Definitiva de Layouts e Texto Cortado:** 
+  1. Corrigimos um erro onde as caixas de seleção (*Selectbox*) estavam achatando os textos horizontalmente na base das letras: ao remover de nosso CSS o `padding` minúsculo e fixar um `line-height: 1.6`, o *Streamlit* voltou a escalar naturalmente as listas com textos longos sem decepá-los.
+  2. Impedimos o Plotly de ocultar finais de rótulos muito grandes contendo quebra de linha embutida (Ex: "NÃO SEI RESPONDER"). Injetando margens base irredutíveis (`b=100`), expandindo a altura do layout (`height=500`) e zerando ângulos textuais (`tickangle=0`), o Plotly passou a dispor até três ou quatro linhas perfeitamente legíveis na métrica de Respostas do Estudante.
 
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
