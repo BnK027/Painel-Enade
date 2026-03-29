@@ -197,43 +197,50 @@ def render_filters(source_data):
     st.markdown('<div class="fade-in" style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
     
     col_a, col_b, col_c = st.columns(3)
-    with col_a:
-        st.markdown('<div class="filter-header">Centro</div>', unsafe_allow_html=True)
-        centro_options = get_options(source_data, 'CENTRO')
-        selected_centro = st.multiselect("Selecione os Centros", centro_options[1:], placeholder="Todos", label_visibility="collapsed", key='filtro_centro')
-        
-    with col_b:
-        st.markdown('<div class="filter-header">Ano Base</div>', unsafe_allow_html=True)
-        selected_ano = st.selectbox("Selecione o Ano", get_options(source_data, 'ANO'), label_visibility="collapsed", key='filtro_ano')
-        
-    with col_c:
-        st.markdown('<div class="filter-header">Nota Faixa</div>', unsafe_allow_html=True)
-        enade_options = get_options(source_data, 'ENADE FAIXA')
-        selected_nota = st.multiselect("Selecione a Nota", enade_options[1:], placeholder="Todas", label_visibility="collapsed", key='filtro_nota')
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown('<div class="filter-header">Curso</div>', unsafe_allow_html=True)
-        selected_curso = st.selectbox("Selecione o Curso", get_options(source_data, 'NOME DO CURSO'), label_visibility="collapsed", key='filtro_curso')
-
-    with col2:
-        st.markdown('<div class="filter-header">Modalidade</div>', unsafe_allow_html=True)
-        selected_modalidade = st.selectbox("Selecione a Modalidade", get_options(source_data, 'MODALIDADE'), label_visibility="collapsed", key='filtro_mod')
-
     filtered_data = source_data.copy()
 
+    with col_a:
+        st.markdown('<div class="filter-header">Centro</div>', unsafe_allow_html=True)
+        centro_options = get_options(filtered_data, 'CENTRO')
+        selected_centro = st.multiselect("Selecione os Centros", centro_options[1:], placeholder="Todos", label_visibility="collapsed", key='filtro_centro')
+        
     if selected_centro:
         filtered_data = filtered_data[filtered_data['CENTRO'].isin(selected_centro)]
+
+    with col_b:
+        st.markdown('<div class="filter-header">Ano Base</div>', unsafe_allow_html=True)
+        ano_options = get_options(filtered_data, 'ANO')
+        selected_ano = st.selectbox("Selecione o Ano", ano_options, label_visibility="collapsed", key='filtro_ano')
+        
     if selected_ano != 'Todos':
         if str(filtered_data['ANO'].dtype) == 'object':
             filtered_data = filtered_data[filtered_data['ANO'] == selected_ano]
         else:
             try: filtered_data = filtered_data[filtered_data['ANO'] == float(selected_ano)]
             except: pass
+
+    with col_c:
+        st.markdown('<div class="filter-header">Nota Faixa</div>', unsafe_allow_html=True)
+        enade_options = get_options(filtered_data, 'ENADE FAIXA')
+        selected_nota = st.multiselect("Selecione a Nota", enade_options[1:], placeholder="Todas", label_visibility="collapsed", key='filtro_nota')
+
     if selected_nota:
         filtered_data = filtered_data[filtered_data['ENADE FAIXA'].astype(str).isin(selected_nota)]
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown('<div class="filter-header">Curso</div>', unsafe_allow_html=True)
+        curso_options = get_options(filtered_data, 'NOME DO CURSO')
+        selected_curso = st.selectbox("Selecione o Curso", curso_options, label_visibility="collapsed", key='filtro_curso')
+
     if selected_curso != 'Todos':
         filtered_data = filtered_data[filtered_data['NOME DO CURSO'] == selected_curso]
+
+    with col2:
+        st.markdown('<div class="filter-header">Modalidade</div>', unsafe_allow_html=True)
+        modal_options = get_options(filtered_data, 'MODALIDADE')
+        selected_modalidade = st.selectbox("Selecione a Modalidade", modal_options, label_visibility="collapsed", key='filtro_mod')
+
     if selected_modalidade != 'Todos':
         filtered_data = filtered_data[filtered_data['MODALIDADE'] == selected_modalidade]
 
