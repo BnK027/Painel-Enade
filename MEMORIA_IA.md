@@ -55,12 +55,17 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * Construimos um script iterativo de extração automatizado (`extract_missing_qe.py`) isolando e varrendo os metadados da Coluna A (onde os códigos `QE_I27` ao `QE_I82` residiam em linhas perdidas) conectando as chaves à Coluna D (onde residia o texto original do formulário lido pelo aluno).
 * Exportamos as chaves recuperadas validando que as turmas contavam com exatas 68 questões oficiais nas versões padrão, pulando para 92 questões em 2021 (devido a perguntas sobre a pandemia). Todo esse conjunto léxico foi extraído com segurança para o repositório como um módulo utilizável (`qe_dictionary.py`).
 
+### 9. Impacto da Pandemia de COVID-19 (Questionário do Estudante 2021) (29/03/2026)
+* Após mapearmos as 92 questões exclusivas da edição de 2021 no dicionário (`qe_dictionary.py`), notamos que o Streamlit não renderizava perguntas acima do `QE_I81`. 
+* **Diagnóstico de Engenharia de Dados**: Isolamos que o INEP armazenou os microdados relacionados à pandemia estritamente na planilha/arquivo sob a aba oculta `Arq_43` (diferente da aba `Arq_4` padrão das edições anteriores).
+* **Solução:** Expandimos o motor de inferência da função `load_microdata()` no `app.py`, capturando o `Arq_43` de forma nativa e unificando-o ao ecossistema de memória principal.
+* Na tela **QUEST. ESTUDANTE**, a aplicação agora descobre de forma dinâmica qual DataFrame (`df_arq4` comum ou `df_arq43` exclusivo da pandemia) abarca a Questão de I82 a I92 selecionada no *dropdown*, aplicando o cálculo de KPIs, Likerts (1 a 9) e ToolTips de forma invisível ao usuário final.
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
 * Como o sistema base contendo o Hub Principal e os 5 módulos verticais encontram-se 100% integrados, analíticos e estáveis, a aplicação possui agora nivel pleno de maturidade *(Production-Ready)*.
-* Integrar as chaves de dicionário recuperadas (`qe_dictionary.py`) às tooltips e aos rótulos de gráfico na tela `show_questionario` do Painel do Estudante, substituindo chaves numéricas por enunciados textuais definitivos.
 * A infraestrutura de versionamento (**Git** e **GitHub Desktop**) já foi devidamente instalada na máquina (Winget).
 * O próximo passo oficial é **realizar o controle de versão**, efetuando um *Commit* total do Painel ENADE utilizando a interface do GitHub Desktop.
 * Finalmente, efetuar o **Deploy Master**: conectar este repositório git recém criado à infraestrutura de servidores da **Streamlit Community Cloud**, gerando um link público acessível.
 
-*(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada pelo usuário)*
+*(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*

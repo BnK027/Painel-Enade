@@ -125,7 +125,7 @@ def load_data():
 def load_microdata():
     files = ['Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
     all_sexo, all_idade, all_raca, all_renda = [], [], [], []
-    all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4 = [], [], [], [], [], [], [], [], []
+    all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43 = [], [], [], [], [], [], [], [], [], []
     
     for file in files:
         try:
@@ -154,8 +154,8 @@ def load_microdata():
                 df_renda = pd.merge(pd.read_excel(xls, sheet_name='Arq_14'), curso_map, on='CO_CURSO', how='inner')
                 if not df_renda.empty: all_renda.append(df_renda)
 
-            for arq, lst in zip(['Arq_10','Arq_11','Arq_16','Arq_17','Arq_21','Arq_29','Arq_31','Arq_32', 'Arq_4'], 
-                                [all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4]):
+            for arq, lst in zip(['Arq_10','Arq_11','Arq_16','Arq_17','Arq_21','Arq_29','Arq_31','Arq_32', 'Arq_4', 'Arq_43'], 
+                                [all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43]):
                 if arq in xls.sheet_names:
                     df_temp = pd.merge(pd.read_excel(xls, sheet_name=arq), curso_map, on='CO_CURSO', how='inner')
                     if not df_temp.empty: lst.append(df_temp)
@@ -176,7 +176,8 @@ def load_microdata():
         'estudo': pd.concat(all_estudo, ignore_index=True) if all_estudo else pd.DataFrame(),
         'motiv_c': pd.concat(all_motiv_c, ignore_index=True) if all_motiv_c else pd.DataFrame(),
         'motiv_i': pd.concat(all_motiv_i, ignore_index=True) if all_motiv_i else pd.DataFrame(),
-        'arq4': pd.concat(all_arq4, ignore_index=True) if all_arq4 else pd.DataFrame()
+        'arq4': pd.concat(all_arq4, ignore_index=True) if all_arq4 else pd.DataFrame(),
+        'arq43': pd.concat(all_arq43, ignore_index=True) if all_arq43 else pd.DataFrame()
     }
 
 try:
@@ -547,13 +548,15 @@ def show_questionario():
     anos_filtrados = filtered_data['ANO'].unique().tolist()
     
     df_arq4 = microdados.get('arq4', pd.DataFrame())
-    if df_arq4.empty:
-        st.warning("Sem dados pré-processados de Arq_4 disponíveis.")
+    df_arq43 = microdados.get('arq43', pd.DataFrame())
+    if df_arq4.empty and df_arq43.empty:
+        st.warning("Sem dados pré-processados de Arq_4 ou Arq_43 disponíveis.")
         return
         
     df_arq4 = df_arq4[(df_arq4['CO_CURSO'].isin(cursos_filtrados)) & (df_arq4['ANO'].isin(anos_filtrados))]
+    df_arq43 = df_arq43[(df_arq43['CO_CURSO'].isin(cursos_filtrados)) & (df_arq43['ANO'].isin(anos_filtrados))]
     
-    if df_arq4.empty:
+    if df_arq4.empty and df_arq43.empty:
         st.info("Nenhum dado do questionário disponível neste filtro.")
         return
 
@@ -563,8 +566,9 @@ def show_questionario():
     except ImportError:
         dict_questoes = {}
 
-    # Discover all QE_I columns available in Arq_4 (Likert scale 1-6)
-    qe_cols = [str(c) for c in df_arq4.columns if str(c).startswith('QE_I')]
+    # Discover all QE_I columns available in both Arq_4 and Arq_43 (Likert scale 1-6)
+    qe_cols = [str(c) for c in df_arq4.columns.tolist() + df_arq43.columns.tolist() if str(c).startswith('QE_I')]
+    qe_cols = list(set(qe_cols))
     qe_cols.sort()
     
     # Montar dropdown customizado
@@ -605,10 +609,18 @@ def show_questionario():
             9: 'NÃO RESPONDEU'
         }
         
+        # Identifica em qual dataframe a questão existe
+        if col_var in df_arq4.columns and not df_arq4.empty and not df_arq4[col_var].dropna().empty:
+            df_target = df_arq4.copy()
+        elif col_var in df_arq43.columns and not df_arq43.empty and not df_arq43[col_var].dropna().empty:
+            df_target = df_arq43.copy()
+        else:
+            df_target = pd.DataFrame(columns=[col_var])
+            
         # Converte nulos, '.' ou espaços em branco para código 9
-        df_arq4[col_var] = pd.to_numeric(df_arq4[col_var], errors='coerce').fillna(9)
+        df_target[col_var] = pd.to_numeric(df_target[col_var], errors='coerce').fillna(9)
         # Filtra respostas catalogadas (1 a 9)
-        df_resp = df_arq4[df_arq4[col_var].isin([1, 2, 3, 4, 5, 6, 7, 8, 9])].copy()
+        df_resp = df_target[df_target[col_var].isin([1, 2, 3, 4, 5, 6, 7, 8, 9])].copy()
         
         if df_resp.empty:
             st.info("Sem dados disponíveis para este filtro.")
@@ -626,7 +638,7 @@ def show_questionario():
             para_plot = pd.DataFrame({'Resposta': opcoes_exibir, 'Resposta_Texto': [dict_likert[i] for i in opcoes_exibir]})
             para_plot = pd.merge(para_plot, contagem[['Resposta', 'Quantidade']], on='Resposta', how='left').fillna(0)
             
-            total_alunos = len(df_arq4)
+            total_alunos = len(df_target)
             para_plot['Percentual'] = (para_plot['Quantidade'] / total_alunos) * 100 if total_alunos > 0 else 0
             para_plot['Texto_Eixo'] = para_plot['Resposta_Texto'].str.replace(' ', '<br>')
             para_plot['Rotulo'] = para_plot.apply(lambda row: f"<b>{row['Percentual']:.0f}%</b><br><span style='font-size:11px'>({int(row['Quantidade'])})</span>", axis=1)
