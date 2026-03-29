@@ -196,55 +196,66 @@ def get_options(df, column):
 def render_filters(source_data):
     st.markdown('<div class="fade-in" style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
     
-    col_a, col_b, col_c = st.columns(3)
-    filtered_data = source_data.copy()
+    curr_centro = st.session_state.get('filtro_centro', [])
+    curr_ano = st.session_state.get('filtro_ano', 'Todos')
+    curr_nota = st.session_state.get('filtro_nota', [])
+    curr_curso = st.session_state.get('filtro_curso', 'Todos')
+    curr_mod = st.session_state.get('filtro_mod', 'Todos')
 
+    def get_filtered_for(exclude_key):
+        df = source_data.copy()
+        if exclude_key != 'CENTRO' and curr_centro:
+            df = df[df['CENTRO'].isin(curr_centro)]
+        if exclude_key != 'ANO' and curr_ano != 'Todos':
+            if str(df['ANO'].dtype) == 'object':
+                df = df[df['ANO'] == curr_ano]
+            else:
+                try: df = df[df['ANO'] == float(curr_ano)]
+                except: pass
+        if exclude_key != 'ENADE FAIXA' and curr_nota:
+            df = df[df['ENADE FAIXA'].astype(str).isin(curr_nota)]
+        if exclude_key != 'NOME DO CURSO' and curr_curso != 'Todos':
+            df = df[df['NOME DO CURSO'] == curr_curso]
+        if exclude_key != 'MODALIDADE' and curr_mod != 'Todos':
+            df = df[df['MODALIDADE'] == curr_mod]
+        return df
+
+    col_a, col_b, col_c = st.columns(3)
+    
     with col_a:
         st.markdown('<div class="filter-header">Centro</div>', unsafe_allow_html=True)
-        centro_options = get_options(filtered_data, 'CENTRO')
+        centro_options = get_options(get_filtered_for('CENTRO'), 'CENTRO')
+        valid_centros = [c for c in curr_centro if c in centro_options]
+        if valid_centros != curr_centro: st.session_state['filtro_centro'] = valid_centros
         selected_centro = st.multiselect("Selecione os Centros", centro_options[1:], placeholder="Todos", label_visibility="collapsed", key='filtro_centro')
         
-    if selected_centro:
-        filtered_data = filtered_data[filtered_data['CENTRO'].isin(selected_centro)]
-
     with col_b:
         st.markdown('<div class="filter-header">Ano Base</div>', unsafe_allow_html=True)
-        ano_options = get_options(filtered_data, 'ANO')
+        ano_options = get_options(get_filtered_for('ANO'), 'ANO')
+        if curr_ano not in ano_options: st.session_state['filtro_ano'] = 'Todos'
         selected_ano = st.selectbox("Selecione o Ano", ano_options, label_visibility="collapsed", key='filtro_ano')
         
-    if selected_ano != 'Todos':
-        if str(filtered_data['ANO'].dtype) == 'object':
-            filtered_data = filtered_data[filtered_data['ANO'] == selected_ano]
-        else:
-            try: filtered_data = filtered_data[filtered_data['ANO'] == float(selected_ano)]
-            except: pass
-
     with col_c:
         st.markdown('<div class="filter-header">Nota Faixa</div>', unsafe_allow_html=True)
-        enade_options = get_options(filtered_data, 'ENADE FAIXA')
+        enade_options = get_options(get_filtered_for('ENADE FAIXA'), 'ENADE FAIXA')
+        valid_notas = [n for n in curr_nota if n in enade_options]
+        if valid_notas != curr_nota: st.session_state['filtro_nota'] = valid_notas
         selected_nota = st.multiselect("Selecione a Nota", enade_options[1:], placeholder="Todas", label_visibility="collapsed", key='filtro_nota')
-
-    if selected_nota:
-        filtered_data = filtered_data[filtered_data['ENADE FAIXA'].astype(str).isin(selected_nota)]
 
     col1, col2 = st.columns(2)
     with col1:
         st.markdown('<div class="filter-header">Curso</div>', unsafe_allow_html=True)
-        curso_options = get_options(filtered_data, 'NOME DO CURSO')
+        curso_options = get_options(get_filtered_for('NOME DO CURSO'), 'NOME DO CURSO')
+        if curr_curso not in curso_options: st.session_state['filtro_curso'] = 'Todos'
         selected_curso = st.selectbox("Selecione o Curso", curso_options, label_visibility="collapsed", key='filtro_curso')
-
-    if selected_curso != 'Todos':
-        filtered_data = filtered_data[filtered_data['NOME DO CURSO'] == selected_curso]
 
     with col2:
         st.markdown('<div class="filter-header">Modalidade</div>', unsafe_allow_html=True)
-        modal_options = get_options(filtered_data, 'MODALIDADE')
+        modal_options = get_options(get_filtered_for('MODALIDADE'), 'MODALIDADE')
+        if curr_mod not in modal_options: st.session_state['filtro_mod'] = 'Todos'
         selected_modalidade = st.selectbox("Selecione a Modalidade", modal_options, label_visibility="collapsed", key='filtro_mod')
 
-    if selected_modalidade != 'Todos':
-        filtered_data = filtered_data[filtered_data['MODALIDADE'] == selected_modalidade]
-
-    return filtered_data
+    return get_filtered_for(None)
 
 
 # --- TELAS PRINCIPAIS ---

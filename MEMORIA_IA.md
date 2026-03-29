@@ -61,10 +61,10 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Solução:** Expandimos o motor de inferência da função `load_microdata()` no `app.py`, capturando o `Arq_43` de forma nativa e unificando-o ao ecossistema de memória principal.
 * Na tela **QUEST. ESTUDANTE**, a aplicação agora descobre de forma dinâmica qual DataFrame (`df_arq4` comum ou `df_arq43` exclusivo da pandemia) abarca a Questão de I82 a I92 selecionada no *dropdown*, aplicando o cálculo de KPIs, Likerts (1 a 9) e ToolTips de forma invisível ao usuário final.
 
-### 10. Filtros em Cascata (Inteligência de Renderização) (29/03/2026)
-* Para evitar que o usuário selecionasse um Campus e acidentalmente pudesse filtrar um Curso que não existe naquela unidade, re-arquitetamos a lógica da topologia de `render_filters()`.
-* **Solução**: O Streamlit agora constrói e passa o dataset filtrado adiante a cada *widget* processado sequencialmente de cima para baixo.
-* Ao selecionar um **Centro/Campus**, a barra de **Ano Base** reduz as opções apenas aos anos em que o campus fez a prova. Por consequência, a barra de **Curso** renderiza apenas os cursos matematicamente validados por ambos os filtros acima, eliminando combinações "vazias" ou falhas de UX. O aplicativo responde em tempo real sentindo o contexto global.
+### 10. Filtros em Cascata Omnidirecional (Inteligência de Renderização) (29/03/2026)
+* Para evitar que o usuário selecionasse um Campus e acidentalmente pudesse filtrar um Curso que não existe naquela unidade (ou vice-versa), re-arquitetamos a lógica da topologia de `render_filters()`.
+* **Solução**: O Streamlit agora constrói listas de opções usando uma topologia baseada no `st.session_state`. Em vez de filtrar linearmente de cima para baixo, o sistema cruza virtualmente todas as categorias escolhidas: cada *caixa de seleção* carrega uma sub-matriz de dados filtrada ativamente por **todas as outras** regras vigentes.
+* **Exemplo Omnidirecional**: Ao selecionar o ano de `2021`, a barra de **Curso** já omite graduações que não fizeram prova naquele ano, e a barra de **Campus** mostra apenas os centros que registraram participantes. Qualquer filtro que você toque, atualiza instantaneamente as opções exclusivas dos outros quatro, de forma completamente coesa, eliminando resultados vazios ou combinações matematicamente inviáveis.
 
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
