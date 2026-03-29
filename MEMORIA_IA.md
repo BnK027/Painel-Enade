@@ -66,6 +66,13 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Solução**: O Streamlit agora constrói listas de opções usando uma topologia baseada no `st.session_state`. Em vez de filtrar linearmente de cima para baixo, o sistema cruza virtualmente todas as categorias escolhidas: cada *caixa de seleção* carrega uma sub-matriz de dados filtrada ativamente por **todas as outras** regras vigentes.
 * **Exemplo Omnidirecional**: Ao selecionar o ano de `2021`, a barra de **Curso** já omite graduações que não fizeram prova naquele ano, e a barra de **Campus** mostra apenas os centros que registraram participantes. Qualquer filtro que você toque, atualiza instantaneamente as opções exclusivas dos outros quatro, de forma completamente coesa, eliminando resultados vazios ou combinações matematicamente inviáveis.
 
+### 11. Redesign Premium Dark Mode / UI Inspirada em PBI (29/03/2026)
+* O solicitante nos forneceu uma referência em layout contendo um dashboard clássico de Data Science (com telas de fundo escuras/dark blue e forte ênfase em dados vermelhos contrastantes).
+* Extrapolamos essa ideia e refatoramos **100% dos estilos nativos** do Streamlit para convergir este design ao manual da marca do IFES (tons de verde). 
+* **Configuração Core (`config.toml`)**: Modulamos toda a UI base para interagir no espectro Dark, focando no fundo hiper-escuro `#0A110D` (Verde Esmeralda quase preto) e os componentes em `#142219`.
+* **Plotly Gráficos Transparentes**: Aderimos ao estilo visual contínuo injetando `plot_bgcolor` e `paper_bgcolor` transparentes nos gráficos, fazendo com que as barras fluam livremente sobre o Glassmorphism da interface dark, unidas por paletas em neons verdes (`#32A041` e `#58c769`).
+* Todos os textos das métricas foram recalibrados perfeitamente para cores amigáveis ao contraste escuro, como o Off-White/Prata (`#E5EFE8`).
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
 * Como o sistema base contendo o Hub Principal e os 5 módulos verticais encontram-se 100% integrados, analíticos e estáveis, a aplicação possui agora nivel pleno de maturidade *(Production-Ready)*.

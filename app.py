@@ -5,13 +5,13 @@ import plotly.express as px
 # 1. Page Configuration
 st.set_page_config(page_title="Painel - ENADE", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. Premium Global CSS
+# 2. Premium Global CSS (Dark Theme - Green Accents)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
     
     html, body, [class*="st-"], .stMarkdown { font-family: 'Inter', sans-serif !important; }
-    .stApp { background: linear-gradient(135deg, #f4f7f6 0%, #ffffff 100%); }
+    .stApp { background: #0A110D; }
     
     /* Animations */
     @keyframes fadeInScale {
@@ -21,63 +21,64 @@ st.markdown("""
     .fade-in { animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     
     /* Typography */
-    .home-inst-title { font-size: 3.2rem; font-weight: 800; color: #0f2c16; margin-top: 1rem; line-height: 1.1; letter-spacing: -1.5px; }
-    .home-inst-subtitle { font-size: 1.5rem; color: #2c8c44; margin-bottom: 2rem; font-weight: 600; letter-spacing: -0.5px; }
-    .indicadores-title { font-size: 2rem; font-weight: 800; color: #103d6d; margin-bottom: 1.5rem; letter-spacing: -1px; text-transform: uppercase; }
-    .filter-header { font-size: 0.9rem; color: #103d6d; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; border-bottom: 2px solid rgba(16, 61, 109, 0.15); padding-bottom: 6px; letter-spacing: 0.5px; }
+    .home-inst-title { font-size: 3.2rem; font-weight: 800; color: #E5EFE8; margin-top: 1rem; line-height: 1.1; letter-spacing: -1.5px; }
+    .home-inst-subtitle { font-size: 1.5rem; color: #58c769; margin-bottom: 2rem; font-weight: 600; letter-spacing: -0.5px; }
+    .indicadores-title { font-size: 2rem; font-weight: 800; color: #58c769; margin-bottom: 1.5rem; letter-spacing: -1px; text-transform: uppercase; }
+    .filter-header { font-size: 0.9rem; color: #a4d1b0; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; border-bottom: 2px solid rgba(88, 199, 105, 0.2); padding-bottom: 6px; letter-spacing: 0.5px; }
     
     /* Premium Cards & Glassmorphism */
     .card-panel {
-        background-color: rgba(255, 255, 255, 0.75); padding: 2.5rem; border-radius: 24px;
-        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), 0 8px 16px -6px rgba(0,0,0,0.02);
-        border: 1px solid rgba(255,255,255,0.6); border-top: 6px solid #2c8c44;
+        background-color: rgba(20, 34, 25, 0.6); padding: 2.5rem; border-radius: 24px;
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5), 0 8px 16px -6px rgba(0,0,0,0.3);
+        border: 1px solid rgba(88, 199, 105, 0.15); border-top: 4px solid #32A041;
         backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         height: 100%; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .card-panel:hover { transform: translateY(-8px); box-shadow: 0 30px 60px -12px rgba(44, 140, 68, 0.15); }
-    .card-panel-dark { border-top: 6px solid #103d6d; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,244,248,0.95) 100%); }
-    .card-panel-dark:hover { box-shadow: 0 30px 60px -12px rgba(16, 61, 109, 0.15); }
+    .card-panel:hover { transform: translateY(-8px); box-shadow: 0 30px 60px -12px rgba(88, 199, 105, 0.2); border-color: rgba(88, 199, 105, 0.4); }
+    .card-panel-dark { border-top: 4px solid #58c769; background: linear-gradient(180deg, rgba(20, 36, 26, 0.8) 0%, rgba(14, 23, 17, 0.8) 100%); }
+    .card-panel-dark:hover { box-shadow: 0 30px 60px -12px rgba(88, 199, 105, 0.25); }
 
-    /* Streamlit Input Overrides (Fixing White Bars) */
+    /* Streamlit Input Overrides */
     div[data-baseweb="select"] > div {
-        background-color: #ffffff;
+        background-color: #142219;
         border-radius: 12px;
-        border: 1px solid #e0e6ed;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        border: 1px solid #2a4734;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         font-weight: 500;
-        color: #103d6d;
+        color: #E5EFE8;
         transition: all 0.3s ease;
     }
     div[data-baseweb="select"] * { line-height: 1.6; }
     div[data-baseweb="select"] > div:hover {
-        border-color: #103d6d; box-shadow: 0 6px 16px rgba(16,61,109,0.1);
+        border-color: #58c769; box-shadow: 0 0 12px rgba(88, 199, 105, 0.15);
     }
     
     /* Plotly Charts Premium Look */
     [data-testid="stPlotlyChart"] {
-        background-color: rgba(255,255,255,0.9);
+        background-color: rgba(20, 34, 25, 0.4);
         border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         padding: 10px;
-        border: 1px solid rgba(0,0,0,0.03);
+        border: 1px solid rgba(88, 199, 105, 0.1);
         transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
     }
     [data-testid="stPlotlyChart"]:hover {
         transform: translateY(-4px) scale(1.01);
-        box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+        box-shadow: 0 12px 32px rgba(88, 199, 105, 0.15);
+        border-color: rgba(88, 199, 105, 0.3);
     }
 
     /* KPI Cards */
-    .kpi-card { background: linear-gradient(135deg, #ffffff, #fdfdfd); border-left: 6px solid #103d6d; border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); text-align: center; margin: 10px auto; transition: transform 0.3s; border-right: 1px solid #f0f0f0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; }
-    .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(16,61,109,0.12); }
-    .kpi-title { font-size: 0.85rem; color: #888; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-    .kpi-value { font-size: 2.8rem; font-weight: 800; color: #103d6d; line-height: 1; letter-spacing: -1px; }
+    .kpi-card { background: linear-gradient(135deg, #142219, #0f1a13); border-left: 6px solid #58c769; border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); text-align: center; margin: 10px auto; transition: transform 0.3s; border-right: 1px solid #1f3627; border-top: 1px solid #1f3627; border-bottom: 1px solid #1f3627; }
+    .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(88, 199, 105, 0.15); border-color: rgba(88, 199, 105, 0.3); }
+    .kpi-title { font-size: 0.85rem; color: #a4d1b0; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+    .kpi-value { font-size: 2.8rem; font-weight: 800; color: #58c769; line-height: 1; letter-spacing: -1px; text-shadow: 0 0 20px rgba(88, 199, 105, 0.3); }
 
     /* Button Styling */
-    .stButton>button { border-radius: 14px; font-weight: 700; padding: 0.8rem 1.5rem; border: none; background: #ffffff; color: #103d6d; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e8e8e8; }
-    .stButton>button:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 24px rgba(16,61,109,0.15); background: #103d6d; color: #ffffff; border-color: #103d6d; }
+    .stButton>button { border-radius: 14px; font-weight: 700; padding: 0.8rem 1.5rem; border: none; background: #142219; color: #a4d1b0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 1px solid #2a4734; }
+    .stButton>button:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 24px rgba(88, 199, 105, 0.2); background: #32A041; color: #ffffff; border-color: #58c769; }
     
-    .custom-divider { border: 0; height: 1px; background: linear-gradient(to right, transparent, rgba(16,61,109,0.2), transparent); margin: 40px 0; }
+    .custom-divider { border: 0; height: 1px; background: linear-gradient(to right, transparent, rgba(88, 199, 105, 0.4), transparent); margin: 40px 0; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -321,8 +322,8 @@ def show_dashboard():
             <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
                 <!-- home-dash -->
                 <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Avaliação Institucional</p>
-                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">NOTAS ENADE</h1>
-                <p style="color: #666; font-size: 1.15rem; margin: 0 auto; font-weight: 400; max-width: 600px;">
+                <h1 style="font-size: 3rem; font-weight: 900; color: #E5EFE8;">NOTAS ENADE</h1>
+                <p style="color: #a4d1b0; font-size: 1.15rem; margin: 0 auto; font-weight: 400; max-width: 600px;">
                     Cruzamento de dados contínuos e métricas de desempenho dos estudantes do <span style="color:#1a5722; font-weight:600;">IFES</span>
                 </p>
             </div>
@@ -346,7 +347,7 @@ def show_cursos():
             <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
                 <!-- cursos-dash -->
                 <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Análise de Provas</p>
-                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">DADOS DOS CURSOS</h1>
+                <h1 style="font-size: 3rem; font-weight: 900; color: #E5EFE8;">DADOS DOS CURSOS</h1>
             </div>
         """, unsafe_allow_html=True)
         st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
@@ -364,7 +365,7 @@ def show_cursos():
         if not avg_scores.empty:
             melted = avg_scores.melt(id_vars='NOME DO CURSO', value_vars=['NOTA_FG', 'NOTA_CE'], var_name='Tipo de Prova', value_name='Nota Média')
             fig1 = px.bar(melted, x='NOME DO CURSO', y='Nota Média', color='Tipo de Prova', barmode='group', color_discrete_sequence=['#1a5722', '#58c769'])
-            fig1.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter")
+            fig1.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter")
             st.plotly_chart(fig1, use_container_width=True)
         else:
             st.info("Sem dados de notas isoladas suficientes no filtro.")
@@ -381,7 +382,7 @@ def show_estudantes():
             <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
                 <!-- estudantes-dash -->
                 <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Microdados Sociodemográficos INEP</p>
-                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">INFORMAÇÕES DO ESTUDANTE</h1>
+                <h1 style="font-size: 3rem; font-weight: 900; color: #E5EFE8;">INFORMAÇÕES DO ESTUDANTE</h1>
             </div>
         ''', unsafe_allow_html=True)
         st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
@@ -407,8 +408,8 @@ def show_estudantes():
                 df_idade['NU_IDADE'] = pd.to_numeric(df_idade['NU_IDADE'], errors='coerce')
                 df_idade = df_idade.dropna(subset=['NU_IDADE'])
                 fig_idade = px.histogram(df_idade, x='NU_IDADE', nbins=15, color_discrete_sequence=['#32A041'], labels={'NU_IDADE': 'Faixa Etária (Anos)'})
-                fig_idade.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-                fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title="Qtd de Estudantes")
+                fig_idade.update_traces(marker_line_width=1.5, marker_line_color='rgba(0,0,0,0)', opacity=0.9)
+                fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title="Qtd de Estudantes")
                 st.plotly_chart(fig_idade, use_container_width=True)
         with col_g2:
             st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição de Gênero</div>', unsafe_allow_html=True)
@@ -418,7 +419,7 @@ def show_estudantes():
                 sexo_counts['Gênero'] = sexo_counts['Gênero'].map({'F': 'Feminino', 'M': 'Masculino'}).fillna(sexo_counts['Gênero'])
                 fig_sexo = px.pie(sexo_counts, values='Quantidade', names='Gênero', hole=0.4, color_discrete_map={'Feminino': '#d45070', 'Masculino': '#2d539e'})
                 fig_sexo.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
-                fig_sexo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False)
+                fig_sexo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False)
                 st.plotly_chart(fig_sexo, use_container_width=True)
 
         col_g3, col_g4 = st.columns(2, gap="large")
@@ -430,8 +431,8 @@ def show_estudantes():
                 raca_counts.columns = ['Cor/Raça', 'Quantidade']
                 raca_counts = raca_counts.sort_values(by='Quantidade', ascending=True)
                 fig_raca = px.bar(raca_counts, y='Cor/Raça', x='Quantidade', orientation='h', color_discrete_sequence=['#1a5722'])
-                fig_raca.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-                fig_raca.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes")
+                fig_raca.update_traces(marker_line_width=1.5, marker_line_color='rgba(0,0,0,0)', opacity=0.9)
+                fig_raca.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes")
                 st.plotly_chart(fig_raca, use_container_width=True)
         with col_g4:
             st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Perfil de Renda Familiar</div>', unsafe_allow_html=True)
@@ -443,8 +444,8 @@ def show_estudantes():
                 renda_counts['Renda'] = pd.Categorical(renda_counts['Renda'], categories=ordem_renda, ordered=True)
                 renda_counts = renda_counts.sort_values('Renda')
                 fig_renda = px.bar(renda_counts, y='Renda', x='Quantidade', orientation='h', color_discrete_sequence=['#32A041'])
-                fig_renda.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-                fig_renda.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes")
+                fig_renda.update_traces(marker_line_width=1.5, marker_line_color='rgba(0,0,0,0)', opacity=0.9)
+                fig_renda.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", xaxis_title="Estudantes")
                 st.plotly_chart(fig_renda, use_container_width=True)
 
     with t2:
@@ -466,8 +467,8 @@ def show_estudantes():
                 df_esc = df_esc.sort_values('Nível')
                 melted = df_esc.melt(id_vars='Nível', value_vars=['Pai', 'Mãe'], var_name='Parente', value_name='Qtd')
                 fig_esc = px.bar(melted, x='Qtd', y='Nível', color='Parente', barmode='group', orientation='h', color_discrete_sequence=['#1a5722', '#58c769'])
-                fig_esc.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-                fig_esc.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title=None)
+                fig_esc.update_traces(marker_line_width=1.5, marker_line_color='rgba(0,0,0,0)', opacity=0.9)
+                fig_esc.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title=None)
                 st.plotly_chart(fig_esc, use_container_width=True)
         
         with col_s2:
@@ -478,7 +479,7 @@ def show_estudantes():
                 trab_c.columns = ['Situação', 'Quantidade']
                 fig_trab = px.pie(trab_c, values='Quantidade', names='Situação', hole=0.5, color_discrete_sequence=px.colors.sequential.Teal)
                 fig_trab.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
-                fig_trab.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False)
+                fig_trab.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False)
                 st.plotly_chart(fig_trab, use_container_width=True)
 
     with t3:
@@ -494,8 +495,8 @@ def show_estudantes():
                 cota_c.columns = ['Critério', 'Total']
                 cota_c = cota_c.sort_values('Total', ascending=True)
                 fig_cota = px.bar(cota_c, y='Critério', x='Total', orientation='h', color_discrete_sequence=['#32A041'])
-                fig_cota.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-                fig_cota.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title=None)
+                fig_cota.update_traces(marker_line_width=1.5, marker_line_color='rgba(0,0,0,0)', opacity=0.9)
+                fig_cota.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title=None)
                 st.plotly_chart(fig_cota, use_container_width=True)
                 
         with col_a2:
@@ -506,7 +507,7 @@ def show_estudantes():
                 bolsa_c.columns = ['Tipo', 'Total']
                 fig_bolsa = px.pie(bolsa_c, values='Total', names='Tipo', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
                 fig_bolsa.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
-                fig_bolsa.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False)
+                fig_bolsa.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", showlegend=False)
                 st.plotly_chart(fig_bolsa, use_container_width=True)
 
     with t4:
@@ -523,8 +524,8 @@ def show_estudantes():
                 estudo_c.columns = ['Horas', 'Qtd']
                 ordem_e = [' Mais de 12 horas', '8 a 12 horas', '4 a 7 horas', '1 a 3 horas', 'Nenhuma']
                 fig_est = px.bar(estudo_c, y='Horas', x='Qtd', orientation='h', color_discrete_sequence=['#ffca3a'])
-                fig_est.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-                fig_est.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter")
+                fig_est.update_traces(marker_line_width=1.5, marker_line_color='rgba(0,0,0,0)', opacity=0.9)
+                fig_est.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter")
                 st.plotly_chart(fig_est, use_container_width=True)
 
         with col_r2:
@@ -535,8 +536,8 @@ def show_estudantes():
                 m_c.columns = ['Motivo', 'Qtd']
                 m_c = m_c.sort_values('Qtd', ascending=True)
                 fig_m = px.bar(m_c, y='Motivo', x='Qtd', orientation='h', color_discrete_sequence=['#8ac926'])
-                fig_m.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
-                fig_m.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title=None)
+                fig_m.update_traces(marker_line_width=1.5, marker_line_color='rgba(0,0,0,0)', opacity=0.9)
+                fig_m.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Inter", yaxis_title=None)
                 st.plotly_chart(fig_m, use_container_width=True)
                 
 
@@ -554,7 +555,7 @@ def show_questionario():
             <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
                 <!-- quest-dash -->
                 <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Avaliação do Processo Formativo</p>
-                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">QUESTIONÁRIO DO ESTUDANTE</h1>
+                <h1 style="font-size: 3rem; font-weight: 900; color: #E5EFE8;">QUESTIONÁRIO DO ESTUDANTE</h1>
             </div>
         """, unsafe_allow_html=True)
         st.markdown('<hr class="custom-divider" style="margin: 20px 0;">', unsafe_allow_html=True)
@@ -608,9 +609,9 @@ def show_questionario():
     with col_q1:
         texto_selecionada = selecionada.split(" - ", 1)[1]
         st.markdown(f'''
-        <div style="background-color: white; border-radius: 16px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.03);">
-            <div class="filter-header" style="color: #103d6d; font-size: 1.1rem; border-bottom: 2px solid rgba(16,61,109,0.1); padding-bottom: 10px; margin-bottom: 15px;">ENUNCIADO DA QUESTÃO:</div>
-            <div style="color: #111; font-size: 1.4rem; font-weight: 600; line-height: 1.5;">{texto_selecionada}</div>
+        <div style="background-color: #142219; border-radius: 16px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); margin-bottom: 25px; border: 1px solid rgba(88,199,105,0.15);">
+            <div class="filter-header" style="color: #a4d1b0; font-size: 1.1rem; border-bottom: 2px solid rgba(88,199,105,0.2); padding-bottom: 10px; margin-bottom: 15px;">ENUNCIADO DA QUESTÃO:</div>
+            <div style="color: #E5EFE8; font-size: 1.4rem; font-weight: 600; line-height: 1.5;">{texto_selecionada}</div>
         </div>
         ''', unsafe_allow_html=True)
         
@@ -663,10 +664,10 @@ def show_questionario():
             
             fig = px.bar(para_plot, x='Texto_Eixo', y='Percentual', text='Rotulo')
             fig.update_traces(
-                marker_color='#103d6d',
+                marker_color='#58c769',
                 textposition='outside',
                 textfont_size=13,
-                textfont_color='#103d6d',
+                textfont_color='#E5EFE8',
                 hovertemplate="<b>%{x}</b><br>Quantidade: %{customdata[0]}<br>Percentual: %{y:.1f}%<extra></extra>",
                 customdata=para_plot[['Quantidade']]
             )
@@ -681,21 +682,21 @@ def show_questionario():
                 height=500
             )
             fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
-            fig.update_xaxes(tickfont=dict(size=11, color='#103d6d', weight='bold'), tickangle=0, automargin=True)
+            fig.update_xaxes(tickfont=dict(size=11, color='#E5EFE8', weight='bold'), tickangle=0, automargin=True)
             st.plotly_chart(fig, use_container_width=True)
             
     with col_kpi:
         st.markdown(f'''
-        <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 25px; border-top: 5px solid #103d6d;">
-            <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>INSCRITOS</div>
-            <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(inscritos)}</div>
+        <div style="background-color: #142219; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 25px; border-top: 5px solid #32A041;">
+            <div style="font-size: 0.95rem; font-weight: 800; color: #E5EFE8; text-transform: uppercase;">CONCLUINTES<br>INSCRITOS</div>
+            <div style="font-size: 3.5rem; font-weight: 900; color: #58c769; line-height: 1.2;">{int(inscritos)}</div>
         </div>
         ''', unsafe_allow_html=True)
         
         st.markdown(f'''
-        <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-top: 5px solid #103d6d;">
-            <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>PARTICIPANTES</div>
-            <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(participantes)}</div>
+        <div style="background-color: #142219; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-top: 5px solid #32A041;">
+            <div style="font-size: 0.95rem; font-weight: 800; color: #E5EFE8; text-transform: uppercase;">CONCLUINTES<br>PARTICIPANTES</div>
+            <div style="font-size: 3.5rem; font-weight: 900; color: #58c769; line-height: 1.2;">{int(participantes)}</div>
         </div>
         ''', unsafe_allow_html=True)
 
