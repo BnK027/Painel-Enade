@@ -99,7 +99,7 @@ def load_data():
         df_merged = pd.merge(df_enade, df_cursos[['CO_CURSO', 'CAMPUS']], left_on='Código do Curso', right_on='CO_CURSO', how='left')
         
         rename_dict = {
-            'Área de Avaliação': 'NOME DO CURSO', 'CAMPUS': 'CENTRO',
+            'Área de Avaliação': 'NOME DO CURSO', 'CAMPUS': 'CAMPUS',
             'Município do Curso': 'MUNICÍPIO', 'Município do Curso**': 'MUNICÍPIO',
             'Ano': 'ANO', 'Conceito Enade (Contínuo)': 'ENADE CONTÍNUO',
             'Conceito Enade (Faixa)': 'ENADE FAIXA', 'Modalidade de Ensino': 'MODALIDADE',
@@ -112,7 +112,7 @@ def load_data():
         if col_nota_ce: rename_dict[col_nota_ce] = 'NOTA_CE'
             
         df_final = df_merged.rename(columns=rename_dict)
-        cols_to_keep = ['NOME DO CURSO', 'CENTRO', 'MUNICÍPIO', 'ANO', 'ENADE CONTÍNUO', 'ENADE FAIXA', 'MODALIDADE', 'INSCRITOS', 'PRESENTES', 'NOTA_FG', 'NOTA_CE', 'CO_CURSO']
+        cols_to_keep = ['NOME DO CURSO', 'CAMPUS', 'MUNICÍPIO', 'ANO', 'ENADE CONTÍNUO', 'ENADE FAIXA', 'MODALIDADE', 'INSCRITOS', 'PRESENTES', 'NOTA_FG', 'NOTA_CE', 'CO_CURSO']
         cols_to_keep = [c for c in cols_to_keep if c in df_final.columns]
         all_dfs.append(df_final[cols_to_keep])
         
@@ -135,7 +135,7 @@ def load_microdata():
             
             # Map CO_CURSO to their actual Names and Campus
             curso_map = pd.merge(df_cursos[['CO_CURSO', 'CAMPUS']], df_enade[['Código do Curso', 'Área de Avaliação', 'Ano']], left_on='CO_CURSO', right_on='Código do Curso', how='inner')
-            curso_map = curso_map.rename(columns={'Área de Avaliação': 'NOME DO CURSO', 'CAMPUS': 'CENTRO', 'Ano': 'ANO'})
+            curso_map = curso_map.rename(columns={'Área de Avaliação': 'NOME DO CURSO', 'CAMPUS': 'CAMPUS', 'Ano': 'ANO'})
             
             # Aba Arq_5 (Sexo)
             if 'Arq_5' in xls.sheet_names:
@@ -196,7 +196,7 @@ def get_options(df, column):
 def render_filters(source_data):
     st.markdown('<div class="fade-in" style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
     
-    curr_centro = st.session_state.get('filtro_centro', [])
+    curr_campus = st.session_state.get('filtro_campus', [])
     curr_ano = st.session_state.get('filtro_ano', 'Todos')
     curr_nota = st.session_state.get('filtro_nota', [])
     curr_curso = st.session_state.get('filtro_curso', 'Todos')
@@ -204,8 +204,8 @@ def render_filters(source_data):
 
     def get_filtered_for(exclude_key):
         df = source_data.copy()
-        if exclude_key != 'CENTRO' and curr_centro:
-            df = df[df['CENTRO'].isin(curr_centro)]
+        if exclude_key != 'CAMPUS' and curr_campus:
+            df = df[df['CAMPUS'].isin(curr_campus)]
         if exclude_key != 'ANO' and curr_ano != 'Todos':
             if str(df['ANO'].dtype) == 'object':
                 df = df[df['ANO'] == curr_ano]
@@ -223,11 +223,11 @@ def render_filters(source_data):
     col_a, col_b, col_c = st.columns(3)
     
     with col_a:
-        st.markdown('<div class="filter-header">Centro</div>', unsafe_allow_html=True)
-        centro_options = get_options(get_filtered_for('CENTRO'), 'CENTRO')
-        valid_centros = [c for c in curr_centro if c in centro_options]
-        if valid_centros != curr_centro: st.session_state['filtro_centro'] = valid_centros
-        selected_centro = st.multiselect("Selecione os Centros", centro_options[1:], placeholder="Todos", label_visibility="collapsed", key='filtro_centro')
+        st.markdown('<div class="filter-header">Campus</div>', unsafe_allow_html=True)
+        campus_options = get_options(get_filtered_for('CAMPUS'), 'CAMPUS')
+        valid_campi = [c for c in curr_campus if c in campus_options]
+        if valid_campi != curr_campus: st.session_state['filtro_campus'] = valid_campi
+        selected_campus = st.multiselect("Selecione os Campi", campus_options[1:], placeholder="Todos", label_visibility="collapsed", key='filtro_campus')
         
     with col_b:
         st.markdown('<div class="filter-header">Ano Base</div>', unsafe_allow_html=True)
@@ -332,7 +332,7 @@ def show_dashboard():
     filtered_data = render_filters(data)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.dataframe(filtered_data[['NOME DO CURSO', 'CENTRO', 'MUNICÍPIO', 'ANO', 'ENADE CONTÍNUO', 'ENADE FAIXA']], width='stretch', hide_index=True, height=500)
+    st.dataframe(filtered_data[['NOME DO CURSO', 'CAMPUS', 'MUNICÍPIO', 'ANO', 'ENADE CONTÍNUO', 'ENADE FAIXA']], width='stretch', hide_index=True, height=500)
 
 def show_cursos():
     col_back, _ = st.columns([1, 6])
