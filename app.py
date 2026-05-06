@@ -206,11 +206,10 @@ def render_filters(source_data, ano_fixo=None):
         
         # Filtro de Ano OBRIGATÓRIO (invisível)
         if ano_fixo:
-            if str(df['ANO'].dtype) == 'object':
-                df = df[df['ANO'] == str(ano_fixo)]
-            else:
-                try: df = df[df['ANO'] == float(ano_fixo)]
-                except: pass
+            # Força a conversão para string removendo possíveis decimais para garantir o match
+            df['ANO_STR_TEMP'] = df['ANO'].astype(str).str.replace('.0', '', regex=False)
+            df = df[df['ANO_STR_TEMP'] == str(ano_fixo)]
+            df = df.drop(columns=['ANO_STR_TEMP'])
                 
         if exclude_key != 'CAMPUS' and curr_campus:
             df = df[df['CAMPUS'].isin(curr_campus)]
@@ -533,7 +532,12 @@ def show_visao_ano():
                 except ImportError:
                     dict_questoes = {}
 
-                qe_cols = [str(c) for c in df_arq4.columns.tolist() + df_arq43.columns.tolist() if str(c).startswith('QE_I')]
+                qe_cols = []
+                if not df_arq4.empty:
+                    qe_cols.extend([str(c) for c in df_arq4.columns.tolist() if str(c).startswith('QE_I') and not df_arq4[c].dropna().empty])
+                if not df_arq43.empty:
+                    qe_cols.extend([str(c) for c in df_arq43.columns.tolist() if str(c).startswith('QE_I') and not df_arq43[c].dropna().empty])
+                
                 qe_cols = list(set(qe_cols))
                 qe_cols.sort()
                 

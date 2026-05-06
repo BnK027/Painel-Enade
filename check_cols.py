@@ -1,13 +1,10 @@
-import pandas as pd
-import glob
+﻿import pandas as pd
+import warnings
+warnings.filterwarnings('ignore')
 
-files = glob.glob("Enade_*_Ifes.xlsx")
+files = ['Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
 for file in files:
-    print(f"--- {file} ---")
-    try:
-        df_e = pd.read_excel(file, sheet_name='Enade')
-        df_c = pd.read_excel(file, sheet_name='Cursos')
-        print("Enade cols:", [c for c in df_e.columns if "Código" in c or "Munic" in c or "Conceito" in c or "Ano" in c])
-        print("Cursos cols:", [c for c in df_c.columns if "CO_CURSO" in c or "CAMPUS" in c])
-    except Exception as e:
-        print("Error:", e)
+    df_enade = pd.read_excel(file, sheet_name='Enade')
+    col_nota_fg = next((c for c in df_enade.columns if 'Bruta' in str(c) and 'FG' in str(c)), None)
+    col_nota_ce = next((c for c in df_enade.columns if 'Bruta' in str(c) and 'CE' in str(c)), None)
+    print(file, '-> FG:', col_nota_fg, 'CE:', col_nota_ce)
