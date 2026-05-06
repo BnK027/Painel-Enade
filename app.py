@@ -1,4 +1,4 @@
-﻿import streamlit as st
+import streamlit as st
 import pandas as pd
 import plotly.express as px
 
@@ -96,14 +96,14 @@ def load_data():
         col_nota_fg = next((c for c in df_enade.columns if 'Bruta' in str(c) and 'FG' in str(c)), None)
         col_nota_ce = next((c for c in df_enade.columns if 'Bruta' in str(c) and 'CE' in str(c)), None)
         
-        df_merged = pd.merge(df_enade, df_cursos[['CO_CURSO', 'CAMPUS']], left_on='CÃ³digo do Curso', right_on='CO_CURSO', how='left')
+        df_merged = pd.merge(df_enade, df_cursos[['CO_CURSO', 'CAMPUS']], left_on='Código do Curso', right_on='CO_CURSO', how='left')
         
         rename_dict = {
-            'Ãrea de AvaliaÃ§Ã£o': 'NOME DO CURSO', 'CAMPUS': 'CAMPUS',
-            'MunicÃ­pio do Curso': 'MUNICÃPIO', 'MunicÃ­pio do Curso**': 'MUNICÃPIO',
-            'Ano': 'ANO', 'Conceito Enade (ContÃ­nuo)': 'ENADE CONTÃNUO',
+            'Área de Avaliação': 'NOME DO CURSO', 'CAMPUS': 'CAMPUS',
+            'Município do Curso': 'MUNICÍPIO', 'Município do Curso**': 'MUNICÍPIO',
+            'Ano': 'ANO', 'Conceito Enade (Contínuo)': 'ENADE CONTÍNUO',
             'Conceito Enade (Faixa)': 'ENADE FAIXA', 'Modalidade de Ensino': 'MODALIDADE',
-            'Categoria Administrativa': 'CATEGORIA', 'Grau AcadÃªmico': 'PROGRAMA'
+            'Categoria Administrativa': 'CATEGORIA', 'Grau Acadêmico': 'PROGRAMA'
         }
         
         if col_inscritos: rename_dict[col_inscritos] = 'INSCRITOS'
@@ -112,13 +112,13 @@ def load_data():
         if col_nota_ce: rename_dict[col_nota_ce] = 'NOTA_CE'
             
         df_final = df_merged.rename(columns=rename_dict)
-        cols_to_keep = ['NOME DO CURSO', 'CAMPUS', 'MUNICÃPIO', 'ANO', 'ENADE CONTÃNUO', 'ENADE FAIXA', 'MODALIDADE', 'INSCRITOS', 'PRESENTES', 'NOTA_FG', 'NOTA_CE', 'CO_CURSO']
+        cols_to_keep = ['NOME DO CURSO', 'CAMPUS', 'MUNICÍPIO', 'ANO', 'ENADE CONTÍNUO', 'ENADE FAIXA', 'MODALIDADE', 'INSCRITOS', 'PRESENTES', 'NOTA_FG', 'NOTA_CE', 'CO_CURSO']
         cols_to_keep = [c for c in cols_to_keep if c in df_final.columns]
         all_dfs.append(df_final[cols_to_keep])
         
     final_combined = pd.concat(all_dfs, ignore_index=True)
-    if pd.api.types.is_numeric_dtype(final_combined['ENADE CONTÃNUO']):
-        final_combined['ENADE CONTÃNUO'] = final_combined['ENADE CONTÃNUO'].apply(lambda x: f"{x:.4f}" if pd.notna(x) else str(x))
+    if pd.api.types.is_numeric_dtype(final_combined['ENADE CONTÍNUO']):
+        final_combined['ENADE CONTÍNUO'] = final_combined['ENADE CONTÍNUO'].apply(lambda x: f"{x:.4f}" if pd.notna(x) else str(x))
     return final_combined
 
 @st.cache_data
@@ -134,8 +134,8 @@ def load_microdata():
             xls = pd.ExcelFile(file)
             
             # Map CO_CURSO to their actual Names and Campus
-            curso_map = pd.merge(df_cursos[['CO_CURSO', 'CAMPUS']], df_enade[['CÃ³digo do Curso', 'Ãrea de AvaliaÃ§Ã£o', 'Ano']], left_on='CO_CURSO', right_on='CÃ³digo do Curso', how='inner')
-            curso_map = curso_map.rename(columns={'Ãrea de AvaliaÃ§Ã£o': 'NOME DO CURSO', 'CAMPUS': 'CAMPUS', 'Ano': 'ANO'})
+            curso_map = pd.merge(df_cursos[['CO_CURSO', 'CAMPUS']], df_enade[['Código do Curso', 'Área de Avaliação', 'Ano']], left_on='CO_CURSO', right_on='Código do Curso', how='inner')
+            curso_map = curso_map.rename(columns={'Área de Avaliação': 'NOME DO CURSO', 'CAMPUS': 'CAMPUS', 'Ano': 'ANO'})
             
             # Aba Arq_5 (Sexo)
             if 'Arq_5' in xls.sheet_names:
@@ -145,7 +145,7 @@ def load_microdata():
             if 'Arq_6' in xls.sheet_names:
                 df_idade = pd.merge(pd.read_excel(xls, sheet_name='Arq_6'), curso_map, on='CO_CURSO', how='inner')
                 if not df_idade.empty: all_idade.append(df_idade)
-            # Aba Arq_8 (Cor/RaÃ§a - QE_I02)
+            # Aba Arq_8 (Cor/Raça - QE_I02)
             if 'Arq_8' in xls.sheet_names:
                 df_raca = pd.merge(pd.read_excel(xls, sheet_name='Arq_8'), curso_map, on='CO_CURSO', how='inner')
                 if not df_raca.empty: all_raca.append(df_raca)
@@ -194,7 +194,7 @@ def get_options(df, column):
 
 # --- Helper de Filtros Global ---
 def render_filters(source_data, ano_fixo=None):
-    st.markdown('<div class="fade-in" style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">âš™ï¸ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="fade-in" style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
     
     curr_campus = st.session_state.get('filtro_campus', [])
     curr_nota = st.session_state.get('filtro_nota', [])
@@ -204,7 +204,7 @@ def render_filters(source_data, ano_fixo=None):
     def get_filtered_for(exclude_key):
         df = source_data.copy()
         
-        # Filtro de Ano OBRIGATÃ“RIO (invisÃ­vel)
+        # Filtro de Ano OBRIGATÓRIO (invisível)
         if ano_fixo:
             if str(df['ANO'].dtype) == 'object':
                 df = df[df['ANO'] == str(ano_fixo)]
@@ -253,14 +253,10 @@ def render_filters(source_data, ano_fixo=None):
 
     return get_filtered_for(None)
 
-
-
-# --- TELAS PRINCIPAIS ---
-
 def show_home():
     col_text, col_img = st.columns([3, 1], gap="large")
     with col_text:
-        st.markdown('<div class="home-inst-title">INSTITUTO FEDERAL DO ESPÃRITO SANTO - IFES</div>', unsafe_allow_html=True)
+        st.markdown('<div class="home-inst-title">INSTITUTO FEDERAL DO ESPÍRITO SANTO - IFES</div>', unsafe_allow_html=True)
     with col_img:
         st.image('ifes-horizontal-cor.png', use_container_width=True)
         
@@ -273,16 +269,16 @@ def show_home():
             <p class="home-info-title">Orientador</p>
             <p class="home-info-name">Wagner Teixeira da Costa</p>
             <p class="home-info-title">Aluno</p>
-            <p class="home-info-name" style="margin-bottom: 0;">Matheus Ferreira Tissianel BenincÃ¡</p>
+            <p class="home-info-name" style="margin-bottom: 0;">Matheus Ferreira Tissianel Benincá</p>
         </div>
         ''', unsafe_allow_html=True)
         
     with col_right:
         st.markdown('''
         <div class="card-panel card-panel-dark">
-            <div class="indicadores-title">Plataformas AnalÃ­ticas</div>
+            <div class="indicadores-title">Plataformas Analíticas</div>
             <p style="color: #555; font-size: 1.05rem; line-height: 1.5; margin-bottom: 1rem;">
-                Selecione abaixo o ano do ENADE para acessar as mÃ©tricas institucionais, desempenho e microdados sociodemogrÃ¡ficos.
+                Selecione abaixo o ano do ENADE para acessar as métricas institucionais, desempenho e microdados sociodemográficos.
             </p>
         </div>
         ''', unsafe_allow_html=True)
@@ -290,22 +286,22 @@ def show_home():
         st.markdown("<br>", unsafe_allow_html=True)
         col_b1, col_b2, col_b3, col_b4 = st.columns(4)
         with col_b1:
-            if st.button("ðŸ“… 2018", use_container_width=True, type="primary"):
+            if st.button("📅 2018", use_container_width=True, type="primary"):
                 st.session_state.ano_selecionado = '2018'
                 st.session_state.page = 'visao_ano'
                 st.rerun()
         with col_b2:
-            if st.button("ðŸ“… 2019", use_container_width=True, type="primary"):
+            if st.button("📅 2019", use_container_width=True, type="primary"):
                 st.session_state.ano_selecionado = '2019'
                 st.session_state.page = 'visao_ano'
                 st.rerun()
         with col_b3:
-            if st.button("ðŸ“… 2021", use_container_width=True, type="primary"):
+            if st.button("📅 2021", use_container_width=True, type="primary"):
                 st.session_state.ano_selecionado = '2021'
                 st.session_state.page = 'visao_ano'
                 st.rerun()
         with col_b4:
-            if st.button("ðŸ“… 2022", use_container_width=True, type="primary"):
+            if st.button("📅 2022", use_container_width=True, type="primary"):
                 st.session_state.ano_selecionado = '2022'
                 st.session_state.page = 'visao_ano'
                 st.rerun()
@@ -314,14 +310,14 @@ def show_visao_ano():
     ano = st.session_state.get('ano_selecionado', '2018')
     col_back, _ = st.columns([1, 6])
     with col_back:
-        if st.button("â¬… Voltar ao InÃ­cio", use_container_width=True, key='back_bt_visao'):
+        if st.button("⬅ Voltar ao Início", use_container_width=True, key='back_bt_visao'):
             st.session_state.page = 'home'
             st.rerun()
             
     with st.container():    
         st.markdown(f'''
             <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
-                <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Painel AnalÃ­tico</p>
+                <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Painel Analítico</p>
                 <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">ENADE {ano}</h1>
             </div>
         ''', unsafe_allow_html=True)
@@ -330,14 +326,14 @@ def show_visao_ano():
     filtered_data = render_filters(data, ano_fixo=ano)
     st.markdown("<br>", unsafe_allow_html=True)
     
-    t_notas, t_cursos, t_estudantes, t_quest = st.tabs(["ðŸš€ NOTAS", "ðŸ‘¥ CURSOS", "ðŸŽ“ ESTUDANTE", "ðŸ“ QUEST. ESTUDANTE"])
+    t_notas, t_cursos, t_estudantes, t_quest = st.tabs(["🚀 NOTAS", "👥 CURSOS", "🎓 ESTUDANTE", "📝 QUEST. ESTUDANTE"])
     
     with t_notas:
-        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">AvaliaÃ§Ã£o Institucional</div>', unsafe_allow_html=True)
-        st.dataframe(filtered_data[['NOME DO CURSO', 'CAMPUS', 'MUNICÃPIO', 'ANO', 'ENADE CONTÃNUO', 'ENADE FAIXA']], width='stretch', hide_index=True, height=500)
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Avaliação Institucional</div>', unsafe_allow_html=True)
+        st.dataframe(filtered_data[['NOME DO CURSO', 'CAMPUS', 'MUNICÍPIO', 'ANO', 'ENADE CONTÍNUO', 'ENADE FAIXA']], width='stretch', hide_index=True, height=500)
         
     with t_cursos:
-        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Raio-X da Prova: FormaÃ§Ã£o Geral vs EspecÃ­fica</div>', unsafe_allow_html=True)
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Raio-X da Prova: Formação Geral vs Específica</div>', unsafe_allow_html=True)
         df_calc = filtered_data.copy()
         if 'NOTA_FG' in df_calc.columns and 'NOTA_CE' in df_calc.columns:
             df_calc['NOTA_FG'] = pd.to_numeric(df_calc['NOTA_FG'].astype(str).str.replace(',', '.'), errors='coerce')
@@ -345,23 +341,23 @@ def show_visao_ano():
             avg_scores = df_calc.groupby('NOME DO CURSO')[['NOTA_FG', 'NOTA_CE']].mean().reset_index().dropna()
             if not avg_scores.empty:
                 import plotly.express as px
-                melted = avg_scores.melt(id_vars='NOME DO CURSO', value_vars=['NOTA_FG', 'NOTA_CE'], var_name='Tipo de Prova', value_name='Nota MÃ©dia')
-                fig1 = px.bar(melted, x='NOME DO CURSO', y='Nota MÃ©dia', color='Tipo de Prova', barmode='group', color_discrete_sequence=['#1a5722', '#58c769'])
+                melted = avg_scores.melt(id_vars='NOME DO CURSO', value_vars=['NOTA_FG', 'NOTA_CE'], var_name='Tipo de Prova', value_name='Nota Média')
+                fig1 = px.bar(melted, x='NOME DO CURSO', y='Nota Média', color='Tipo de Prova', barmode='group', color_discrete_sequence=['#1a5722', '#58c769'])
                 fig1.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter")
                 st.plotly_chart(fig1, use_container_width=True)
             else:
                 st.info("Sem dados de notas isoladas suficientes no filtro.")
                 
     with t_estudantes:
-        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Microdados SociodemogrÃ¡ficos INEP</div>', unsafe_allow_html=True)
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Microdados Sociodemográficos INEP</div>', unsafe_allow_html=True)
         
         cursos_filtrados = filtered_data['CO_CURSO'].unique().tolist()
         anos_filtrados = filtered_data['ANO'].unique().tolist()
         
-        # Como o Streamlit nÃ£o permite st.tabs aninhados, usaremos st.radio horizontal
+        # Como o Streamlit não permite st.tabs aninhados, usaremos st.radio horizontal
         sub_tab = st.radio(
             "Selecione a categoria de dados:",
-            ["ðŸ“Š Demografia BÃ¡sica", "ðŸ’¼ Perfil SocioeconÃ´mico", "ðŸ›ï¸ Acesso e PermanÃªncia", "ðŸ“š Rotina de Estudos"],
+            ["📊 Demografia Básica", "💼 Perfil Socioeconômico", "🏛️ Acesso e Permanência", "📚 Rotina de Estudos"],
             horizontal=True,
             label_visibility="collapsed"
         )
@@ -369,7 +365,7 @@ def show_visao_ano():
         
         import plotly.express as px
         
-        if sub_tab == "ðŸ“Š Demografia BÃ¡sica":
+        if sub_tab == "📊 Demografia Básica":
             df_sexo = microdados['sexo'][microdados['sexo']['CO_CURSO'].isin(cursos_filtrados) & microdados['sexo']['ANO'].isin(anos_filtrados)]
             df_idade = microdados['idade'][microdados['idade']['CO_CURSO'].isin(cursos_filtrados) & microdados['idade']['ANO'].isin(anos_filtrados)]
             df_raca = microdados['raca'][microdados['raca']['CO_CURSO'].isin(cursos_filtrados) & microdados['raca']['ANO'].isin(anos_filtrados)]
@@ -377,44 +373,44 @@ def show_visao_ano():
             
             col_g1, col_g2 = st.columns(2, gap="large")
             with col_g1:
-                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">DistribuiÃ§Ã£o de Idade</div>', unsafe_allow_html=True)
+                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição de Idade</div>', unsafe_allow_html=True)
                 if not df_idade.empty and 'NU_IDADE' in df_idade.columns:
                     df_idade['NU_IDADE'] = pd.to_numeric(df_idade['NU_IDADE'], errors='coerce')
                     df_idade = df_idade.dropna(subset=['NU_IDADE'])
-                    fig_idade = px.histogram(df_idade, x='NU_IDADE', nbins=15, color_discrete_sequence=['#32A041'], labels={'NU_IDADE': 'Faixa EtÃ¡ria (Anos)'})
+                    fig_idade = px.histogram(df_idade, x='NU_IDADE', nbins=15, color_discrete_sequence=['#32A041'], labels={'NU_IDADE': 'Faixa Etária (Anos)'})
                     fig_idade.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title="Qtd de Estudantes")
                     st.plotly_chart(fig_idade, use_container_width=True)
             with col_g2:
-                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">DistribuiÃ§Ã£o de GÃªnero</div>', unsafe_allow_html=True)
+                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição de Gênero</div>', unsafe_allow_html=True)
                 if not df_sexo.empty and 'TP_SEXO' in df_sexo.columns:
                     sexo_counts = df_sexo['TP_SEXO'].value_counts().reset_index()
-                    sexo_counts.columns = ['GÃªnero', 'Quantidade']
-                    sexo_counts['GÃªnero'] = sexo_counts['GÃªnero'].map({'F': 'Feminino', 'M': 'Masculino'}).fillna(sexo_counts['GÃªnero'])
-                    fig_sexo = px.pie(sexo_counts, values='Quantidade', names='GÃªnero', hole=0.4, color_discrete_map={'Feminino': '#d45070', 'Masculino': '#2d539e'})
+                    sexo_counts.columns = ['Gênero', 'Quantidade']
+                    sexo_counts['Gênero'] = sexo_counts['Gênero'].map({'F': 'Feminino', 'M': 'Masculino'}).fillna(sexo_counts['Gênero'])
+                    fig_sexo = px.pie(sexo_counts, values='Quantidade', names='Gênero', hole=0.4, color_discrete_map={'Feminino': '#d45070', 'Masculino': '#2d539e'})
                     fig_sexo.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
                     fig_sexo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False)
                     st.plotly_chart(fig_sexo, use_container_width=True)
 
             col_g3, col_g4 = st.columns(2, gap="large")
             with col_g3:
-                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">DistribuiÃ§Ã£o Cor/RaÃ§a</div>', unsafe_allow_html=True)
-                dict_raca = {'A': 'Branca', 'B': 'Preta', 'C': 'Amarela', 'D': 'Parda', 'E': 'IndÃ­gena', 'F': 'NÃ£o declarado'}
+                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição Cor/Raça</div>', unsafe_allow_html=True)
+                dict_raca = {'A': 'Branca', 'B': 'Preta', 'C': 'Amarela', 'D': 'Parda', 'E': 'Indígena', 'F': 'Não declarado'}
                 if not df_raca.empty and 'QE_I02' in df_raca.columns:
                     raca_counts = df_raca['QE_I02'].map(dict_raca).value_counts().reset_index()
-                    raca_counts.columns = ['Cor/RaÃ§a', 'Quantidade']
+                    raca_counts.columns = ['Cor/Raça', 'Quantidade']
                     raca_counts = raca_counts.sort_values(by='Quantidade', ascending=True)
-                    fig_raca = px.bar(raca_counts, y='Cor/RaÃ§a', x='Quantidade', orientation='h', color_discrete_sequence=['#1a5722'])
+                    fig_raca = px.bar(raca_counts, y='Cor/Raça', x='Quantidade', orientation='h', color_discrete_sequence=['#1a5722'])
                     fig_raca.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_raca.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes")
                     st.plotly_chart(fig_raca, use_container_width=True)
             with col_g4:
                 st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Perfil de Renda Familiar</div>', unsafe_allow_html=True)
-                dict_renda = {'A': 'AtÃ© 1,5 SM', 'B': '1,5 a 3 SM', 'C': '3 a 4,5 SM', 'D': '4,5 a 6 SM', 'E': '6 a 10 SM', 'F': '10 a 30 SM', 'G': 'Acima 30 SM'}
+                dict_renda = {'A': 'Até 1,5 SM', 'B': '1,5 a 3 SM', 'C': '3 a 4,5 SM', 'D': '4,5 a 6 SM', 'E': '6 a 10 SM', 'F': '10 a 30 SM', 'G': 'Acima 30 SM'}
                 if not df_renda.empty and 'QE_I08' in df_renda.columns:
                     renda_counts = df_renda['QE_I08'].map(dict_renda).value_counts().reset_index()
                     renda_counts.columns = ['Renda', 'Quantidade']
-                    ordem_renda = ['Acima 30 SM', '10 a 30 SM', '6 a 10 SM', '4,5 a 6 SM', '3 a 4,5 SM', '1,5 a 3 SM', 'AtÃ© 1,5 SM']
+                    ordem_renda = ['Acima 30 SM', '10 a 30 SM', '6 a 10 SM', '4,5 a 6 SM', '3 a 4,5 SM', '1,5 a 3 SM', 'Até 1,5 SM']
                     renda_counts['Renda'] = pd.Categorical(renda_counts['Renda'], categories=ordem_renda, ordered=True)
                     renda_counts = renda_counts.sort_values('Renda')
                     fig_renda = px.bar(renda_counts, y='Renda', x='Quantidade', orientation='h', color_discrete_sequence=['#32A041'])
@@ -422,59 +418,59 @@ def show_visao_ano():
                     fig_renda.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes")
                     st.plotly_chart(fig_renda, use_container_width=True)
 
-        elif sub_tab == "ðŸ’¼ Perfil SocioeconÃ´mico":
+        elif sub_tab == "💼 Perfil Socioeconômico":
             df_pai = microdados['pai'][microdados['pai']['CO_CURSO'].isin(cursos_filtrados) & microdados['pai']['ANO'].isin(anos_filtrados)]
             df_mae = microdados['mae'][microdados['mae']['CO_CURSO'].isin(cursos_filtrados) & microdados['mae']['ANO'].isin(anos_filtrados)]
             df_trab = microdados['trab'][microdados['trab']['CO_CURSO'].isin(cursos_filtrados) & microdados['trab']['ANO'].isin(anos_filtrados)]
 
             col_s1, col_s2 = st.columns(2, gap="large")
             with col_s1:
-                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Escolaridade MÃ©dia dos Pais</div>', unsafe_allow_html=True)
-                dict_escolaridade = {'A': 'Nenhuma', 'B': 'Ens. Fundamental I', 'C': 'Ens. Fundamental II', 'D': 'Ensino MÃ©dio', 'E': 'Ensino Superior', 'F': 'PÃ³s-graduaÃ§Ã£o'}
+                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Escolaridade Média dos Pais</div>', unsafe_allow_html=True)
+                dict_escolaridade = {'A': 'Nenhuma', 'B': 'Ens. Fundamental I', 'C': 'Ens. Fundamental II', 'D': 'Ensino Médio', 'E': 'Ensino Superior', 'F': 'Pós-graduação'}
                 if not df_pai.empty and not df_mae.empty:
                     pai_c = df_pai['QE_I04'].map(dict_escolaridade).value_counts()
                     mae_c = df_mae['QE_I05'].map(dict_escolaridade).value_counts()
-                    df_esc = pd.DataFrame({'Pai': pai_c, 'MÃ£e': mae_c}).fillna(0).reset_index()
-                    df_esc.columns = ['NÃ­vel', 'Pai', 'MÃ£e']
-                    ordem_esc = ['Nenhuma', 'Ens. Fundamental I', 'Ens. Fundamental II', 'Ensino MÃ©dio', 'Ensino Superior', 'PÃ³s-graduaÃ§Ã£o']
-                    df_esc['NÃ­vel'] = pd.Categorical(df_esc['NÃ­vel'], categories=ordem_esc, ordered=True)
-                    df_esc = df_esc.sort_values('NÃ­vel')
-                    melted = df_esc.melt(id_vars='NÃ­vel', value_vars=['Pai', 'MÃ£e'], var_name='Parente', value_name='Qtd')
-                    fig_esc = px.bar(melted, x='Qtd', y='NÃ­vel', color='Parente', barmode='group', orientation='h', color_discrete_sequence=['#1a5722', '#58c769'])
+                    df_esc = pd.DataFrame({'Pai': pai_c, 'Mãe': mae_c}).fillna(0).reset_index()
+                    df_esc.columns = ['Nível', 'Pai', 'Mãe']
+                    ordem_esc = ['Nenhuma', 'Ens. Fundamental I', 'Ens. Fundamental II', 'Ensino Médio', 'Ensino Superior', 'Pós-graduação']
+                    df_esc['Nível'] = pd.Categorical(df_esc['Nível'], categories=ordem_esc, ordered=True)
+                    df_esc = df_esc.sort_values('Nível')
+                    melted = df_esc.melt(id_vars='Nível', value_vars=['Pai', 'Mãe'], var_name='Parente', value_name='Qtd')
+                    fig_esc = px.bar(melted, x='Qtd', y='Nível', color='Parente', barmode='group', orientation='h', color_discrete_sequence=['#1a5722', '#58c769'])
                     fig_esc.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_esc.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title=None)
                     st.plotly_chart(fig_esc, use_container_width=True)
             
             with col_s2:
-                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">SituaÃ§Ã£o de Trabalho Atual</div>', unsafe_allow_html=True)
-                dict_trab = {'A': 'NÃ£o trabalha', 'B': 'Trabalha eventualmente', 'C': 'AtÃ© 20h/semana', 'D': '21-39h/semana', 'E': '40h ou mais/semana'}
+                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Situação de Trabalho Atual</div>', unsafe_allow_html=True)
+                dict_trab = {'A': 'Não trabalha', 'B': 'Trabalha eventualmente', 'C': 'Até 20h/semana', 'D': '21-39h/semana', 'E': '40h ou mais/semana'}
                 if not df_trab.empty:
                     trab_c = df_trab['QE_I10'].map(dict_trab).value_counts().reset_index()
-                    trab_c.columns = ['SituaÃ§Ã£o', 'Quantidade']
-                    fig_trab = px.pie(trab_c, values='Quantidade', names='SituaÃ§Ã£o', hole=0.5, color_discrete_sequence=px.colors.sequential.Teal)
+                    trab_c.columns = ['Situação', 'Quantidade']
+                    fig_trab = px.pie(trab_c, values='Quantidade', names='Situação', hole=0.5, color_discrete_sequence=px.colors.sequential.Teal)
                     fig_trab.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
                     fig_trab.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False)
                     st.plotly_chart(fig_trab, use_container_width=True)
 
-        elif sub_tab == "ðŸ›ï¸ Acesso e PermanÃªncia":
+        elif sub_tab == "🏛️ Acesso e Permanência":
             df_cota = microdados['cota'][microdados['cota']['CO_CURSO'].isin(cursos_filtrados) & microdados['cota']['ANO'].isin(anos_filtrados)]
             df_bolsa = microdados['bolsa'][microdados['bolsa']['CO_CURSO'].isin(cursos_filtrados) & microdados['bolsa']['ANO'].isin(anos_filtrados)]
             
             col_a1, col_a2 = st.columns(2, gap="large")
             with col_a1:
-                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">AdmissÃ£o por PolÃ­ticas Sociais (Cotas)</div>', unsafe_allow_html=True)
-                dict_cota = {'A': 'Ampla ConcorrÃªncia (NÃ£o)', 'B': 'Ã‰tnico-Racial', 'C': 'CritÃ©rio de Renda', 'D': 'Escola PÃºblica', 'E': 'Dois ou mais critÃ©rios', 'F': 'Outros'}
+                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Admissão por Políticas Sociais (Cotas)</div>', unsafe_allow_html=True)
+                dict_cota = {'A': 'Ampla Concorrência (Não)', 'B': 'Étnico-Racial', 'C': 'Critério de Renda', 'D': 'Escola Pública', 'E': 'Dois ou mais critérios', 'F': 'Outros'}
                 if not df_cota.empty:
                     cota_c = df_cota['QE_I15'].map(lambda x: dict_cota.get(x, 'Outros')).value_counts().reset_index()
-                    cota_c.columns = ['CritÃ©rio', 'Total']
+                    cota_c.columns = ['Critério', 'Total']
                     cota_c = cota_c.sort_values('Total', ascending=True)
-                    fig_cota = px.bar(cota_c, y='CritÃ©rio', x='Total', orientation='h', color_discrete_sequence=['#32A041'])
+                    fig_cota = px.bar(cota_c, y='Critério', x='Total', orientation='h', color_discrete_sequence=['#32A041'])
                     fig_cota.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_cota.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title=None)
                     st.plotly_chart(fig_cota, use_container_width=True)
                     
             with col_a2:
-                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Bolsas e AuxÃ­lios Financeiros</div>', unsafe_allow_html=True)
+                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Bolsas e Auxílios Financeiros</div>', unsafe_allow_html=True)
                 dict_bolsa = {'A': 'Nenhum', 'B': 'FIES', 'C': 'ProUni', 'D': 'Entidade Externa', 'E': 'Programa IFES', 'F': 'Outros'}
                 if not df_bolsa.empty:
                     bolsa_c = df_bolsa['QE_I11'].map(lambda x: dict_bolsa.get(x, 'Outros') if isinstance(x, str) else 'Outros').value_counts().reset_index()
@@ -484,7 +480,7 @@ def show_visao_ano():
                     fig_bolsa.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False)
                     st.plotly_chart(fig_bolsa, use_container_width=True)
 
-        elif sub_tab == "ðŸ“š Rotina de Estudos":
+        elif sub_tab == "📚 Rotina de Estudos":
             df_estudo = microdados['estudo'][microdados['estudo']['CO_CURSO'].isin(cursos_filtrados) & microdados['estudo']['ANO'].isin(anos_filtrados)]
             df_motiv_c = microdados['motiv_c'][microdados['motiv_c']['CO_CURSO'].isin(cursos_filtrados) & microdados['motiv_c']['ANO'].isin(anos_filtrados)]
             df_motiv_i = microdados['motiv_i'][microdados['motiv_i']['CO_CURSO'].isin(cursos_filtrados) & microdados['motiv_i']['ANO'].isin(anos_filtrados)]
@@ -503,8 +499,8 @@ def show_visao_ano():
                     st.plotly_chart(fig_est, use_container_width=True)
 
             with col_r2:
-                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">MotivaÃ§Ã£o Principal de Escolha do Curso</div>', unsafe_allow_html=True)
-                dict_motiv = {'A': 'InserÃ§Ã£o no mercado', 'B': 'InfluÃªncia familiar', 'C': 'ValorizaÃ§Ã£o Profissional', 'D': 'ContribuiÃ§Ã£o Social', 'E': 'VocaÃ§Ã£o', 'F': 'Oferecido na cidade', 'G': 'Flexibilidade', 'H': 'Outro'}
+                st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Motivação Principal de Escolha do Curso</div>', unsafe_allow_html=True)
+                dict_motiv = {'A': 'Inserção no mercado', 'B': 'Influência familiar', 'C': 'Valorização Profissional', 'D': 'Contribuição Social', 'E': 'Vocação', 'F': 'Oferecido na cidade', 'G': 'Flexibilidade', 'H': 'Outro'}
                 if not df_motiv_c.empty:
                     m_c = df_motiv_c['QE_I25'].map(lambda x: dict_motiv.get(x, 'Outro')).value_counts().reset_index()
                     m_c.columns = ['Motivo', 'Qtd']
@@ -515,7 +511,7 @@ def show_visao_ano():
                     st.plotly_chart(fig_m, use_container_width=True)
 
     with t_quest:
-        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">AvaliaÃ§Ã£o do Processo Formativo</div>', unsafe_allow_html=True)
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Avaliação do Processo Formativo</div>', unsafe_allow_html=True)
         
         cursos_filtrados = filtered_data['CO_CURSO'].unique().tolist()
         anos_filtrados = filtered_data['ANO'].unique().tolist()
@@ -524,13 +520,13 @@ def show_visao_ano():
         df_arq43 = microdados.get('arq43', pd.DataFrame())
         
         if df_arq4.empty and df_arq43.empty:
-            st.warning("Sem dados prÃ©-processados de Arq_4 ou Arq_43 disponÃ­veis.")
+            st.warning("Sem dados pré-processados de Arq_4 ou Arq_43 disponíveis.")
         else:
             df_arq4 = df_arq4[(df_arq4['CO_CURSO'].isin(cursos_filtrados)) & (df_arq4['ANO'].isin(anos_filtrados))]
             df_arq43 = df_arq43[(df_arq43['CO_CURSO'].isin(cursos_filtrados)) & (df_arq43['ANO'].isin(anos_filtrados))]
             
             if df_arq4.empty and df_arq43.empty:
-                st.info("Nenhum dado do questionÃ¡rio disponÃ­vel neste filtro.")
+                st.info("Nenhum dado do questionário disponível neste filtro.")
             else:
                 try:
                     from qe_dictionary import qe_dict as dict_questoes
@@ -543,7 +539,7 @@ def show_visao_ano():
                 
                 opcoes = []
                 for c in qe_cols:
-                    texto = dict_questoes.get(c, f"QuestÃ£o {c.replace('QE_I', '')} (Sem enunciado cadastrado)")
+                    texto = dict_questoes.get(c, f"Questão {c.replace('QE_I', '')} (Sem enunciado cadastrado)")
                     opcoes.append(f"{c} - {texto}")
                     
                 selecionada = st.selectbox("Selecione a pergunta para visualizar o detalhamento:", opcoes)
@@ -558,7 +554,7 @@ def show_visao_ano():
                     texto_selecionada = selecionada.split(" - ", 1)[1]
                     st.markdown(f'''
                     <div style="background-color: white; border-radius: 16px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.03);">
-                        <div class="filter-header" style="color: #103d6d; font-size: 1.1rem; border-bottom: 2px solid rgba(16,61,109,0.1); padding-bottom: 10px; margin-bottom: 15px;">ENUNCIADO DA QUESTÃƒO:</div>
+                        <div class="filter-header" style="color: #103d6d; font-size: 1.1rem; border-bottom: 2px solid rgba(16,61,109,0.1); padding-bottom: 10px; margin-bottom: 15px;">ENUNCIADO DA QUESTÃO:</div>
                         <div style="color: #111; font-size: 1.4rem; font-weight: 600; line-height: 1.5;">{texto_selecionada}</div>
                     </div>
                     ''', unsafe_allow_html=True)
@@ -570,9 +566,9 @@ def show_visao_ano():
                         4: 'CONCORDO PARCIALMENTE',
                         5: 'CONCORDO',
                         6: 'CONCORDO TOTALMENTE',
-                        7: 'NÃƒO SEI RESPONDER',
-                        8: 'NÃƒO SE APLICA',
-                        9: 'NÃƒO RESPONDEU'
+                        7: 'NÃO SEI RESPONDER',
+                        8: 'NÃO SE APLICA',
+                        9: 'NÃO RESPONDEU'
                     }
                     
                     if col_var in df_arq4.columns and not df_arq4.empty and not df_arq4[col_var].dropna().empty:
@@ -586,7 +582,7 @@ def show_visao_ano():
                     df_resp = df_target[df_target[col_var].isin([1, 2, 3, 4, 5, 6, 7, 8, 9])].copy()
                     
                     if df_resp.empty:
-                        st.info("Sem dados disponÃ­veis para este filtro.")
+                        st.info("Sem dados disponíveis para este filtro.")
                     else:
                         contagem = df_resp[col_var].value_counts().reset_index()
                         contagem.columns = ['Resposta', 'Quantidade']
@@ -653,4 +649,3 @@ if st.session_state.page == 'home':
     show_home()
 elif st.session_state.page == 'visao_ano':
     show_visao_ano()
-
