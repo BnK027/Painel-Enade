@@ -306,6 +306,11 @@ def show_home():
                 st.session_state.page = 'visao_ano'
                 st.rerun()
 
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("📈 COMPARATIVO HISTÓRICO (TODOS OS ANOS)", use_container_width=True):
+            st.session_state.page = 'visao_historica'
+            st.rerun()
+
 def show_visao_ano():
     ano = st.session_state.get('ano_selecionado', '2018')
     col_back, _ = st.columns([1, 6])
@@ -640,6 +645,99 @@ def show_visao_ano():
                     </div>
                     ''', unsafe_allow_html=True)
 
+
+def show_visao_historica():
+    col_back, _ = st.columns([1, 6])
+    with col_back:
+        if st.button("⬅ Voltar ao Início", use_container_width=True, key='back_bt_hist'):
+            st.session_state.page = 'home'
+            st.rerun()
+            
+    with st.container():    
+        st.markdown(f'''
+            <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+                <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Análise Temporal</p>
+                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">VISÃO HISTÓRICA</h1>
+                <p style="color: #666; font-size: 1.15rem; margin: 0 auto; font-weight: 400; max-width: 600px;">
+                    Comparativo de desempenho, notas e participação ao longo das edições do ENADE.
+                </p>
+            </div>
+        ''', unsafe_allow_html=True)
+
+    # Renderiza os filtros SEM fixar o ano
+    filtered_data = render_filters(data, ano_fixo=None)
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    t_evolucao, t_comp, t_participacao, t_tabela = st.tabs(["📈 Evolução das Notas", "📊 Componentes da Nota", "👥 Participação", "📋 Tabela Geral"])
+    
+    # Pre-processamento: converter notas para numérico
+    df_calc = filtered_data.copy()
+    if 'ENADE CONTÍNUO' in df_calc.columns:
+        df_calc['ENADE_NUM'] = pd.to_numeric(df_calc['ENADE CONTÍNUO'].astype(str).str.replace(',', '.'), errors='coerce')
+    if 'NOTA_FG' in df_calc.columns:
+        df_calc['NOTA_FG_NUM'] = pd.to_numeric(df_calc['NOTA_FG'].astype(str).str.replace(',', '.'), errors='coerce')
+    if 'NOTA_CE' in df_calc.columns:
+        df_calc['NOTA_CE_NUM'] = pd.to_numeric(df_calc['NOTA_CE'].astype(str).str.replace(',', '.'), errors='coerce')
+        
+    # Garantir que ANO é categórico para o eixo X não ficar contínuo (2018.5)
+    df_calc['ANO_STR'] = df_calc['ANO'].astype(str).str.replace('.0', '', regex=False)
+    
+    with t_evolucao:
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Evolução do ENADE Contínuo por Curso</div>', unsafe_allow_html=True)
+        if 'ENADE_NUM' in df_calc.columns and not df_calc.empty:
+            avg_enade = df_calc.groupby(['ANO_STR', 'NOME DO CURSO'])['ENADE_NUM'].mean().reset_index().dropna()
+            if not avg_enade.empty:
+                import plotly.express as px
+                # Ordenar por ano
+                avg_enade = avg_enade.sort_values('ANO_STR')
+                fig1 = px.line(avg_enade, x='ANO_STR', y='ENADE_NUM', color='NOME DO CURSO', markers=True, 
+                               labels={'ANO_STR': 'Ano do Enade', 'ENADE_NUM': 'Nota Contínua Média'})
+                fig1.update_traces(line=dict(width=3), marker=dict(size=8))
+                fig1.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter")
+                fig1.update_xaxes(type='category')
+                st.plotly_chart(fig1, use_container_width=True)
+            else:
+                st.info("Sem dados numéricos suficientes para gerar o gráfico.")
+        else:
+            st.info("Coluna de nota não encontrada no filtro atual.")
+            
+    with t_comp:
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Comparativo Temporal: Formação Geral vs Específica</div>', unsafe_allow_html=True)
+        if 'NOTA_FG_NUM' in df_calc.columns and 'NOTA_CE_NUM' in df_calc.columns and not df_calc.empty:
+            avg_comp = df_calc.groupby('ANO_STR')[['NOTA_FG_NUM', 'NOTA_CE_NUM']].mean().reset_index().dropna()
+            if not avg_comp.empty:
+                import plotly.express as px
+                avg_comp = avg_comp.sort_values('ANO_STR')
+                melted = avg_comp.melt(id_vars='ANO_STR', value_vars=['NOTA_FG_NUM', 'NOTA_CE_NUM'], var_name='Tipo', value_name='Nota Média')
+                melted['Tipo'] = melted['Tipo'].map({'NOTA_FG_NUM': 'Formação Geral', 'NOTA_CE_NUM': 'Conhecimento Específico'})
+                fig2 = px.bar(melted, x='ANO_STR', y='Nota Média', color='Tipo', barmode='group', color_discrete_sequence=['#1a5722', '#58c769'],
+                              labels={'ANO_STR': 'Ano do Enade'})
+                fig2.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter")
+                fig2.update_xaxes(type='category')
+                st.plotly_chart(fig2, use_container_width=True)
+            else:
+                st.info("Sem dados suficientes para gerar o gráfico de componentes.")
+                
+    with t_participacao:
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Evolução da Taxa de Participação (Inscritos vs Presentes)</div>', unsafe_allow_html=True)
+        if 'INSCRITOS' in df_calc.columns and 'PRESENTES' in df_calc.columns and not df_calc.empty:
+            sum_part = df_calc.groupby('ANO_STR')[['INSCRITOS', 'PRESENTES']].sum().reset_index()
+            if not sum_part.empty:
+                import plotly.express as px
+                sum_part = sum_part.sort_values('ANO_STR')
+                melted_part = sum_part.melt(id_vars='ANO_STR', value_vars=['INSCRITOS', 'PRESENTES'], var_name='Status', value_name='Quantidade')
+                fig3 = px.bar(melted_part, x='ANO_STR', y='Quantidade', color='Status', barmode='group', color_discrete_sequence=['#103d6d', '#4287f5'],
+                              labels={'ANO_STR': 'Ano do Enade'})
+                fig3.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter")
+                fig3.update_xaxes(type='category')
+                st.plotly_chart(fig3, use_container_width=True)
+            else:
+                st.info("Sem dados suficientes para gerar o gráfico de participação.")
+                
+    with t_tabela:
+        st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Tabela Geral Consolidada</div>', unsafe_allow_html=True)
+        st.dataframe(filtered_data[['ANO', 'NOME DO CURSO', 'CAMPUS', 'MUNICÍPIO', 'ENADE CONTÍNUO', 'ENADE FAIXA', 'INSCRITOS', 'PRESENTES']], width='stretch', hide_index=True, height=500)
+
 # --- ROUTER (GERENCIADOR DE ESTADO) ---
 
 if 'page' not in st.session_state:
@@ -649,3 +747,5 @@ if st.session_state.page == 'home':
     show_home()
 elif st.session_state.page == 'visao_ano':
     show_visao_ano()
+elif st.session_state.page == 'visao_historica':
+    show_visao_historica()
