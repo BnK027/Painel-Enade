@@ -285,9 +285,17 @@ def show_home():
                         st.session_state.ano_selecionado = ano
                         st.session_state.page = f'visao_{ano}'
                         st.rerun()
-
-
-
+                        
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    with st.expander("📊 Consultar Tabela Geral: Todos os Cursos e Anos Disponíveis", expanded=False):
+        st.markdown("Confira abaixo a lista completa de todos os cursos da base de dados e os anos em que realizaram o Enade:")
+        df_table = data.groupby(['CAMPUS', 'NOME DO CURSO'])['ANO'].apply(
+            lambda x: sorted(list(set(x.dropna().astype(str).str.replace('.0', '', regex=False))))
+        ).reset_index()
+        df_table['Anos Avaliados'] = df_table['ANO'].apply(lambda x: ', '.join(x))
+        df_table = df_table.drop(columns=['ANO'])
+        df_table.columns = ['Campus', 'Curso', 'Anos Avaliados']
+        st.dataframe(df_table, hide_index=True, use_container_width=True)
 
 # --- ROUTER (GERENCIADOR DE ESTADO) ---
 
