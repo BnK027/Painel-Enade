@@ -245,21 +245,20 @@ def show_home():
     col_left, col_right = st.columns([1, 1], gap="large")
     with col_left:
         st.markdown('''<div class="card-panel" style="padding: 2rem;">
-    <div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding: 10px; border-radius: 12px; transition: all 0.3s; background: linear-gradient(to right, rgba(16, 61, 109, 0.03), transparent);">
-        <div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #103d6d, #205c9e); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; margin-right: 15px; box-shadow: 0 4px 10px rgba(16,61,109,0.2);">W</div>
-        <div>
-            <p style="margin: 0; font-size: 0.75rem; color: #103d6d; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Orientador</p>
-            <p style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 800; letter-spacing: -0.5px;">Prof. Wagner Teixeira da Costa</p>
-        </div>
-    </div>
-    
-    <div style="display: flex; align-items: center; padding: 10px; border-radius: 12px; transition: all 0.3s; background: linear-gradient(to right, rgba(44, 140, 68, 0.03), transparent);">
-        <div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #2c8c44, #3bb358); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; margin-right: 15px; box-shadow: 0 4px 10px rgba(44,140,68,0.2);">M</div>
-        <div>
-            <p style="margin: 0; font-size: 0.75rem; color: #2c8c44; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Aluno Desenvolvedor</p>
-            <p style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 800; letter-spacing: -0.5px;">Matheus Ferreira Tissianel Benincá</p>
-        </div>
-    </div>
+<div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding: 10px; border-radius: 12px; transition: all 0.3s; background: linear-gradient(to right, rgba(16, 61, 109, 0.03), transparent);">
+<div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #103d6d, #205c9e); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; margin-right: 15px; box-shadow: 0 4px 10px rgba(16,61,109,0.2);">W</div>
+<div>
+<p style="margin: 0; font-size: 0.75rem; color: #103d6d; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Orientador</p>
+<p style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 800; letter-spacing: -0.5px;">Prof. Wagner Teixeira da Costa</p>
+</div>
+</div>
+<div style="display: flex; align-items: center; padding: 10px; border-radius: 12px; transition: all 0.3s; background: linear-gradient(to right, rgba(44, 140, 68, 0.03), transparent);">
+<div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #2c8c44, #3bb358); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; margin-right: 15px; box-shadow: 0 4px 10px rgba(44,140,68,0.2);">M</div>
+<div>
+<p style="margin: 0; font-size: 0.75rem; color: #2c8c44; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Aluno Desenvolvedor</p>
+<p style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 800; letter-spacing: -0.5px;">Matheus Ferreira Tissianel Benincá</p>
+</div>
+</div>
 </div>''', unsafe_allow_html=True)
         
     with col_right:
