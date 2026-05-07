@@ -261,6 +261,33 @@ def show_home():
 </div>
 </div>''', unsafe_allow_html=True)
         
+        # --- Indicadores Globais no Espaço Vazio ---
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="indicadores-title" style="font-size: 1.2rem; margin-bottom: 0.8rem; letter-spacing: 0;">📊 Destaques Institucionais (Total)</div>', unsafe_allow_html=True)
+        
+        # Cálculos globais
+        total_alunos = data['PRESENTES'].sum()
+        total_cursos = data['NOME DO CURSO'].nunique()
+        total_campi = data['CAMPUS'].nunique()
+        
+        # Card 1: Alunos
+        st.markdown(f'''<div class="kpi-card" style="padding: 15px; margin-bottom: 15px;">
+            <p class="kpi-title" style="font-size: 0.75rem; margin-bottom: 5px;">Total de Alunos Avaliados</p>
+            <p class="kpi-value" style="font-size: 2.2rem;">{int(total_alunos):,}</p>
+        </div>'''.replace(',', '.'), unsafe_allow_html=True)
+        
+        col_k1, col_k2 = st.columns(2)
+        with col_k1:
+            st.markdown(f'''<div class="kpi-card" style="padding: 15px; border-left-color: #2c8c44;">
+                <p class="kpi-title" style="font-size: 0.75rem; margin-bottom: 5px;">Cursos</p>
+                <p class="kpi-value" style="font-size: 2rem;">{total_cursos}</p>
+            </div>''', unsafe_allow_html=True)
+        with col_k2:
+            st.markdown(f'''<div class="kpi-card" style="padding: 15px; border-left-color: #f39c12;">
+                <p class="kpi-title" style="font-size: 0.75rem; margin-bottom: 5px;">Campi</p>
+                <p class="kpi-value" style="font-size: 2rem;">{total_campi}</p>
+            </div>''', unsafe_allow_html=True)
+        
     with col_right:
         st.markdown('''
         <div class="card-panel card-panel-dark">
