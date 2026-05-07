@@ -85,7 +85,7 @@ st.markdown("""
 # 3. Data Loading
 @st.cache_data
 def load_data():
-    files = ['Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
+    files = ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
     all_dfs = []
     
     for file in files:
@@ -124,7 +124,7 @@ def load_data():
 
 @st.cache_data
 def load_microdata():
-    files = ['Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
+    files = ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
     all_sexo, all_idade, all_raca, all_renda = [], [], [], []
     all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43 = [], [], [], [], [], [], [], [], [], []
     
@@ -340,6 +340,9 @@ if 'page' not in st.session_state:
 
 if st.session_state.page == 'home':
     show_home()
+elif st.session_state.page == 'visao_2017':
+    from views.visao_2017 import render_visao_2017
+    render_visao_2017(data, microdados, render_filters)
 elif st.session_state.page == 'visao_2018':
     from views.visao_2018 import render_visao_2018
     render_visao_2018(data, microdados, render_filters)

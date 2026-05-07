@@ -1,4 +1,4 @@
-﻿import streamlit as st
+import streamlit as st
 import pandas as pd
 import plotly.express as px
 
@@ -9,7 +9,7 @@ def render_visao_2021(data, microdados, render_filters):
         if st.button('⬅ Voltar ao Início', use_container_width=True, key='back_bt_visao_2021'):
             st.session_state.page = 'home'
             st.rerun()
-with st.container():    
+    with st.container():    
         st.markdown(f'''
             <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
                 <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Painel Analítico</p>
@@ -339,5 +339,3 @@ with st.container():
                         <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(participantes)}</div>
                     </div>
                     ''', unsafe_allow_html=True)
-
-

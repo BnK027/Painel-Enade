@@ -2,14 +2,14 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-def render_visao_2019(data, microdados, render_filters):
-    ano = '2019'
+def render_visao_2017(data, microdados, render_filters):
+    ano = '2017'
     col_back, _ = st.columns([1, 6])
     with col_back:
-        if st.button('⬅ Voltar ao Início', use_container_width=True, key='back_bt_visao_2019'):
+        if st.button('⬅ Voltar ao Início', use_container_width=True, key='back_bt_visao_2017'):
             st.session_state.page = 'home'
             st.rerun()
-
+    
     with st.container():    
         st.markdown(f'''
             <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
@@ -26,7 +26,12 @@ def render_visao_2019(data, microdados, render_filters):
     
     with t_notas:
         st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Avaliação Institucional</div>', unsafe_allow_html=True)
-        st.dataframe(filtered_data[['NOME DO CURSO', 'CAMPUS', 'MUNICÍPIO', 'ANO', 'ENADE CONTÍNUO', 'ENADE FAIXA']], width='stretch', hide_index=True, height=500)
+        # Check if columns exist before display
+        cols_to_show = ['NOME DO CURSO', 'CAMPUS', 'MUNICÍPIO', 'ANO']
+        if 'ENADE CONTÍNUO' in filtered_data.columns: cols_to_show.append('ENADE CONTÍNUO')
+        if 'ENADE FAIXA' in filtered_data.columns: cols_to_show.append('ENADE FAIXA')
+        
+        st.dataframe(filtered_data[cols_to_show], width='stretch', hide_index=True, height=500)
         
     with t_cursos:
         st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Raio-X da Prova: Formação Geral vs Específica</div>', unsafe_allow_html=True)
@@ -43,6 +48,8 @@ def render_visao_2019(data, microdados, render_filters):
                 st.plotly_chart(fig1, use_container_width=True)
             else:
                 st.info("Sem dados de notas isoladas suficientes no filtro.")
+        else:
+            st.info("Colunas de NOTA_FG ou NOTA_CE não encontradas para 2017.")
                 
     with t_estudantes:
         st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Microdados Sociodemográficos INEP</div>', unsafe_allow_html=True)
@@ -50,7 +57,6 @@ def render_visao_2019(data, microdados, render_filters):
         cursos_filtrados = filtered_data['CO_CURSO'].unique().tolist()
         anos_filtrados = filtered_data['ANO'].unique().tolist()
         
-        # Como o Streamlit não permite st.tabs aninhados, usaremos st.radio horizontal
         sub_tab = st.radio(
             "Selecione a categoria de dados:",
             ["📊 Demografia Básica", "💼 Perfil Socioeconômico", "🏛️ Acesso e Permanência", "📚 Rotina de Estudos"],
@@ -58,8 +64,6 @@ def render_visao_2019(data, microdados, render_filters):
             label_visibility="collapsed"
         )
         st.markdown("<br>", unsafe_allow_html=True)
-        
-        import plotly.express as px
         
         if sub_tab == "📊 Demografia Básica":
             df_sexo = microdados['sexo'][microdados['sexo']['CO_CURSO'].isin(cursos_filtrados) & microdados['sexo']['ANO'].isin(anos_filtrados)]
@@ -77,6 +81,7 @@ def render_visao_2019(data, microdados, render_filters):
                     fig_idade.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_idade.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title="Qtd de Estudantes")
                     st.plotly_chart(fig_idade, use_container_width=True)
+                else: st.info("Dados de idade não disponíveis.")
             with col_g2:
                 st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Distribuição de Gênero</div>', unsafe_allow_html=True)
                 if not df_sexo.empty and 'TP_SEXO' in df_sexo.columns:
@@ -87,6 +92,7 @@ def render_visao_2019(data, microdados, render_filters):
                     fig_sexo.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
                     fig_sexo.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False)
                     st.plotly_chart(fig_sexo, use_container_width=True)
+                else: st.info("Dados de gênero não disponíveis.")
 
             col_g3, col_g4 = st.columns(2, gap="large")
             with col_g3:
@@ -100,6 +106,7 @@ def render_visao_2019(data, microdados, render_filters):
                     fig_raca.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_raca.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes")
                     st.plotly_chart(fig_raca, use_container_width=True)
+                else: st.info("Dados de raça não disponíveis.")
             with col_g4:
                 st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Perfil de Renda Familiar</div>', unsafe_allow_html=True)
                 dict_renda = {'A': 'Até 1,5 SM', 'B': '1,5 a 3 SM', 'C': '3 a 4,5 SM', 'D': '4,5 a 6 SM', 'E': '6 a 10 SM', 'F': '10 a 30 SM', 'G': 'Acima 30 SM'}
@@ -113,6 +120,7 @@ def render_visao_2019(data, microdados, render_filters):
                     fig_renda.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_renda.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", xaxis_title="Estudantes")
                     st.plotly_chart(fig_renda, use_container_width=True)
+                else: st.info("Dados de renda não disponíveis.")
 
         elif sub_tab == "💼 Perfil Socioeconômico":
             df_pai = microdados['pai'][microdados['pai']['CO_CURSO'].isin(cursos_filtrados) & microdados['pai']['ANO'].isin(anos_filtrados)]
@@ -136,6 +144,7 @@ def render_visao_2019(data, microdados, render_filters):
                     fig_esc.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_esc.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title=None)
                     st.plotly_chart(fig_esc, use_container_width=True)
+                else: st.info("Dados de escolaridade dos pais não disponíveis.")
             
             with col_s2:
                 st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Situação de Trabalho Atual</div>', unsafe_allow_html=True)
@@ -147,6 +156,7 @@ def render_visao_2019(data, microdados, render_filters):
                     fig_trab.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
                     fig_trab.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False)
                     st.plotly_chart(fig_trab, use_container_width=True)
+                else: st.info("Dados de trabalho não disponíveis.")
 
         elif sub_tab == "🏛️ Acesso e Permanência":
             df_cota = microdados['cota'][microdados['cota']['CO_CURSO'].isin(cursos_filtrados) & microdados['cota']['ANO'].isin(anos_filtrados)]
@@ -164,6 +174,7 @@ def render_visao_2019(data, microdados, render_filters):
                     fig_cota.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_cota.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title=None)
                     st.plotly_chart(fig_cota, use_container_width=True)
+                else: st.info("Dados de cotas não disponíveis.")
                     
             with col_a2:
                 st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Bolsas e Auxílios Financeiros</div>', unsafe_allow_html=True)
@@ -175,11 +186,11 @@ def render_visao_2019(data, microdados, render_filters):
                     fig_bolsa.update_traces(textposition='inside', textinfo='percent+label', marker={"line": {"color": "white", "width": 2}})
                     fig_bolsa.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", showlegend=False)
                     st.plotly_chart(fig_bolsa, use_container_width=True)
+                else: st.info("Dados de bolsas não disponíveis.")
 
         elif sub_tab == "📚 Rotina de Estudos":
             df_estudo = microdados['estudo'][microdados['estudo']['CO_CURSO'].isin(cursos_filtrados) & microdados['estudo']['ANO'].isin(anos_filtrados)]
             df_motiv_c = microdados['motiv_c'][microdados['motiv_c']['CO_CURSO'].isin(cursos_filtrados) & microdados['motiv_c']['ANO'].isin(anos_filtrados)]
-            df_motiv_i = microdados['motiv_i'][microdados['motiv_i']['CO_CURSO'].isin(cursos_filtrados) & microdados['motiv_i']['ANO'].isin(anos_filtrados)]
 
             col_r1, col_r2 = st.columns(2, gap="large")
             with col_r1:
@@ -188,11 +199,11 @@ def render_visao_2019(data, microdados, render_filters):
                 if not df_estudo.empty:
                     estudo_c = df_estudo['QE_I23'].map(dict_estudo).value_counts().reset_index()
                     estudo_c.columns = ['Horas', 'Qtd']
-                    ordem_e = [' Mais de 12 horas', '8 a 12 horas', '4 a 7 horas', '1 a 3 horas', 'Nenhuma']
                     fig_est = px.bar(estudo_c, y='Horas', x='Qtd', orientation='h', color_discrete_sequence=['#ffca3a'])
                     fig_est.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_est.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter")
                     st.plotly_chart(fig_est, use_container_width=True)
+                else: st.info("Dados de rotina de estudos não disponíveis.")
 
             with col_r2:
                 st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.3rem;">Motivação Principal de Escolha do Curso</div>', unsafe_allow_html=True)
@@ -205,6 +216,7 @@ def render_visao_2019(data, microdados, render_filters):
                     fig_m.update_traces(marker_line_width=1.5, marker_line_color='white', opacity=0.9)
                     fig_m.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='white', font_family="Inter", yaxis_title=None)
                     st.plotly_chart(fig_m, use_container_width=True)
+                else: st.info("Dados de motivação não disponíveis.")
 
     with t_quest:
         st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Avaliação do Processo Formativo</div>', unsafe_allow_html=True)
@@ -218,8 +230,10 @@ def render_visao_2019(data, microdados, render_filters):
         if df_arq4.empty and df_arq43.empty:
             st.warning("Sem dados pré-processados de Arq_4 ou Arq_43 disponíveis.")
         else:
-            df_arq4 = df_arq4[(df_arq4['CO_CURSO'].isin(cursos_filtrados)) & (df_arq4['ANO'].isin(anos_filtrados))]
-            df_arq43 = df_arq43[(df_arq43['CO_CURSO'].isin(cursos_filtrados)) & (df_arq43['ANO'].isin(anos_filtrados))]
+            if not df_arq4.empty:
+                df_arq4 = df_arq4[(df_arq4['CO_CURSO'].isin(cursos_filtrados)) & (df_arq4['ANO'].isin(anos_filtrados))]
+            if not df_arq43.empty:
+                df_arq43 = df_arq43[(df_arq43['CO_CURSO'].isin(cursos_filtrados)) & (df_arq43['ANO'].isin(anos_filtrados))]
             
             if df_arq4.empty and df_arq43.empty:
                 st.info("Nenhum dado do questionário disponível neste filtro.")
@@ -243,100 +257,105 @@ def render_visao_2019(data, microdados, render_filters):
                     texto = dict_questoes.get(c, f"Questão {c.replace('QE_I', '')} (Sem enunciado cadastrado)")
                     opcoes.append(f"{c} - {texto}")
                     
-                selecionada = st.selectbox("Selecione a pergunta para visualizar o detalhamento:", opcoes)
-                col_var = selecionada.split(" - ")[0]
-                
-                inscritos = filtered_data['INSCRITOS'].sum()
-                participantes = filtered_data['PRESENTES'].sum()
+                if not opcoes:
+                    st.info("Nenhuma questão do questionário encontrada nos dados.")
+                else:
+                    selecionada = st.selectbox("Selecione a pergunta para visualizar o detalhamento:", opcoes, key='sel_q_2017')
+                    col_var = selecionada.split(" - ")[0]
+                    
+                    inscritos = filtered_data['INSCRITOS'].sum()
+                    participantes = filtered_data['PRESENTES'].sum()
 
-                col_q1, col_kpi = st.columns([3, 1], gap="large")
-                
-                with col_q1:
-                    texto_selecionada = selecionada.split(" - ", 1)[1]
-                    st.markdown(f'''
-                    <div style="background-color: white; border-radius: 16px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.03);">
-                        <div class="filter-header" style="color: #103d6d; font-size: 1.1rem; border-bottom: 2px solid rgba(16,61,109,0.1); padding-bottom: 10px; margin-bottom: 15px;">ENUNCIADO DA QUESTÃO:</div>
-                        <div style="color: #111; font-size: 1.4rem; font-weight: 600; line-height: 1.5;">{texto_selecionada}</div>
-                    </div>
-                    ''', unsafe_allow_html=True)
+                    col_q1, col_kpi = st.columns([3, 1], gap="large")
                     
-                    dict_likert = {
-                        1: 'DISCORDO TOTALMENTE',
-                        2: 'DISCORDO',
-                        3: 'DISCORDO PARCIALMENTE',
-                        4: 'CONCORDO PARCIALMENTE',
-                        5: 'CONCORDO',
-                        6: 'CONCORDO TOTALMENTE',
-                        7: 'NÃO SEI RESPONDER',
-                        8: 'NÃO SE APLICA',
-                        9: 'NÃO RESPONDEU'
-                    }
-                    
-                    if col_var in df_arq4.columns and not df_arq4.empty and not df_arq4[col_var].dropna().empty:
-                        df_target = df_arq4.copy()
-                    elif col_var in df_arq43.columns and not df_arq43.empty and not df_arq43[col_var].dropna().empty:
-                        df_target = df_arq43.copy()
-                    else:
-                        df_target = pd.DataFrame(columns=[col_var])
+                    with col_q1:
+                        texto_selecionada = selecionada.split(" - ", 1)[1]
+                        st.markdown(f'''
+                        <div style="background-color: white; border-radius: 16px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.03);">
+                            <div class="filter-header" style="color: #103d6d; font-size: 1.1rem; border-bottom: 2px solid rgba(16,61,109,0.1); padding-bottom: 10px; margin-bottom: 15px;">ENUNCIADO DA QUESTÃO:</div>
+                            <div style="color: #111; font-size: 1.4rem; font-weight: 600; line-height: 1.5;">{texto_selecionada}</div>
+                        </div>
+                        ''', unsafe_allow_html=True)
                         
-                    df_target[col_var] = pd.to_numeric(df_target[col_var], errors='coerce').fillna(9)
-                    df_resp = df_target[df_target[col_var].isin([1, 2, 3, 4, 5, 6, 7, 8, 9])].copy()
-                    
-                    if df_resp.empty:
-                        st.info("Sem dados disponíveis para este filtro.")
-                    else:
-                        contagem = df_resp[col_var].value_counts().reset_index()
-                        contagem.columns = ['Resposta', 'Quantidade']
+                        dict_likert = {
+                            1: 'DISCORDO TOTALMENTE',
+                            2: 'DISCORDO',
+                            3: 'DISCORDO PARCIALMENTE',
+                            4: 'CONCORDO PARCIALMENTE',
+                            5: 'CONCORDO',
+                            6: 'CONCORDO TOTALMENTE',
+                            7: 'NÃO SEI RESPONDER',
+                            8: 'NÃO SE APLICA',
+                            9: 'NÃO RESPONDEU'
+                        }
                         
-                        opcoes_exibir = [1, 2, 3, 4, 5, 6, 9]
-                        for opc in [7, 8]:
-                            if opc in contagem['Resposta'].values and contagem[contagem['Resposta'] == opc]['Quantidade'].iloc[0] > 0:
-                                opcoes_exibir.append(opc)
-                        opcoes_exibir.sort()
+                        if col_var in df_arq4.columns and not df_arq4.empty and not df_arq4[col_var].dropna().empty:
+                            df_target = df_arq4.copy()
+                        elif col_var in df_arq43.columns and not df_arq43.empty and not df_arq43[col_var].dropna().empty:
+                            df_target = df_arq43.copy()
+                        else:
+                            df_target = pd.DataFrame(columns=[col_var])
+                            
+                        if not df_target.empty:
+                            df_target[col_var] = pd.to_numeric(df_target[col_var], errors='coerce').fillna(9)
+                            df_resp = df_target[df_target[col_var].isin([1, 2, 3, 4, 5, 6, 7, 8, 9])].copy()
+                            
+                            if df_resp.empty:
+                                st.info("Sem dados disponíveis para este filtro.")
+                            else:
+                                contagem = df_resp[col_var].value_counts().reset_index()
+                                contagem.columns = ['Resposta', 'Quantidade']
+                                
+                                opcoes_exibir = [1, 2, 3, 4, 5, 6, 9]
+                                for opc in [7, 8]:
+                                    if opc in contagem['Resposta'].values and contagem[contagem['Resposta'] == opc]['Quantidade'].iloc[0] > 0:
+                                        opcoes_exibir.append(opc)
+                                opcoes_exibir.sort()
+                                
+                                para_plot = pd.DataFrame({'Resposta': opcoes_exibir, 'Resposta_Texto': [dict_likert[i] for i in opcoes_exibir]})
+                                para_plot = pd.merge(para_plot, contagem[['Resposta', 'Quantidade']], on='Resposta', how='left').fillna(0)
+                                
+                                total_alunos = len(df_target)
+                                para_plot['Percentual'] = (para_plot['Quantidade'] / total_alunos) * 100 if total_alunos > 0 else 0
+                                para_plot['Texto_Eixo'] = para_plot['Resposta_Texto'].str.replace(' ', '<br>')
+                                para_plot['Rotulo'] = para_plot.apply(lambda row: f"<b>{row['Percentual']:.0f}%</b><br><span style='font-size:11px'>({int(row['Quantidade'])})</span>", axis=1)
+                                
+                                fig = px.bar(para_plot, x='Texto_Eixo', y='Percentual', text='Rotulo')
+                                fig.update_traces(
+                                    marker_color='#103d6d',
+                                    textposition='outside',
+                                    textfont_size=13,
+                                    textfont_color='#103d6d',
+                                    hovertemplate="<b>%{x}</b><br>Quantidade: %{customdata[0]}<br>Percentual: %{y:.1f}%<extra></extra>",
+                                    customdata=para_plot[['Quantidade']]
+                                )
+                                fig.update_layout(
+                                    plot_bgcolor='rgba(0,0,0,0)',
+                                    paper_bgcolor='rgba(0,0,0,0)',
+                                    font_family="Inter",
+                                    yaxis_title=None,
+                                    xaxis_title=None,
+                                    showlegend=False,
+                                    margin=dict(t=30, b=100, l=0, r=0),
+                                    height=500
+                                )
+                                fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
+                                fig.update_xaxes(tickfont=dict(size=11, color='#103d6d', weight='bold'), tickangle=0, automargin=True)
+                                st.plotly_chart(fig, use_container_width=True, key='chart_q_2017')
+                        else:
+                            st.info("Dados não encontrados para a questão selecionada.")
+                            
+                    with col_kpi:
+                        st.markdown(f'''
+                        <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 25px; border-top: 5px solid #103d6d;">
+                            <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>INSCRITOS</div>
+                            <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(inscritos)}</div>
+                        </div>
+                        ''', unsafe_allow_html=True)
                         
-                        para_plot = pd.DataFrame({'Resposta': opcoes_exibir, 'Resposta_Texto': [dict_likert[i] for i in opcoes_exibir]})
-                        para_plot = pd.merge(para_plot, contagem[['Resposta', 'Quantidade']], on='Resposta', how='left').fillna(0)
-                        
-                        total_alunos = len(df_target)
-                        para_plot['Percentual'] = (para_plot['Quantidade'] / total_alunos) * 100 if total_alunos > 0 else 0
-                        para_plot['Texto_Eixo'] = para_plot['Resposta_Texto'].str.replace(' ', '<br>')
-                        para_plot['Rotulo'] = para_plot.apply(lambda row: f"<b>{row['Percentual']:.0f}%</b><br><span style='font-size:11px'>({int(row['Quantidade'])})</span>", axis=1)
-                        
-                        import plotly.express as px
-                        fig = px.bar(para_plot, x='Texto_Eixo', y='Percentual', text='Rotulo')
-                        fig.update_traces(
-                            marker_color='#103d6d',
-                            textposition='outside',
-                            textfont_size=13,
-                            textfont_color='#103d6d',
-                            hovertemplate="<b>%{x}</b><br>Quantidade: %{customdata[0]}<br>Percentual: %{y:.1f}%<extra></extra>",
-                            customdata=para_plot[['Quantidade']]
-                        )
-                        fig.update_layout(
-                            plot_bgcolor='rgba(0,0,0,0)',
-                            paper_bgcolor='rgba(0,0,0,0)',
-                            font_family="Inter",
-                            yaxis_title=None,
-                            xaxis_title=None,
-                            showlegend=False,
-                            margin=dict(t=30, b=100, l=0, r=0),
-                            height=500
-                        )
-                        fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
-                        fig.update_xaxes(tickfont=dict(size=11, color='#103d6d', weight='bold'), tickangle=0, automargin=True)
-                        st.plotly_chart(fig, use_container_width=True)
-                        
-                with col_kpi:
-                    st.markdown(f'''
-                    <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 25px; border-top: 5px solid #103d6d;">
-                        <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>INSCRITOS</div>
-                        <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(inscritos)}</div>
-                    </div>
-                    ''', unsafe_allow_html=True)
-                    
-                    st.markdown(f'''
-                    <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-top: 5px solid #103d6d;">
-                        <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>PARTICIPANTES</div>
-                        <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(participantes)}</div>
-                    </div>
-                    ''', unsafe_allow_html=True)
+                        st.markdown(f'''
+                        <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-top: 5px solid #103d6d;">
+                            <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>PARTICIPANTES</div>
+                            <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(participantes)}</div>
+                        </div>
+                        ''', unsafe_allow_html=True)
