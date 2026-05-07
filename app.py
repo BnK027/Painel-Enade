@@ -10,8 +10,8 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
     
-    html, body, [class*="st-"], .stMarkdown { font-family: 'Inter', sans-serif !important; }
-    .material-symbols-rounded, .material-icons, [class*="icon"], [class*="Icon"], i, svg, svg * { font-family: 'Material Icons', 'Material Symbols Rounded', 'Material Icons Round' !important; }
+    /* Aplica a fonte Inter apenas em textos, evitando quebrar os ícones nativos da UI (como o expander) */
+    .stMarkdown, .card-panel, .kpi-card, .home-inst-title, .indicadores-title, .filter-header, h1, h2, h3, h4, p, span.st-emotion-cache-10trblm { font-family: 'Inter', sans-serif !important; }
     .stApp { background: linear-gradient(135deg, #f4f7f6 0%, #ffffff 100%); }
     
     /* Animations */
