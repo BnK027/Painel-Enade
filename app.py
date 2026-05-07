@@ -11,7 +11,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
     
     html, body, [class*="st-"], .stMarkdown { font-family: 'Inter', sans-serif !important; }
-    .material-symbols-rounded { font-family: 'Material Symbols Rounded' !important; }
+    .material-symbols-rounded, .material-icons, [class*="icon"], [class*="Icon"], i, svg, svg * { font-family: 'Material Icons', 'Material Symbols Rounded', 'Material Icons Round' !important; }
     .stApp { background: linear-gradient(135deg, #f4f7f6 0%, #ffffff 100%); }
     
     /* Animations */
