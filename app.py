@@ -197,9 +197,7 @@ def render_filters(source_data, ano_fixo=None):
     st.markdown('<div class="fade-in" style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
     
     curr_campus = st.session_state.get('filtro_campus', [])
-    curr_nota = st.session_state.get('filtro_nota', [])
     curr_curso = st.session_state.get('filtro_curso', 'Todos')
-    curr_mod = st.session_state.get('filtro_mod', 'Todos')
 
     def get_filtered_for(exclude_key):
         df = source_data.copy()
@@ -213,15 +211,11 @@ def render_filters(source_data, ano_fixo=None):
                 
         if exclude_key != 'CAMPUS' and curr_campus:
             df = df[df['CAMPUS'].isin(curr_campus)]
-        if exclude_key != 'ENADE FAIXA' and curr_nota:
-            df = df[df['ENADE FAIXA'].astype(str).isin(curr_nota)]
         if exclude_key != 'NOME DO CURSO' and curr_curso != 'Todos':
             df = df[df['NOME DO CURSO'] == curr_curso]
-        if exclude_key != 'MODALIDADE' and curr_mod != 'Todos':
-            df = df[df['MODALIDADE'] == curr_mod]
         return df
 
-    col_a, col_c = st.columns(2)
+    col_a, col_b = st.columns(2)
     
     with col_a:
         st.markdown('<div class="filter-header">Campus</div>', unsafe_allow_html=True)
@@ -230,25 +224,11 @@ def render_filters(source_data, ano_fixo=None):
         if valid_campi != curr_campus: st.session_state['filtro_campus'] = valid_campi
         selected_campus = st.multiselect("Selecione os Campi", campus_options[1:], placeholder="Todos", label_visibility="collapsed", key='filtro_campus')
         
-    with col_c:
-        st.markdown('<div class="filter-header">Nota Faixa</div>', unsafe_allow_html=True)
-        enade_options = get_options(get_filtered_for('ENADE FAIXA'), 'ENADE FAIXA')
-        valid_notas = [n for n in curr_nota if n in enade_options]
-        if valid_notas != curr_nota: st.session_state['filtro_nota'] = valid_notas
-        selected_nota = st.multiselect("Selecione a Nota", enade_options[1:], placeholder="Todas", label_visibility="collapsed", key='filtro_nota')
-
-    col1, col2 = st.columns(2)
-    with col1:
+    with col_b:
         st.markdown('<div class="filter-header">Curso</div>', unsafe_allow_html=True)
         curso_options = get_options(get_filtered_for('NOME DO CURSO'), 'NOME DO CURSO')
         if curr_curso not in curso_options: st.session_state['filtro_curso'] = 'Todos'
         selected_curso = st.selectbox("Selecione o Curso", curso_options, label_visibility="collapsed", key='filtro_curso')
-
-    with col2:
-        st.markdown('<div class="filter-header">Modalidade</div>', unsafe_allow_html=True)
-        modal_options = get_options(get_filtered_for('MODALIDADE'), 'MODALIDADE')
-        if curr_mod not in modal_options: st.session_state['filtro_mod'] = 'Todos'
-        selected_modalidade = st.selectbox("Selecione a Modalidade", modal_options, label_visibility="collapsed", key='filtro_mod')
 
     return get_filtered_for(None)
 
