@@ -8,3 +8,5 @@ venv/
 .env
 .venv
 .vscode/
+microdados_Enade_2017_LGPD/
+scratch/
