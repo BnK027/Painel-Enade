@@ -78,18 +78,19 @@ st.markdown("""
     .stButton>button { border-radius: 14px; font-weight: 700; padding: 0.8rem 1.5rem; border: none; background: #ffffff; color: #103d6d; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e8e8e8; }
     .stButton>button:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 24px rgba(16,61,109,0.15); background: #103d6d; color: #ffffff; border-color: #103d6d; }
     
-    /* Mobile Adjustments */
-    @media (max-width: 768px) {
-        .home-inst-title { font-size: 2rem; }
-        .indicadores-title { font-size: 1.4rem; }
-        .kpi-value { font-size: 2rem; }
+    /* Responsive & Questionnaire Section */
+    @media (max-width: 1024px) { 
+        .kpi-value { font-size: 2.2rem; } 
         .card-panel { padding: 1.5rem; }
-        .stTabs [data-baseweb="tab-list"] { gap: 10px; }
-        .stTabs [data-baseweb="tab"] { font-size: 0.8rem; padding: 5px 10px; }
     }
-    
-    .custom-divider { border: 0; height: 1px; background: linear-gradient(to right, transparent, rgba(16,61,109,0.2), transparent); margin: 40px 0; }
-</style>
+    @media (max-width: 768px) { 
+        .home-inst-title { font-size: 2rem; } 
+        .kpi-value { font-size: 1.8rem; }
+        .qe-section { padding: 1rem; }
+    }
+    .qe-section { background: #f8fafc; border-radius: 20px; padding: 2rem; border-left: 8px solid #2c8c44; margin-top: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .qe-label { font-size: 1.1rem; font-weight: 700; color: #0f2c16; margin-bottom: 0.5rem; display: block; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; }
+    .qe-value-tag { display: inline-block; background: #e2e8f0; padding: 4px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; color: #334155; margin-top: 5px; }
 """, unsafe_allow_html=True)
 
 # 3. Data Loading

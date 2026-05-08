@@ -264,14 +264,15 @@ def render_visao_2021(data, microdados, render_filters):
                 inscritos = filtered_data['INSCRITOS'].sum()
                 participantes = filtered_data['PRESENTES'].sum()
 
-                col_q1, col_kpi = st.columns([3, 1], gap="large")
+                # Ajuste de Layout: Centralizado no Desktop
+                c_l, c_main, c_r = st.columns([1, 12, 1])
                 
-                with col_q1:
+                with c_main:
                     texto_selecionada = selecionada.split(" - ", 1)[1]
                     st.markdown(f'''
-                    <div style="background-color: white; border-radius: 16px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.03);">
-                        <div class="filter-header" style="color: #103d6d; font-size: 1.1rem; border-bottom: 2px solid rgba(16,61,109,0.1); padding-bottom: 10px; margin-bottom: 15px;">ENUNCIADO DA QUESTÃO:</div>
-                        <div style="color: #111; font-size: 1.4rem; font-weight: 600; line-height: 1.5;">{texto_selecionada}</div>
+                    <div class="qe-section">
+                        <span class="qe-label">ENUNCIADO DA QUESTÃO:</span>
+                        <div style="color: #111; font-size: 1.3rem; font-weight: 600; line-height: 1.4;">{texto_selecionada}</div>
                     </div>
                     ''', unsafe_allow_html=True)
                     
@@ -334,11 +335,11 @@ def render_visao_2021(data, microdados, render_filters):
                             yaxis_title=None,
                             xaxis_title=None,
                             showlegend=False,
-                            margin=dict(t=30, b=100, l=0, r=0),
-                            height=500
+                            margin=dict(t=50, b=150, l=0, r=0),
+                            height=600
                         )
                         fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
-                        fig.update_xaxes(tickfont=dict(size=11, color='#103d6d', weight='bold'), tickangle=-90, automargin=True)
+                        fig.update_xaxes(tickfont=dict(size=12, color='#103d6d', weight='bold'), tickangle=-90, automargin=True)
                         st.plotly_chart(fig, use_container_width=True)
                         
                 # Removido col_kpi lateral para dar mais espaço ao gráfico no mobile
