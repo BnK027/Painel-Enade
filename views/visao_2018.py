@@ -20,6 +20,21 @@ def render_visao_2018(data, microdados, render_filters):
 
     # Renderiza os filtros fixando o ano
     filtered_data = render_filters(data, ano_fixo=ano)
+    
+    # KPIs de Participação (Inscritos, Presentes, Faltantes)
+    inscritos = filtered_data['INSCRITOS'].sum()
+    participantes = filtered_data['PRESENTES'].sum()
+    faltantes = inscritos - participantes
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
+    with col_kpi1:
+        st.markdown(f'''<div class="kpi-card"><p class="kpi-title">Inscritos</p><p class="kpi-value">{int(inscritos)}</p></div>''', unsafe_allow_html=True)
+    with col_kpi2:
+        st.markdown(f'''<div class="kpi-card"><p class="kpi-title">Fizeram a Prova</p><p class="kpi-value">{int(participantes)}</p></div>''', unsafe_allow_html=True)
+    with col_kpi3:
+        st.markdown(f'''<div class="kpi-card" style="border-left-color: #d9534f;"><p class="kpi-title">Faltaram</p><p class="kpi-value" style="color: #d9534f;">{int(faltantes)}</p></div>''', unsafe_allow_html=True)
+
     st.markdown("<br>", unsafe_allow_html=True)
     
     t_notas, t_cursos, t_estudantes, t_quest = st.tabs(["🚀 NOTAS", "👥 CURSOS", "🎓 ESTUDANTE", "📝 QUEST. ESTUDANTE"])
@@ -299,7 +314,7 @@ def render_visao_2018(data, microdados, render_filters):
                         
                         total_alunos = len(df_target)
                         para_plot['Percentual'] = (para_plot['Quantidade'] / total_alunos) * 100 if total_alunos > 0 else 0
-                        para_plot['Texto_Eixo'] = para_plot['Resposta_Texto'].str.replace(' ', '<br>')
+                        para_plot['Texto_Eixo'] = para_plot['Resposta_Texto']
                         para_plot['Rotulo'] = para_plot.apply(lambda row: f"<b>{row['Percentual']:.0f}%</b><br><span style='font-size:11px'>({int(row['Quantidade'])})</span>", axis=1)
                         
                         import plotly.express as px
@@ -323,20 +338,8 @@ def render_visao_2018(data, microdados, render_filters):
                             height=500
                         )
                         fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
-                        fig.update_xaxes(tickfont=dict(size=11, color='#103d6d', weight='bold'), tickangle=0, automargin=True)
+                        fig.update_xaxes(tickfont=dict(size=11, color='#103d6d', weight='bold'), tickangle=-90, automargin=True)
                         st.plotly_chart(fig, use_container_width=True)
                         
-                with col_kpi:
-                    st.markdown(f'''
-                    <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 25px; border-top: 5px solid #103d6d;">
-                        <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>INSCRITOS</div>
-                        <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(inscritos)}</div>
-                    </div>
-                    ''', unsafe_allow_html=True)
-                    
-                    st.markdown(f'''
-                    <div style="background-color: white; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-top: 5px solid #103d6d;">
-                        <div style="font-size: 0.95rem; font-weight: 800; color: #103d6d; text-transform: uppercase;">CONCLUINTES<br>PARTICIPANTES</div>
-                        <div style="font-size: 3.5rem; font-weight: 900; color: #103d6d; line-height: 1.2;">{int(participantes)}</div>
-                    </div>
-                    ''', unsafe_allow_html=True)
+                # Removido col_kpi lateral para dar mais espaço ao gráfico no mobile
+                pass
