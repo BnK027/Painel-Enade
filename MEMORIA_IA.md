@@ -96,14 +96,15 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * Desenvolvemos a `views/visao_2018.py`, seguindo o padrão de "Abas" (Notas, Cursos, Estudante, Questionário) e garantindo a consistência visual com os anos de 2017, 2019 e 2021.
 * Implementamos a lógica de filtragem omnidirecional para o ano de 2018, conectando os microdados demográficos e de questionário.
 
-### 16. Extração de Dados e-MEC (Em Planejamento/Início) (08/05/2026)
-* **Objetivo:** Coletar informações detalhadas de todos os cursos do IFES (Código 1808) diretamente do portal e-MEC.
-* **Status:** Iniciamos a análise do portal (`https://emec.mec.gov.br/...`). O plano é extrair os dados de cada curso (nome, modalidade, campus, atos regulatórios, etc.) e consolidar em uma planilha Excel/CSV.
-* **Próximo Passo Técnico:** Executar o script de scraping via navegador para percorrer a lista de cursos e capturar os detalhes de cada um.
+### 17. Saneamento de Dados ENADE 2017 via EMEC (10/05/2026)
+* Realizamos uma limpeza profunda na base `Enade_2017_Ifes.xlsx` utilizando a planilha oficial `Dados Cursos EMEC finalizado.xlsx`.
+* **Correção de Nomenclatura:** Eliminamos 15 ocorrências de nomes genéricos (ex: "Curso 123569") substituindo-os pelos nomes reais extraídos do EMEC.
+* **Refino Geográfico (Campi):** Mapeamos a coluna `CAMPUS` para todos os registros que estavam marcados como "IFES (Sede)" ou "Desconhecido", utilizando a relação Código de Curso -> Município -> Nome do Campus oficial.
+* **Integridade da Base:** As correções foram replicadas em todas as abas críticas (`Enade`, `Microdados` e `Cursos`), garantindo que tanto os gráficos consolidados quanto os de microdados sociodemográficos exibam os rótulos corretos.
 
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
-* **Extração e-MEC:** Finalizar o scraping dos cursos e gerar a planilha solicitada.
+* **Verificação de Cursos Faltantes (2017):** Investigar por que cursos como Pedagogia (Colatina) e Engenharia Civil (Nova Venécia) não foram capturados na extração inicial, apesar de constarem no EMEC com notas Enade. (Depende de download de microdados do OneDrive).
 * **Refino das Visões:** Revisar se há inconsistências de dados entre as visões 2017, 2018, 2019 e 2021.
 * **Controle de Versão:** Realizar o commit final de todas as visões e dados consolidados.
 * **Deploy:** Efetuar o Deploy Master na Streamlit Community Cloud.
