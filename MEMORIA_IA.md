@@ -74,10 +74,38 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * Gráficos do Plotly herdaram papéis e plot backgrounds transparentes para que as barras e eixos "flutuem" harmoniosamente dentro dos cartões em brancos com subtons de primárias verdes (`#32A041` e `#2c8c44`).
 
 ---
+### 12. Otimização Mobile e Legibilidade de Gráficos (08/05/2026)
+* Implementamos uma melhoria crítica na visualização de dados para dispositivos móveis, focada na aba de **Questões do Estudante**.
+* **Rotação de Legendas:** Ajustamos o ângulo dos rótulos do eixo X em todos os gráficos de barra para **-90 graus**. Isso impede que nomes de categorias longos (como "Concordo Totalmente") se sobreponham em telas estreitas de celulares.
+* **Layout Responsivo:** Refatoramos a exibição dos enunciados das questões. No desktop, eles mantêm um layout centralizado e elegante; no mobile, expandem-se para largura total, garantindo leitura confortável.
+* **Ajustes de Margem:** Expandimos a margem inferior dos gráficos (`margin-bottom=150`) e aumentamos a altura total para `600px`, permitindo que o Plotly renderize todo o texto das legendas sem cortes.
+
+### 13. Integração e Engenharia de Dados do ENADE 2017 (08/05/2026)
+* Realizamos a extração e consolidação dos **Microdados ENADE 2017** (padrão LGPD fragmentado em 42 arquivos TXT).
+* **Processo de ETL:** Criamos um script de extração (`extract_2017.py`) que filtrou os 877 registros do IFES (`CO_IES: 1808`) entre mais de 500 mil linhas, unificando dados de performance (notas), sociodemográficos e respostas do questionário em um novo arquivo `Enade_2017_Ifes.xlsx`.
+* **Identificação de Cursos:** Implementamos uma lógica de mapeamento cruzado com a base de 2021 para recuperar nomes reais de cursos e campi que não constavam nos microdados brutos de 2017.
+* **Nova Visualização:** Desenvolvemos a `views/visao_2017.py` e atualizamos o roteador do `app.py` para incluir o ano de 2017 como uma nova plataforma analítica funcional.
+
+### 14. Resolução de Conflitos Git e Limites de Armazenamento (08/05/2026)
+* Corrigimos um erro de *Push* rejeitado pelo GitHub devido ao limite de **100MB por arquivo** (causado pelos arquivos TXT brutos de 2017 que possuem até 134MB).
+* **Saneamento do Repositório:** Atualizamos o `.gitignore` para excluir permanentemente a pasta `microdados_Enade_2017_LGPD/` e limpamos o histórico local de commits (`git reset --soft`), garantindo que apenas a base consolidada e leve de 2017 seja enviada para a nuvem.
+
+---
+### 15. Integração e Engenharia de Dados do ENADE 2018 (08/05/2026)
+* Expandimos a arquitetura para suportar o **ENADE 2018**.
+* Desenvolvemos a `views/visao_2018.py`, seguindo o padrão de "Abas" (Notas, Cursos, Estudante, Questionário) e garantindo a consistência visual com os anos de 2017, 2019 e 2021.
+* Implementamos a lógica de filtragem omnidirecional para o ano de 2018, conectando os microdados demográficos e de questionário.
+
+### 16. Extração de Dados e-MEC (Em Planejamento/Início) (08/05/2026)
+* **Objetivo:** Coletar informações detalhadas de todos os cursos do IFES (Código 1808) diretamente do portal e-MEC.
+* **Status:** Iniciamos a análise do portal (`https://emec.mec.gov.br/...`). O plano é extrair os dados de cada curso (nome, modalidade, campus, atos regulatórios, etc.) e consolidar em uma planilha Excel/CSV.
+* **Próximo Passo Técnico:** Executar o script de scraping via navegador para percorrer a lista de cursos e capturar os detalhes de cada um.
+
+---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
-* Como o sistema base contendo o Hub Principal e os 5 módulos verticais encontram-se 100% integrados, analíticos e estáveis, a aplicação possui agora nivel pleno de maturidade *(Production-Ready)*.
-* A infraestrutura de versionamento (**Git** e **GitHub Desktop**) já foi devidamente instalada na máquina (Winget).
-* O próximo passo oficial é **realizar o controle de versão**, efetuando um *Commit* total do Painel ENADE utilizando a interface do GitHub Desktop.
-* Finalmente, efetuar o **Deploy Master**: conectar este repositório git recém criado à infraestrutura de servidores da **Streamlit Community Cloud**, gerando um link público acessível.
+* **Extração e-MEC:** Finalizar o scraping dos cursos e gerar a planilha solicitada.
+* **Refino das Visões:** Revisar se há inconsistências de dados entre as visões 2017, 2018, 2019 e 2021.
+* **Controle de Versão:** Realizar o commit final de todas as visões e dados consolidados.
+* **Deploy:** Efetuar o Deploy Master na Streamlit Community Cloud.
 
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*
