@@ -138,6 +138,7 @@ def load_microdata():
     files = ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
     all_sexo, all_idade, all_raca, all_renda = [], [], [], []
     all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43 = [], [], [], [], [], [], [], [], [], []
+    all_ce_respostas, all_ce_gabarito = [], []
     
     for file in files:
         try:
@@ -171,6 +172,15 @@ def load_microdata():
                 if arq in xls.sheet_names:
                     df_temp = pd.merge(pd.read_excel(xls, sheet_name=arq), curso_map, on='CO_CURSO', how='inner')
                     if not df_temp.empty: lst.append(df_temp)
+
+            # Arq_3B: respostas por questão do CE (CE1..CE27) + gabarito por aluno
+            if 'Arq_3B' in xls.sheet_names:
+                df_3b = pd.merge(pd.read_excel(xls, sheet_name='Arq_3B'), curso_map, on='CO_CURSO', how='inner')
+                if not df_3b.empty: all_ce_respostas.append(df_3b)
+            # Arq_3: gabarito final (DS_VT_GAB_OCE_FIN) por aluno
+            if 'Arq_3' in xls.sheet_names:
+                df_3 = pd.merge(pd.read_excel(xls, sheet_name='Arq_3'), curso_map, on='CO_CURSO', how='inner')
+                if not df_3.empty: all_ce_gabarito.append(df_3)
                 
         except Exception as e:
             continue
@@ -189,7 +199,9 @@ def load_microdata():
         'motiv_c': pd.concat(all_motiv_c, ignore_index=True) if all_motiv_c else pd.DataFrame(),
         'motiv_i': pd.concat(all_motiv_i, ignore_index=True) if all_motiv_i else pd.DataFrame(),
         'arq4': pd.concat(all_arq4, ignore_index=True) if all_arq4 else pd.DataFrame(),
-        'arq43': pd.concat(all_arq43, ignore_index=True) if all_arq43 else pd.DataFrame()
+        'arq43': pd.concat(all_arq43, ignore_index=True) if all_arq43 else pd.DataFrame(),
+        'ce_respostas': pd.concat(all_ce_respostas, ignore_index=True) if all_ce_respostas else pd.DataFrame(),
+        'ce_gabarito': pd.concat(all_ce_gabarito, ignore_index=True) if all_ce_gabarito else pd.DataFrame(),
     }
 
 try:

@@ -37,7 +37,7 @@ def render_visao_2021(data, microdados, render_filters):
     st.markdown("<br>", unsafe_allow_html=True)
     
     
-    t_notas, t_cursos, t_estudantes, t_quest = st.tabs(["🚀 NOTAS", "👥 CURSOS", "🎓 ESTUDANTE", "📝 QUEST. ESTUDANTE"])
+    t_notas, t_cursos, t_estudantes, t_quest, t_ce = st.tabs(["🚀 NOTAS", "👥 CURSOS", "🎓 ESTUDANTE", "📝 QUEST. ESTUDANTE", "📊 QUEST. ESPECÍFICO"])
     
     with t_notas:
         st.markdown('<div class="indicadores-title" style="text-align:center; font-size: 1.5rem; margin-top: 1rem;">Avaliação Institucional</div>', unsafe_allow_html=True)
@@ -342,5 +342,6 @@ def render_visao_2021(data, microdados, render_filters):
                         fig.update_xaxes(tickfont=dict(size=12, color='#103d6d', weight='bold'), tickangle=-90, automargin=True)
                         st.plotly_chart(fig, use_container_width=True)
                         
-                # Removido col_kpi lateral para dar mais espaço ao gráfico no mobile
-                pass
+    with t_ce:
+        from views.quest_especifico import render_tab_quest_especifico
+        render_tab_quest_especifico(microdados, filtered_data)
