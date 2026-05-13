@@ -102,11 +102,31 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Refino Geográfico (Campi):** Mapeamos a coluna `CAMPUS` para todos os registros que estavam marcados como "IFES (Sede)" ou "Desconhecido", utilizando a relação Código de Curso -> Município -> Nome do Campus oficial.
 * **Integridade da Base:** As correções foram replicadas em todas as abas críticas (`Enade`, `Microdados` e `Cursos`), garantindo que tanto os gráficos consolidados quanto os de microdados sociodemográficos exibam os rótulos corretos.
 
+### 18. Análise de Performance: Componente Específico (CE) (11/05/2026)
+* Implementamos uma funcionalidade granular para analisar o desempenho dos alunos questão por questão na parte objetiva do **Componente Específico (CE1 a CE27)**.
+* **Engenharia de Dados (Arq_3B):** Refatoramos o motor de carregamento no `app.py` para processar a aba `Arq_3B` (respostas individuais codificadas) e `Arq_3` (gabaritos oficiais).
+* **Módulo Compartilhado (`quest_especifico.py`):** Criamos uma visualização isolada e protegida que impede a mistura de dados entre cursos diferentes (essencial, pois cada CE é único por área).
+* **Visualizações Avançadas:**
+    * **Gráfico de Acertos vs Erros:** Barras agrupadas com percentuais e quantidades absolutas.
+    * **Heatmap de Desempenho:** Mapa de calor (Red-to-Green) para identificação instantânea de questões críticas.
+    * **Tabela de Indicadores:** Detalhamento de questões anuladas, brancas e ausências.
+* **Integração Sistêmica:** A nova aba **📊 QUEST. ESPECÍFICO** foi integrada nas visões de 2018, 2019, 2021 e 2022.
+
+### 19. Redação e Exportação do Artigo Acadêmico (12/05/2026)
+* Elaboramos um rascunho completo de artigo científico descrevendo a metodologia, arquitetura (Streamlit + Antigravity) e funcionalidades do painel, seguindo a estrutura de tópicos solicitada.
+* **Exportação para PDF:** Desenvolvemos um script de automação (`fpdf2`) para converter o rascunho Markdown em um documento PDF formatado com tipografia Unicode (DejaVuSans) para suportar caracteres da língua portuguesa.
+* **Organização de Workspace:** Conforme solicitação do usuário, o artigo e seus scripts foram mantidos fora da estrutura de código fonte do Dashboard para manter o repositório focado exclusivamente na aplicação. O PDF final foi movido para a pasta de Documentos principal do usuário.
+
+### 20. Script de Deploy Cirúrgico e Manutenção (12/05/2026)
+* Criamos o **`Salvar_Producao_Github.bat`**, um script automatizado que realiza o deploy no GitHub adicionando apenas os arquivos estritamente necessários para o funcionamento no Streamlit Cloud.
+* Isso evita problemas de limite de tamanho (bloqueando arquivos binários pesados ou backups de microdados LGPD) e garante que o ambiente de produção esteja sempre sincronizado e leve.
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
-* **Verificação de Cursos Faltantes (2017):** Investigar por que cursos como Pedagogia (Colatina) e Engenharia Civil (Nova Venécia) não foram capturados na extração inicial, apesar de constarem no EMEC com notas Enade. (Depende de download de microdados do OneDrive).
-* **Refino das Visões:** Revisar se há inconsistências de dados entre as visões 2017, 2018, 2019 e 2021.
-* **Controle de Versão:** Realizar o commit final de todas as visões e dados consolidados.
-* **Deploy:** Efetuar o Deploy Master na Streamlit Community Cloud.
+* `[x]` **Análise de Componente Específico:** Implementado para 2018-2022.
+* `[x]` **Artigo do Projeto:** Rascunho inicial e PDF gerados e entregues.
+* `[ ]` **Integração CE 2017:** Verificar se os microdados de 2017 permitem a mesma análise de acertos/erros por questão (a estrutura do `Arq_3B` em 2017 costuma ser diferente).
+* `[ ]` **Deploy Master:** Realizar o push final via `Salvar_Producao_Github.bat` e verificar o link oficial.
+* `[ ]` **Revisão Final de Coerência:** Validar se os nomes de cursos mapeados via EMEC em 2017 estão consistentes com as outras visões.
 
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*
