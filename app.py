@@ -414,36 +414,36 @@ def show_splash(ano):
     st.session_state.splash_shown = ano
 
     # Espaço vertical para centralizar
-    st.markdown('<div style="height: 18vh;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="height: 20vh;"></div>', unsafe_allow_html=True)
 
-    # Conteúdo centralizado da splash
-    _, col_center, _ = st.columns([1, 2, 1])
-    with col_center:
-        # Tenta múltiplos caminhos para encontrar a imagem
+    # Logo horizontal IFES centralizado
+    _, col_img, _ = st.columns([1, 2, 1])
+    with col_img:
         for candidate in [
-            os.path.join(BASE_DIR, 'ifes-vertical-cor.png'),
-            'ifes-vertical-cor.png',
-            os.path.join(os.getcwd(), 'ifes-vertical-cor.png'),
+            os.path.join(BASE_DIR, 'ifes-horizontal-cor.png'),
+            'ifes-horizontal-cor.png',
+            os.path.join(os.getcwd(), 'ifes-horizontal-cor.png'),
         ]:
             if os.path.exists(candidate):
-                st.image(candidate, width=250)
+                st.image(candidate, use_container_width=True)
                 break
 
-        st.markdown(f'''
-            <div style="text-align:center; margin-top: 1.5rem;">
-                <p style="color:#2c8c44; font-weight:800; letter-spacing:3px;
-                           text-transform:uppercase; margin-bottom:0.5rem;
-                           font-family:Inter,sans-serif; font-size:1rem;">
-                    PAINEL ANALÍTICO
-                </p>
-                <h1 style="color:#103d6d; font-size:3.5rem; font-weight:900;
-                            margin:0; letter-spacing:-2px; font-family:Inter,sans-serif;">
-                    ENADE {ano}
-                </h1>
-            </div>
-        ''', unsafe_allow_html=True)
+    # Texto centralizado abaixo do logo
+    st.markdown(f'''
+        <div style="text-align:center; margin-top: 2.5rem;">
+            <p style="color:#2c8c44; font-weight:800; letter-spacing:3px;
+                       text-transform:uppercase; margin-bottom:0.5rem;
+                       font-family:Inter,sans-serif; font-size:1.1rem;">
+                PAINEL ANALÍTICO
+            </p>
+            <h1 style="color:#103d6d; font-size:3.8rem; font-weight:900;
+                        margin:0; letter-spacing:-2px; font-family:Inter,sans-serif;">
+                ENADE {ano}
+            </h1>
+        </div>
+    ''', unsafe_allow_html=True)
 
-    time.sleep(1.3)
+    time.sleep(1.5)
     st.rerun()
 
 if st.session_state.page == 'home':
