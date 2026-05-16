@@ -413,25 +413,24 @@ def show_splash(ano):
 
     st.session_state.splash_shown = ano
 
-    # Injeta CSS de overlay branco que cobre toda a tela
-    st.markdown("""
-        <style>
-        #splash-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #ffffff; z-index: 9999;
-        }
-        </style>
-        <div id="splash-overlay"></div>
-    """, unsafe_allow_html=True)
+    # Espaço vertical para centralizar
+    st.markdown('<div style="height: 18vh;"></div>', unsafe_allow_html=True)
 
     # Conteúdo centralizado da splash
-    _, col_center, _ = st.columns([2, 3, 2])
+    _, col_center, _ = st.columns([1, 2, 1])
     with col_center:
-        img_path = os.path.join(BASE_DIR, 'ifes-vertical-cor.png')
-        if os.path.exists(img_path):
-            st.image(img_path, use_container_width=True)
+        # Tenta múltiplos caminhos para encontrar a imagem
+        for candidate in [
+            os.path.join(BASE_DIR, 'ifes-vertical-cor.png'),
+            'ifes-vertical-cor.png',
+            os.path.join(os.getcwd(), 'ifes-vertical-cor.png'),
+        ]:
+            if os.path.exists(candidate):
+                st.image(candidate, width=250)
+                break
+
         st.markdown(f'''
-            <div style="text-align:center; margin-top: 1rem;">
+            <div style="text-align:center; margin-top: 1.5rem;">
                 <p style="color:#2c8c44; font-weight:800; letter-spacing:3px;
                            text-transform:uppercase; margin-bottom:0.5rem;
                            font-family:Inter,sans-serif; font-size:1rem;">
