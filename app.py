@@ -256,6 +256,27 @@ def render_filters(source_data, ano_fixo=None):
 
     return get_filtered_for(None)
 
+# --- Header das Views com logo IFES no canto direito ---
+def render_page_header(ano, back_key):
+    col_back, col_title, col_logo = st.columns([1.5, 5, 1.5])
+    with col_back:
+        st.markdown("<div style='padding-top: 8px;'>", unsafe_allow_html=True)
+        if st.button('⬅ Voltar ao Início', use_container_width=True, key=back_key):
+            st.session_state.page = 'home'
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+    with col_title:
+        st.markdown(f'''
+            <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+                <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Painel Analítico</p>
+                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">ENADE {ano}</h1>
+            </div>
+        ''', unsafe_allow_html=True)
+    with col_logo:
+        st.markdown("<div style='display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 4px;'>", unsafe_allow_html=True)
+        st.image('ifes-horizontal-cor.png', width=160)
+        st.markdown("</div>", unsafe_allow_html=True)
+
 def show_home():
     col_text, col_img = st.columns([3, 1], gap="large")
     with col_text:
@@ -365,16 +386,16 @@ if st.session_state.page == 'home':
     show_home()
 elif st.session_state.page == 'visao_2017':
     from views.visao_2017 import render_visao_2017
-    render_visao_2017(data, microdados, render_filters)
+    render_visao_2017(data, microdados, render_filters, render_page_header)
 elif st.session_state.page == 'visao_2018':
     from views.visao_2018 import render_visao_2018
-    render_visao_2018(data, microdados, render_filters)
+    render_visao_2018(data, microdados, render_filters, render_page_header)
 elif st.session_state.page == 'visao_2019':
     from views.visao_2019 import render_visao_2019
-    render_visao_2019(data, microdados, render_filters)
+    render_visao_2019(data, microdados, render_filters, render_page_header)
 elif st.session_state.page == 'visao_2021':
     from views.visao_2021 import render_visao_2021
-    render_visao_2021(data, microdados, render_filters)
+    render_visao_2021(data, microdados, render_filters, render_page_header)
 elif st.session_state.page == 'visao_2022':
     from views.visao_2022 import render_visao_2022
-    render_visao_2022(data, microdados, render_filters)
+    render_visao_2022(data, microdados, render_filters, render_page_header)

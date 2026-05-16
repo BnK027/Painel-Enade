@@ -2,20 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-def render_visao_2017(data, microdados, render_filters):
+def render_visao_2017(data, microdados, render_filters, render_page_header):
     ano = '2017'
-    col_back, _ = st.columns([1, 6])
-    with col_back:
-        if st.button('⬅ Voltar ao Início', use_container_width=True, key='back_bt_visao_2017'):
-            st.session_state.page = 'home'
-            st.rerun()
-    with st.container():    
-        st.markdown(f'''
-            <div class="fade-in" style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
-                <p style="color: #32A041; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0;">Painel Analítico</p>
-                <h1 style="font-size: 3rem; font-weight: 900; color: #103d6d;">ENADE {ano}</h1>
-            </div>
-        ''', unsafe_allow_html=True)
+    render_page_header(ano, 'back_bt_visao_2017')
 
     # Renderiza os filtros fixando o ano
     filtered_data = render_filters(data, ano_fixo=ano)
