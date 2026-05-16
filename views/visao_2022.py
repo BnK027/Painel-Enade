@@ -25,7 +25,6 @@ def render_visao_2022(data, microdados, render_filters, render_page_header):
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    
     t_notas, t_cursos, t_estudantes, t_quest, t_ce = st.tabs(["🚀 NOTAS", "👥 CURSOS", "🎓 ESTUDANTE", "📝 QUEST. ESTUDANTE", "📊 QUEST. ESPECÍFICO"])
     
     with t_notas:
@@ -242,97 +241,92 @@ def render_visao_2022(data, microdados, render_filters, render_page_header):
                 qe_cols = list(set(qe_cols))
                 qe_cols.sort()
                 
-                opcoes = []
-                for c in qe_cols:
-                    texto = dict_questoes.get(c, f"Questão {c.replace('QE_I', '')} (Sem enunciado cadastrado)")
-                    opcoes.append(f"{c} - {texto}")
-                    
-                selecionada = st.selectbox("Selecione a pergunta para visualizar o detalhamento:", opcoes)
-                col_var = selecionada.split(" - ")[0]
+                from views.quest_ranking import render_question_selectors
+                col_var, texto_selecionada = render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano)
                 
-                inscritos = filtered_data['INSCRITOS'].sum()
-                participantes = filtered_data['PRESENTES'].sum()
+                if col_var is None:
+                    st.info("Sem questões disponíveis.")
+                else:
 
-                # Ajuste de Layout: Centralizado no Desktop
-                c_l, c_main, c_r = st.columns([1, 12, 1])
+                    # Ajuste de Layout: Centralizado no Desktop
+                    c_l, c_main, c_r = st.columns([1, 12, 1])
                 
-                with c_main:
-                    texto_selecionada = selecionada.split(" - ", 1)[1]
-                    st.markdown(f'''
+                    with c_main:
+                        st.markdown(f'''
                     <div class="qe-section">
-                        <span class="qe-label">ENUNCIADO DA QUESTÃO:</span>
-                        <div style="color: #111; font-size: 1.3rem; font-weight: 600; line-height: 1.4;">{texto_selecionada}</div>
-                    </div>
-                    ''', unsafe_allow_html=True)
+                            <span class="qe-label">ENUNCIADO DA QUESTÃO:</span>
+                            <div style="color: #111; font-size: 1.3rem; font-weight: 600; line-height: 1.4;">{texto_selecionada}</div>
+                        </div>
+                        ''', unsafe_allow_html=True)
                     
-                    dict_likert = {
-                        1: 'DISCORDO TOTALMENTE',
-                        2: 'DISCORDO',
-                        3: 'DISCORDO PARCIALMENTE',
-                        4: 'CONCORDO PARCIALMENTE',
-                        5: 'CONCORDO',
-                        6: 'CONCORDO TOTALMENTE',
-                        7: 'NÃO SEI RESPONDER',
-                        8: 'NÃO SE APLICA',
-                        9: 'NÃO RESPONDEU'
-                    }
+                        dict_likert = {
+                            1: 'DISCORDO TOTALMENTE',
+                            2: 'DISCORDO',
+                            3: 'DISCORDO PARCIALMENTE',
+                            4: 'CONCORDO PARCIALMENTE',
+                            5: 'CONCORDO',
+                            6: 'CONCORDO TOTALMENTE',
+                            7: 'NÃO SEI RESPONDER',
+                            8: 'NÃO SE APLICA',
+                            9: 'NÃO RESPONDEU'
+                        }
                     
-                    if col_var in df_arq4.columns and not df_arq4.empty and not df_arq4[col_var].dropna().empty:
-                        df_target = df_arq4.copy()
-                    elif col_var in df_arq43.columns and not df_arq43.empty and not df_arq43[col_var].dropna().empty:
-                        df_target = df_arq43.copy()
-                    else:
-                        df_target = pd.DataFrame(columns=[col_var])
+                        if col_var in df_arq4.columns and not df_arq4.empty and not df_arq4[col_var].dropna().empty:
+                            df_target = df_arq4.copy()
+                        elif col_var in df_arq43.columns and not df_arq43.empty and not df_arq43[col_var].dropna().empty:
+                            df_target = df_arq43.copy()
+                        else:
+                            df_target = pd.DataFrame(columns=[col_var])
                         
-                    df_target[col_var] = pd.to_numeric(df_target[col_var], errors='coerce').fillna(9)
-                    df_resp = df_target[df_target[col_var].isin([1, 2, 3, 4, 5, 6, 7, 8, 9])].copy()
+                        df_target[col_var] = pd.to_numeric(df_target[col_var], errors='coerce').fillna(9)
+                        df_resp = df_target[df_target[col_var].isin([1, 2, 3, 4, 5, 6, 7, 8, 9])].copy()
                     
-                    if df_resp.empty:
-                        st.info("Sem dados disponíveis para este filtro.")
-                    else:
-                        contagem = df_resp[col_var].value_counts().reset_index()
-                        contagem.columns = ['Resposta', 'Quantidade']
+                        if df_resp.empty:
+                            st.info("Sem dados disponíveis para este filtro.")
+                        else:
+                            contagem = df_resp[col_var].value_counts().reset_index()
+                            contagem.columns = ['Resposta', 'Quantidade']
                         
-                        opcoes_exibir = [1, 2, 3, 4, 5, 6, 9]
-                        for opc in [7, 8]:
-                            if opc in contagem['Resposta'].values and contagem[contagem['Resposta'] == opc]['Quantidade'].iloc[0] > 0:
-                                opcoes_exibir.append(opc)
-                        opcoes_exibir.sort()
+                            opcoes_exibir = [1, 2, 3, 4, 5, 6, 9]
+                            for opc in [7, 8]:
+                                if opc in contagem['Resposta'].values and contagem[contagem['Resposta'] == opc]['Quantidade'].iloc[0] > 0:
+                                    opcoes_exibir.append(opc)
+                            opcoes_exibir.sort()
                         
-                        para_plot = pd.DataFrame({'Resposta': opcoes_exibir, 'Resposta_Texto': [dict_likert[i] for i in opcoes_exibir]})
-                        para_plot = pd.merge(para_plot, contagem[['Resposta', 'Quantidade']], on='Resposta', how='left').fillna(0)
+                            para_plot = pd.DataFrame({'Resposta': opcoes_exibir, 'Resposta_Texto': [dict_likert[i] for i in opcoes_exibir]})
+                            para_plot = pd.merge(para_plot, contagem[['Resposta', 'Quantidade']], on='Resposta', how='left').fillna(0)
                         
-                        total_alunos = len(df_target)
-                        para_plot['Percentual'] = (para_plot['Quantidade'] / total_alunos) * 100 if total_alunos > 0 else 0
-                        para_plot['Texto_Eixo'] = para_plot['Resposta_Texto']
-                        para_plot['Rotulo'] = para_plot.apply(lambda row: f"<b>{row['Percentual']:.0f}%</b><br><span style='font-size:11px'>({int(row['Quantidade'])})</span>", axis=1)
+                            total_alunos = len(df_target)
+                            para_plot['Percentual'] = (para_plot['Quantidade'] / total_alunos) * 100 if total_alunos > 0 else 0
+                            para_plot['Texto_Eixo'] = para_plot['Resposta_Texto']
+                            para_plot['Rotulo'] = para_plot.apply(lambda row: f"<b>{row['Percentual']:.0f}%</b><br><span style='font-size:11px'>({int(row['Quantidade'])})</span>", axis=1)
                         
-                        import plotly.express as px
-                        fig = px.bar(para_plot, x='Texto_Eixo', y='Percentual', text='Rotulo')
-                        fig.update_traces(
-                            marker_color='#103d6d',
-                            textposition='outside',
-                            textfont_size=13,
-                            textfont_color='#103d6d',
-                            hovertemplate="<b>%{x}</b><br>Quantidade: %{customdata[0]}<br>Percentual: %{y:.1f}%<extra></extra>",
-                            customdata=para_plot[['Quantidade']]
-                        )
-                        fig.update_layout(
-                            plot_bgcolor='rgba(0,0,0,0)',
-                            paper_bgcolor='rgba(0,0,0,0)',
-                            font_family="Inter",
-                            yaxis_title=None,
-                            xaxis_title=None,
-                            showlegend=False,
-                            margin=dict(t=50, b=150, l=0, r=0),
-                            height=600
-                        )
-                        fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
-                        fig.update_xaxes(tickfont=dict(size=12, color='#103d6d', weight='bold'), tickangle=-90, automargin=True)
-                        st.plotly_chart(fig, use_container_width=True)
+                            import plotly.express as px
+                            fig = px.bar(para_plot, x='Texto_Eixo', y='Percentual', text='Rotulo')
+                            fig.update_traces(
+                                marker_color='#103d6d',
+                                textposition='outside',
+                                textfont_size=13,
+                                textfont_color='#103d6d',
+                                hovertemplate="<b>%{x}</b><br>Quantidade: %{customdata[0]}<br>Percentual: %{y:.1f}%<extra></extra>",
+                                customdata=para_plot[['Quantidade']]
+                            )
+                            fig.update_layout(
+                                plot_bgcolor='rgba(0,0,0,0)',
+                                paper_bgcolor='rgba(0,0,0,0)',
+                                font_family="Inter",
+                                yaxis_title=None,
+                                xaxis_title=None,
+                                showlegend=False,
+                                margin=dict(t=50, b=150, l=0, r=0),
+                                height=600
+                            )
+                            fig.update_yaxes(showticklabels=False, range=[0, max(para_plot['Percentual'] + 10)], showgrid=False)
+                            fig.update_xaxes(tickfont=dict(size=12, color='#103d6d', weight='bold'), tickangle=-90, automargin=True)
+                            st.plotly_chart(fig, use_container_width=True)
                         
-                # Removido col_kpi lateral para dar mais espaço ao gráfico no mobile
-                pass
+                    # Removido col_kpi lateral para dar mais espaço ao gráfico no mobile
+                    pass
 
     with t_ce:
         from views.quest_especifico import render_tab_quest_especifico
