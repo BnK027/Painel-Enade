@@ -401,28 +401,54 @@ def show_home():
 
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
+if 'splash_shown' not in st.session_state:
+    st.session_state.splash_shown = None
 
-# --- Tela de transição animada ao entrar em uma view de ano ---
+# --- Tela de transição: fundo branco, logo IFES + nome do ano ---
 def show_splash(ano):
     import time
-    splash = st.empty()
-    splash.markdown(f'''
-    <div style="
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: #ffffff;
-        display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-        z-index: 9999;
-    ">
-        <img src="data:image/png;base64,{IMG_VERTICAL_B64}" style="width: 280px; margin-bottom: 2.5rem;" />
-        <p style="color: #2c8c44; font-size: 1rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.5rem; font-family: Inter, sans-serif;">Painel Analítico</p>
-        <h1 style="color: #103d6d; font-size: 3.5rem; font-weight: 900; margin: 0; letter-spacing: -2px; font-family: Inter, sans-serif;">ENADE {ano}</h1>
-    </div>
-    ''', unsafe_allow_html=True)
-    time.sleep(1.2)
-    splash.empty()
+    # Só exibe o splash uma vez por navegação (evita re-exibir em reruns por filtros)
+    if st.session_state.splash_shown == ano:
+        return
+
+    st.session_state.splash_shown = ano
+
+    # Injeta CSS de overlay branco que cobre toda a tela
+    st.markdown("""
+        <style>
+        #splash-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #ffffff; z-index: 9999;
+        }
+        </style>
+        <div id="splash-overlay"></div>
+    """, unsafe_allow_html=True)
+
+    # Conteúdo centralizado da splash
+    _, col_center, _ = st.columns([2, 3, 2])
+    with col_center:
+        img_path = os.path.join(BASE_DIR, 'ifes-vertical-cor.png')
+        if os.path.exists(img_path):
+            st.image(img_path, use_container_width=True)
+        st.markdown(f'''
+            <div style="text-align:center; margin-top: 1rem;">
+                <p style="color:#2c8c44; font-weight:800; letter-spacing:3px;
+                           text-transform:uppercase; margin-bottom:0.5rem;
+                           font-family:Inter,sans-serif; font-size:1rem;">
+                    PAINEL ANALÍTICO
+                </p>
+                <h1 style="color:#103d6d; font-size:3.5rem; font-weight:900;
+                            margin:0; letter-spacing:-2px; font-family:Inter,sans-serif;">
+                    ENADE {ano}
+                </h1>
+            </div>
+        ''', unsafe_allow_html=True)
+
+    time.sleep(1.3)
+    st.rerun()
 
 if st.session_state.page == 'home':
+    st.session_state.splash_shown = None   # reseta ao voltar para home
     show_home()
 elif st.session_state.page == 'visao_2017':
     show_splash('2017')
