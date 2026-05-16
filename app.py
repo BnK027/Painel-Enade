@@ -1,6 +1,22 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
+import base64
+
+# --- Caminho base e imagens pré-carregadas ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def _img_b64(filename):
+    path = os.path.join(BASE_DIR, filename)
+    try:
+        with open(path, 'rb') as f:
+            return base64.b64encode(f.read()).decode()
+    except:
+        return ''
+
+IMG_VERTICAL_B64 = _img_b64('ifes-vertical-cor.png')
+IMG_HORIZONTAL_B64 = _img_b64('ifes-horizontal-cor.png')
 
 # 1. Page Configuration
 st.set_page_config(page_title="Painel - ENADE", layout="wide", initial_sidebar_state="collapsed")
@@ -273,14 +289,20 @@ def render_page_header(ano, back_key):
             </div>
         ''', unsafe_allow_html=True)
     with col_logo:
-        st.image('ifes-vertical-cor.png', width=120)
+        if IMG_VERTICAL_B64:
+            st.markdown(
+                f'<img src="data:image/png;base64,{IMG_VERTICAL_B64}" '
+                f'style="width:120px; display:block; margin-left:auto; margin-top:4px;"/>',
+                unsafe_allow_html=True
+            )
 
 def show_home():
     col_text, col_img = st.columns([3, 1], gap="large")
     with col_text:
         st.markdown('<div class="home-inst-title">INSTITUTO FEDERAL DO ESPÍRITO SANTO - IFES</div>', unsafe_allow_html=True)
     with col_img:
-        st.image('ifes-horizontal-cor.png', use_container_width=True)
+        if IMG_HORIZONTAL_B64:
+            st.markdown(f'<img src="data:image/png;base64,{IMG_HORIZONTAL_B64}" style="width:100%; max-width:300px;"/>', unsafe_allow_html=True)
         
     st.markdown('<hr class="custom-divider">', unsafe_allow_html=True)
     
@@ -382,40 +404,23 @@ if 'page' not in st.session_state:
 
 # --- Tela de transição animada ao entrar em uma view de ano ---
 def show_splash(ano):
-    splash = st.empty()
-    with splash.container():
-        st.markdown(f'''
-        <div style="
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(135deg, #0f2c16 0%, #103d6d 100%);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            z-index: 9999;
-            animation: splashFadeOut 0.8s ease forwards;
-            animation-delay: 0.7s;
-        ">
-            <img src="data:image/png;base64,{_get_img_b64('ifes-vertical-cor.png')}" style="width: 200px; margin-bottom: 2rem; animation: fadeInScale 0.5s ease;" />
-            <p style="color: #2c8c44; font-size: 1rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.5rem;">Painel Analítico</p>
-            <h1 style="color: white; font-size: 4rem; font-weight: 900; margin: 0; letter-spacing: -2px;">ENADE {ano}</h1>
-        </div>
-        <style>
-        @keyframes splashFadeOut {{
-            from {{ opacity: 1; }}
-            to {{ opacity: 0; pointer-events: none; }}
-        }}
-        </style>
-        ''', unsafe_allow_html=True)
     import time
-    time.sleep(1.0)
+    splash = st.empty()
+    splash.markdown(f'''
+    <div style="
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: #ffffff;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        z-index: 9999;
+    ">
+        <img src="data:image/png;base64,{IMG_VERTICAL_B64}" style="width: 280px; margin-bottom: 2.5rem;" />
+        <p style="color: #2c8c44; font-size: 1rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.5rem; font-family: Inter, sans-serif;">Painel Analítico</p>
+        <h1 style="color: #103d6d; font-size: 3.5rem; font-weight: 900; margin: 0; letter-spacing: -2px; font-family: Inter, sans-serif;">ENADE {ano}</h1>
+    </div>
+    ''', unsafe_allow_html=True)
+    time.sleep(1.2)
     splash.empty()
-
-def _get_img_b64(path):
-    import base64
-    try:
-        with open(path, 'rb') as f:
-            return base64.b64encode(f.read()).decode()
-    except:
-        return ''
 
 if st.session_state.page == 'home':
     show_home()
