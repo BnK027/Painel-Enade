@@ -273,9 +273,7 @@ def render_page_header(ano, back_key):
             </div>
         ''', unsafe_allow_html=True)
     with col_logo:
-        st.markdown("<div style='display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 4px;'>", unsafe_allow_html=True)
-        st.image('ifes-horizontal-cor.png', width=160)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.image('ifes-vertical-cor.png', width=120)
 
 def show_home():
     col_text, col_img = st.columns([3, 1], gap="large")
@@ -382,20 +380,62 @@ def show_home():
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
 
+# --- Tela de transição animada ao entrar em uma view de ano ---
+def show_splash(ano):
+    splash = st.empty()
+    with splash.container():
+        st.markdown(f'''
+        <div style="
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, #0f2c16 0%, #103d6d 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 9999;
+            animation: splashFadeOut 0.8s ease forwards;
+            animation-delay: 0.7s;
+        ">
+            <img src="data:image/png;base64,{_get_img_b64('ifes-vertical-cor.png')}" style="width: 200px; margin-bottom: 2rem; animation: fadeInScale 0.5s ease;" />
+            <p style="color: #2c8c44; font-size: 1rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.5rem;">Painel Analítico</p>
+            <h1 style="color: white; font-size: 4rem; font-weight: 900; margin: 0; letter-spacing: -2px;">ENADE {ano}</h1>
+        </div>
+        <style>
+        @keyframes splashFadeOut {{
+            from {{ opacity: 1; }}
+            to {{ opacity: 0; pointer-events: none; }}
+        }}
+        </style>
+        ''', unsafe_allow_html=True)
+    import time
+    time.sleep(1.0)
+    splash.empty()
+
+def _get_img_b64(path):
+    import base64
+    try:
+        with open(path, 'rb') as f:
+            return base64.b64encode(f.read()).decode()
+    except:
+        return ''
+
 if st.session_state.page == 'home':
     show_home()
 elif st.session_state.page == 'visao_2017':
+    show_splash('2017')
     from views.visao_2017 import render_visao_2017
     render_visao_2017(data, microdados, render_filters, render_page_header)
 elif st.session_state.page == 'visao_2018':
+    show_splash('2018')
     from views.visao_2018 import render_visao_2018
     render_visao_2018(data, microdados, render_filters, render_page_header)
 elif st.session_state.page == 'visao_2019':
+    show_splash('2019')
     from views.visao_2019 import render_visao_2019
     render_visao_2019(data, microdados, render_filters, render_page_header)
 elif st.session_state.page == 'visao_2021':
+    show_splash('2021')
     from views.visao_2021 import render_visao_2021
     render_visao_2021(data, microdados, render_filters, render_page_header)
 elif st.session_state.page == 'visao_2022':
+    show_splash('2022')
     from views.visao_2022 import render_visao_2022
     render_visao_2022(data, microdados, render_filters, render_page_header)
