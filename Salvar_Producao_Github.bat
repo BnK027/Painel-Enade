@@ -17,6 +17,7 @@ git add requirements.txt
 git add qe_dictionary.py
 git add "Dados Cursos EMEC finalizado.xlsx"
 git add ifes-horizontal-cor.png
+git add ifes-vertical-cor.png
 git add Enade_2017_Ifes.xlsx
 git add Enade_2018_Ifes.xlsx
 git add Enade_2019_Ifes.xlsx
