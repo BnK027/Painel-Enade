@@ -48,8 +48,8 @@ def render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano):
             continue
 
         series_filled = series.fillna(9)
-        pos_count = len(series_filled[series_filled.isin([5, 6])])
-        neg_count = len(series_filled[series_filled.isin([1, 2])])
+        pos_count = len(series_filled[series_filled.isin([4, 5, 6])])
+        neg_count = len(series_filled[series_filled.isin([1, 2, 3])])
 
         pos_pct = (pos_count / total) * 100
         neg_pct = (neg_count / total) * 100
