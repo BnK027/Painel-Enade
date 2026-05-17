@@ -32,21 +32,27 @@ def render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano):
     rankings = []
     for col in qe_cols:
         series = None
+        df_source = None
         if col in df_arq4.columns and not df_arq4.empty and not df_arq4[col].dropna().empty:
-            series = pd.to_numeric(df_arq4[col], errors='coerce').dropna()
+            series = pd.to_numeric(df_arq4[col], errors='coerce')
+            df_source = df_arq4
         elif col in df_arq43.columns and not df_arq43.empty and not df_arq43[col].dropna().empty:
-            series = pd.to_numeric(df_arq43[col], errors='coerce').dropna()
+            series = pd.to_numeric(df_arq43[col], errors='coerce')
+            df_source = df_arq43
 
-        if series is None or len(series) == 0:
+        if series is None or df_source is None:
             continue
 
-        valid = series[series.isin([1, 2, 3, 4, 5, 6])]
-        if len(valid) == 0:
+        total = len(df_source)
+        if total == 0:
             continue
 
-        total = len(valid)
-        pos_pct = len(valid[valid.isin([5, 6])]) / total * 100
-        neg_pct = len(valid[valid.isin([1, 2])]) / total * 100
+        series_filled = series.fillna(9)
+        pos_count = len(series_filled[series_filled.isin([5, 6])])
+        neg_count = len(series_filled[series_filled.isin([1, 2])])
+
+        pos_pct = (pos_count / total) * 100
+        neg_pct = (neg_count / total) * 100
 
         label = dict_questoes.get(col, f"Questão {col.replace('QE_I', '')}")
         rankings.append({'col': col, 'label': label, 'pos_pct': pos_pct, 'neg_pct': neg_pct})
