@@ -121,12 +121,33 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * Criamos o **`Salvar_Producao_Github.bat`**, um script automatizado que realiza o deploy no GitHub adicionando apenas os arquivos estritamente necessários para o funcionamento no Streamlit Cloud.
 * Isso evita problemas de limite de tamanho (bloqueando arquivos binários pesados ou backups de microdados LGPD) e garante que o ambiente de produção esteja sempre sincronizado e leve.
 
+### 21. Módulo de Ranking do Questionário do Estudante (Top 3 Positivas/Negativas) (16/05/2026)
+* **Visualização Analítica Centralizada:** Desenvolvemos o módulo `views/quest_ranking.py` para calcular e renderizar a percepção discente do Questionário do Estudante (`QE_I`). Ele calcula a porcentagem de concordância (Likert 4, 5, 6) e discordância (Likert 1, 2, 3) para cada questão.
+* **Componentes Interativos:** A interface agora expõe três selectboxes complementares: a lista geral de perguntas, as **Top 3 avaliações mais positivas** e as **Top 3 avaliações mais negativas**.
+* **Deduplicação de Código:** Refatoramos e atualizamos de forma integrada todas as visões anuais (`visao_2017.py` a `visao_2022.py`) para utilizar este módulo unificado, eliminando lógica duplicada e facilitando manutenções futuras.
+
+### 22. Atualizações do Artigo Científico e Referências (COBENGE 2026) (16/05/2026)
+* **Aprimoramento do Manuscrito:** Revisamos o artigo para a submissão do COBENGE 2026 com base nos feedbacks do Prof. Wagner, refinando a introdução, metodologia e discussões.
+* **Consolidação Bibliográfica:** Adicionamos novas referências e citações pertinentes do campo de Business Intelligence educacional e avaliação do ENADE (ex: Lima 2018, Sathler 2023, Otsubo 2024, Barreto & Freitas 2020).
+* **Compilação Automatizada para Word:** Desenvolvemos o script `make_docx.py` para compilar o arquivo Markdown `Documentos Artigo/Artigo_Completo_Citado.md` em um arquivo formatado `.docx` (`Documentos Artigo/Artigo_Completo_Citado.docx`) de acordo com as regras de submissão do evento.
+
+### 23. Estruturação da Análise de Candidato x Vaga (Módulo Standalone) (16/05/2026)
+* **Análise do Processo Seletivo:** Estruturamos o módulo `views/visao_cand_vaga.py` para processar dados de concorrência dos processos seletivos do IFES (`Cand_Vaga_Unico.xlsx`).
+* **Indicadores e Gráficos:** O painel standalone apresenta KPIs de inscritos, vagas e relação candidato/vaga, acompanhados de gráficos de concorrência de cursos (Top 15), distribuição por modalidade de ensino, vagas vs inscritos por campus e histórico semestral.
+
+### 24. Validação de Consistência e Limpeza de Metadados (18/05/2026)
+* **Scripts de Validação:** Desenvolvemos scripts de inspeção (`scratch/check_raw_xlsx.py`) para validar o alinhamento das colunas e a consistência das abas de microdados e informações cadastrais entre todas as planilhas consolidadas (`Enade_2017_Ifes.xlsx` a `Enade_2022_Ifes.xlsx`).
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
 * `[x]` **Análise de Componente Específico:** Implementado para 2018-2022.
 * `[x]` **Artigo do Projeto:** Rascunho inicial e PDF gerados e entregues.
+* `[x]` **Destaques do Questionário (Top 3 Positivas/Negativas):** Módulo e visualizações implementadas.
+* `[x]` **Revisão Bibliográfica do Artigo:** Atualizada com as sugestões do professor.
 * `[ ]` **Integração CE 2017:** Verificar se os microdados de 2017 permitem a mesma análise de acertos/erros por questão (a estrutura do `Arq_3B` em 2017 costuma ser diferente).
+* `[ ]` **Integração da Visão Candidato x Vaga:** Avaliar a inclusão definitiva do painel no menu principal do `app.py`.
 * `[ ]` **Deploy Master:** Realizar o push final via `Salvar_Producao_Github.bat` e verificar o link oficial.
 * `[ ]` **Revisão Final de Coerência:** Validar se os nomes de cursos mapeados via EMEC em 2017 estão consistentes com as outras visões.
 
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*
+
