@@ -15,8 +15,10 @@ def _set_source(ano, new_source):
         st.session_state[f'quest_pos_{ano}'] = None
         st.session_state[f'quest_neg_{ano}'] = None
     elif new_source == 'top_pos':
+        st.session_state[f'quest_all_{ano}'] = None
         st.session_state[f'quest_neg_{ano}'] = None
     elif new_source == 'top_neg':
+        st.session_state[f'quest_all_{ano}'] = None
         st.session_state[f'quest_pos_{ano}'] = None
 
 
@@ -72,6 +74,8 @@ def render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano):
     selecionada_all = st.selectbox(
         "Selecione a pergunta para visualizar o detalhamento:",
         opcoes,
+        index=None,
+        placeholder=opcoes[0],
         key=f'quest_all_{ano}',
         on_change=_set_source, args=(ano, 'all')
     )
@@ -118,8 +122,9 @@ def render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano):
         col_var = sel_neg.split(" - ")[0]
         texto = sel_neg.split(" - ", 1)[1]
     else:
-        col_var = selecionada_all.split(" - ")[0]
-        texto = selecionada_all.split(" - ", 1)[1]
+        valor_final_all = selecionada_all if selecionada_all else opcoes[0]
+        col_var = valor_final_all.split(" - ")[0]
+        texto = valor_final_all.split(" - ", 1)[1]
 
     # Remove sufixo de percentual se existir (ex: "... (45% concordam)")
     if texto.endswith('%)'):
