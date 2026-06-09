@@ -4,9 +4,20 @@ import streamlit as st
 import pandas as pd
 
 
-def _set_source(source_key, value):
-    """Callback para rastrear qual selectbox foi usado por último."""
-    st.session_state[source_key] = value
+def _set_source(ano, new_source):
+    """Callback para rastrear qual selectbox foi usado por último e limpar os inativos."""
+    source_key = f'quest_source_{ano}'
+    st.session_state[source_key] = new_source
+    
+    # Limpa a seleção visual dos outros campos para garantir que o usuário
+    # possa re-selecionar opções sem sofrer com a inércia de estado do Streamlit.
+    if new_source == 'all':
+        st.session_state[f'quest_pos_{ano}'] = None
+        st.session_state[f'quest_neg_{ano}'] = None
+    elif new_source == 'top_pos':
+        st.session_state[f'quest_neg_{ano}'] = None
+    elif new_source == 'top_neg':
+        st.session_state[f'quest_pos_{ano}'] = None
 
 
 def render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano):
@@ -62,7 +73,7 @@ def render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano):
         "Selecione a pergunta para visualizar o detalhamento:",
         opcoes,
         key=f'quest_all_{ano}',
-        on_change=_set_source, args=(source_key, 'all')
+        on_change=_set_source, args=(ano, 'all')
     )
 
     # --- Top 3 Positivas e Negativas ---
@@ -79,15 +90,19 @@ def render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano):
             sel_pos = st.selectbox(
                 "🏆 Top 3 Avaliações Mais Positivas:",
                 pos_opts,
+                index=None,
+                placeholder="Selecione para detalhar...",
                 key=f'quest_pos_{ano}',
-                on_change=_set_source, args=(source_key, 'top_pos')
+                on_change=_set_source, args=(ano, 'top_pos')
             )
         with col2:
             sel_neg = st.selectbox(
                 "⚠️ Top 3 Avaliações Mais Negativas:",
                 neg_opts,
+                index=None,
+                placeholder="Selecione para detalhar...",
                 key=f'quest_neg_{ano}',
-                on_change=_set_source, args=(source_key, 'top_neg')
+                on_change=_set_source, args=(ano, 'top_neg')
             )
     else:
         sel_pos = None
