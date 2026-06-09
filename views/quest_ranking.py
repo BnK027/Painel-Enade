@@ -91,7 +91,7 @@ def render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano):
                 "🏆 Top 3 Avaliações Mais Positivas:",
                 pos_opts,
                 index=None,
-                placeholder="Selecione para detalhar...",
+                placeholder=pos_opts[0],
                 key=f'quest_pos_{ano}',
                 on_change=_set_source, args=(ano, 'top_pos')
             )
@@ -100,7 +100,7 @@ def render_question_selectors(df_arq4, df_arq43, qe_cols, dict_questoes, ano):
                 "⚠️ Top 3 Avaliações Mais Negativas:",
                 neg_opts,
                 index=None,
-                placeholder="Selecione para detalhar...",
+                placeholder=neg_opts[0],
                 key=f'quest_neg_{ano}',
                 on_change=_set_source, args=(ano, 'top_neg')
             )
