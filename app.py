@@ -55,7 +55,7 @@ st.markdown("""
     .card-panel-dark { border-top: 6px solid #103d6d; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,244,248,0.95) 100%); }
     .card-panel-dark:hover { box-shadow: 0 30px 60px -12px rgba(16, 61, 109, 0.15); }
 
-    /* Streamlit Input Overrides (Fixing White Bars) */
+    /* Streamlit Input Overrides (Fixing White Bars & Placeholder Color) */
     div[data-baseweb="select"] > div {
         background-color: #ffffff;
         border-radius: 12px;
@@ -66,6 +66,10 @@ st.markdown("""
         transition: all 0.3s ease;
     }
     div[data-baseweb="select"] * { line-height: 1.6; }
+    div[data-baseweb="select"] div, div[data-baseweb="select"] span {
+        color: #103d6d !important;
+        opacity: 1 !important;
+    }
     div[data-baseweb="select"] > div:hover {
         border-color: #103d6d; box-shadow: 0 6px 16px rgba(16,61,109,0.1);
     }
