@@ -138,16 +138,33 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 ### 24. Validação de Consistência e Limpeza de Metadados (18/05/2026)
 * **Scripts de Validação:** Desenvolvemos scripts de inspeção (`scratch/check_raw_xlsx.py`) para validar o alinhamento das colunas e a consistência das abas de microdados e informações cadastrais entre todas as planilhas consolidadas (`Enade_2017_Ifes.xlsx` a `Enade_2022_Ifes.xlsx`).
 
+### 25. Correção de Inércia no Seletor do Questionário do Estudante (12/06/2026)
+* **Resolução de Bug no st.selectbox:** Corrigimos uma falha na aba "Questão do Estudante" onde os usuários precisavam selecionar uma questão intermediária antes de conseguir atualizar o gráfico para a primeira opção do ranking selecionado.
+* **Uso de Placeholders Dinâmicos:** Resolvemos a inércia implementando `index=None` nos selectboxes de rankings e definindo o parâmetro `placeholder` dinamicamente com o valor do primeiro elemento (`opcoes[0]`, `pos_opts[0]`, `neg_opts[0]`). Isso mantém a pergunta visível, mas força o acionamento do callback de atualização ao clicar.
+* **Ajuste de Cor de Placeholder via CSS:** Adicionamos regras CSS personalizadas no `app.py` para garantir que o texto do placeholder (que agora é a nossa questão destacada por padrão) seja renderizado na cor escura institucional (`#103d6d` com opacidade total), eliminando o tom cinza-claro esmaecido padrão do Streamlit.
+
+### 26. Esclarecimento de Acesso a Planilhas no MS Excel (15/06/2026)
+* **Problema de Visibilidade de Abas:** Identificamos que a ausência de visualização direta de abas importantes (como `Arq_3B` do arquivo de 2019) no Microsoft Excel deve-se ao limite de espaço na interface de visualização, que oculta partes das 41 planilhas internas.
+* **Instrução de Navegação:** Orientamos o usuário a acessar a lista completa de abas ocultas clicando com o botão direito nas setas de paginação de planilhas no canto inferior esquerdo do Excel.
+* **Manutenção do Código-Fonte:** O usuário optou por rejeitar qualquer alteração ou cópia temporária de arquivos via código, mantendo o carregamento de dados do painel do Streamlit inalterado para preservar a arquitetura de leitura atual.
+
+### 27. Engenharia de Dados: Criação do Arq_3B para 2017 (15/06/2026)
+* **Reconstrução de Dados Faltantes:** Identificamos que a planilha original de 2017 não possuía a aba derivada `Arq_3B` (que mapeia acertos granulares por questão no Componente Específico).
+* **Script de ETL Especializado:** Criamos um script autônomo (`extract_ce_2017.py`) que processou o arquivo bruto massivo de 566MB (`Enade 2017.xlsm`), capturando a aba `microdados2017_arq3`.
+* **Desmembramento Dinâmico:** Quebramos as strings de gabarito `DS_VT_ACE_OFG` (8 caracteres) e `DS_VT_ACE_OCE` (27 caracteres) em colunas atômicas matemáticas (`Ob1` a `Ob8` e `CE1` a `CE27`).
+* **Injeção Silenciosa:** Anexamos com sucesso as planilhas faltantes `Arq_3` e `Arq_3B` ao consolidado `Enade_2017_Ifes.xlsx`, habilitando nativamente o painel de "Questões Específicas" também para 2017.
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
 * `[x]` **Análise de Componente Específico:** Implementado para 2018-2022.
 * `[x]` **Artigo do Projeto:** Rascunho inicial e PDF gerados e entregues.
 * `[x]` **Destaques do Questionário (Top 3 Positivas/Negativas):** Módulo e visualizações implementadas.
 * `[x]` **Revisão Bibliográfica do Artigo:** Atualizada com as sugestões do professor.
-* `[ ]` **Integração CE 2017:** Verificar se os microdados de 2017 permitem a mesma análise de acertos/erros por questão (a estrutura do `Arq_3B` em 2017 costuma ser diferente).
+* `[x]` **Integração CE 2017:** Verificar se os microdados de 2017 permitem a mesma análise de acertos/erros por questão (a estrutura do `Arq_3B` em 2017 costuma ser diferente).
 * `[ ]` **Integração da Visão Candidato x Vaga:** Avaliar a inclusão definitiva do painel no menu principal do `app.py`.
 * `[ ]` **Deploy Master:** Realizar o push final via `Salvar_Producao_Github.bat` e verificar o link oficial.
-* `[ ]` **Revisão Final de Coerência:** Validar se os nomes de cursos mapeados via EMEC em 2017 estão consistentes com as outras visões.
+* `[ ]` **Revisão Final de Coerência:** Validar se os nomes de cursos mapeados via EMEC in 2017 estão consistentes com as outras visões.
 
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*
+
 
