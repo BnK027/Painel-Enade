@@ -22,6 +22,8 @@ def main():
         df_cursos_oficial = pd.read_excel('Dados Cursos EMEC finalizado.xlsx')
         if 'Código' in df_cursos_oficial.columns:
             df_cursos_oficial = df_cursos_oficial.rename(columns={'Código': 'CO_CURSO'})
+        if 'Município' in df_cursos_oficial.columns and 'CAMPUS' not in df_cursos_oficial.columns:
+            df_cursos_oficial['CAMPUS'] = df_cursos_oficial['Município']
         ifes_cursos = df_cursos_oficial['CO_CURSO'].dropna().astype(str).str.replace(r'\.0$', '', regex=True).unique()
     except Exception as e:
         print(f"Erro ao ler Dados Cursos EMEC finalizado.xlsx: {e}")
