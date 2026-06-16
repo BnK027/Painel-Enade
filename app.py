@@ -172,34 +172,48 @@ def load_microdata():
             
             # Aba Arq_5 (Sexo)
             if 'Arq_5' in xls.sheet_names:
-                df_sexo = pd.merge(pd.read_excel(xls, sheet_name='Arq_5'), curso_map, on='CO_CURSO', how='inner')
+                df_temp = pd.read_excel(xls, sheet_name='Arq_5')
+                if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
+                df_sexo = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_sexo.empty: all_sexo.append(df_sexo)
             # Aba Arq_6 (Idade)
             if 'Arq_6' in xls.sheet_names:
-                df_idade = pd.merge(pd.read_excel(xls, sheet_name='Arq_6'), curso_map, on='CO_CURSO', how='inner')
+                df_temp = pd.read_excel(xls, sheet_name='Arq_6')
+                if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
+                df_idade = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_idade.empty: all_idade.append(df_idade)
             # Aba Arq_8 (Cor/Raça - QE_I02)
             if 'Arq_8' in xls.sheet_names:
-                df_raca = pd.merge(pd.read_excel(xls, sheet_name='Arq_8'), curso_map, on='CO_CURSO', how='inner')
+                df_temp = pd.read_excel(xls, sheet_name='Arq_8')
+                if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
+                df_raca = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_raca.empty: all_raca.append(df_raca)
             # Aba Arq_14 (Renda Familiar - QE_I08)
             if 'Arq_14' in xls.sheet_names:
-                df_renda = pd.merge(pd.read_excel(xls, sheet_name='Arq_14'), curso_map, on='CO_CURSO', how='inner')
+                df_temp = pd.read_excel(xls, sheet_name='Arq_14')
+                if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
+                df_renda = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_renda.empty: all_renda.append(df_renda)
 
             for arq, lst in zip(['Arq_10','Arq_11','Arq_16','Arq_17','Arq_21','Arq_29','Arq_31','Arq_32', 'Arq_4', 'Arq_43'], 
                                 [all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43]):
                 if arq in xls.sheet_names:
-                    df_temp = pd.merge(pd.read_excel(xls, sheet_name=arq), curso_map, on='CO_CURSO', how='inner')
+                    df_arq_temp = pd.read_excel(xls, sheet_name=arq)
+                    if 'ANO' in df_arq_temp.columns: df_arq_temp = df_arq_temp.drop(columns=['ANO'])
+                    df_temp = pd.merge(df_arq_temp, curso_map, on='CO_CURSO', how='inner')
                     if not df_temp.empty: lst.append(df_temp)
 
             # Arq_3B: respostas por questão do CE (CE1..CE27) + gabarito por aluno
             if 'Arq_3B' in xls.sheet_names:
-                df_3b = pd.merge(pd.read_excel(xls, sheet_name='Arq_3B'), curso_map, on='CO_CURSO', how='inner')
+                df_temp = pd.read_excel(xls, sheet_name='Arq_3B')
+                if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
+                df_3b = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_3b.empty: all_ce_respostas.append(df_3b)
             # Arq_3: gabarito final (DS_VT_GAB_OCE_FIN) por aluno
             if 'Arq_3' in xls.sheet_names:
-                df_3 = pd.merge(pd.read_excel(xls, sheet_name='Arq_3'), curso_map, on='CO_CURSO', how='inner')
+                df_temp = pd.read_excel(xls, sheet_name='Arq_3')
+                if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
+                df_3 = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_3.empty: all_ce_gabarito.append(df_3)
                 
         except Exception as e:
