@@ -160,6 +160,19 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Atualização e Saneamento:** Executamos a extração para substituir as 13 abas afetadas (`Arq_4`, `Arq_5`, `Arq_6`, `Arq_8`, `Arq_10`, `Arq_11`, `Arq_14`, `Arq_16`, `Arq_17`, `Arq_21`, `Arq_29`, `Arq_31`, `Arq_32`) dentro do arquivo consolidado `Enade_2017_Ifes.xlsx`, corrigindo definitivamente as análises demográficas e de percepção discente do ano de 2017.
 * **Nota sobre Cache:** Orientamos a necessidade de limpar o cache do Streamlit ("Clear Cache" no menu superior) para forçar o recarregamento dos novos dados corrigidos na memória da aplicação.
 
+### 29. Correção Crítica de Pandas Merge (Sufixo ANO_x) em 2017 (16/06/2026)
+* **Diagnóstico de Abas Vazias:** Após o saneamento de 2017, as abas "Estudante" e "Quest. Estudante" não renderizavam. A investigação do `app.py` revelou um conflito no `pd.merge()`. Como as abas demográficas de 2017 agora possuíam a coluna `ANO` nativamente e o mapeamento de cursos (`curso_map`) também, o Pandas estava renomeando as colunas para `ANO_x` e `ANO_y`, resultando em `NaN` na coluna agregada `ANO` e falha nos filtros dinâmicos do dashboard.
+* **Refatoração Resiliente:** Alteramos a função `load_microdata()` no `app.py` para iterar e realizar o `drop(columns=['ANO'])` em qualquer tabela bruta lida do Excel antes do `merge`, preservando a consistência da coluna única `ANO` proveniente do EMEC. Com isso, os dados completos de demografia de 2017 voltaram a ser exibidos instantaneamente.
+
+### 30. Auditoria de Simetria Estrutural (16/06/2026)
+* **Verificação Criptográfica:** O usuário questionou se algum ano do painel estava desfalcado de componentes ou gráficos presentes em outros anos (exceto as questões de pandemia de 2021). 
+* **Clone Perfeito Comprovado:** Realizamos uma análise com Hash MD5 comparando todos os arquivos de visualização (`visao_2017.py` até `visao_2022.py`). Comprovou-se que o código fonte e a renderização de componentes são estruturalmente idênticos (tamanho exato em bytes e hashes padronizados). Qualquer aba, gráfico (Renda, Idade, Gênero) e componente de UI (Heatmaps, KPIs) que existe em um ano foi rigorosamente propagado para toda a série histórica.
+
+### 31. Automação Mestre de ETL para Futuros Anos do ENADE (16/06/2026)
+* **Demanda de Escalabilidade:** O usuário solicitou um método padronizado para limpar e estruturar planilhas brutas do INEP que ele possa baixar no futuro (ex: Enade 2023, 2024).
+* **Script de Automação (`processar_novo_enade.py`):** Criamos um script de ETL parametrizável de terminal que recebe o ano e o arquivo bruto. Ele filtra autonomamente os dados baseados na matriz de cursos do IFES (`Dados Cursos EMEC finalizado.xlsx`), limpa as abas `Arq_X`, reconstrói de forma inteligente a matriz do Questionário Específico (`Arq_3B` via split de string `DS_VT_ACE_OCE`) e consolida um arquivo final leve (ex: `Enade_2024_Ifes.xlsx`). Além disso, o script possui uma macro de auto-clonagem para gerar o respectivo arquivo visual (ex: `views/visao_2024.py`).
+* **Documentação em Markdown:** Geramos e persistimos o guia `MANUAL_ETL_NOVO_ENADE.md` que engloba instruções de ativação, incluindo um "Comando Mágico" delegável para a Inteligência Artificial.
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
 * `[x]` **Análise de Componente Específico:** Implementado para 2018-2022.
