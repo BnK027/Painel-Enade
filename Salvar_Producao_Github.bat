@@ -18,11 +18,18 @@ git add qe_dictionary.py
 git add "Dados Cursos EMEC finalizado.xlsx"
 git add ifes-horizontal-cor.png
 git add ifes-vertical-cor.png
+git add Enade_2015_Ifes.xlsx
+git add Enade_2016_Ifes.xlsx
 git add Enade_2017_Ifes.xlsx
 git add Enade_2018_Ifes.xlsx
 git add Enade_2019_Ifes.xlsx
 git add Enade_2021_Ifes.xlsx
 git add Enade_2022_Ifes.xlsx
+git add processar_novo_enade.py
+git add processar_novo_enade_txt.py
+git add processar_enade_diretorio.py
+git add MANUAL_ETL_NOVO_ENADE.md
+git add MEMORIA_IA.md
 git add .gitignore
 git add Iniciar_Painel_ENADE.bat
 git add Salvar_No_Github.bat
