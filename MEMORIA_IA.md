@@ -154,6 +154,12 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Desmembramento Dinâmico:** Quebramos as strings de gabarito `DS_VT_ACE_OFG` (8 caracteres) e `DS_VT_ACE_OCE` (27 caracteres) em colunas atômicas matemáticas (`Ob1` a `Ob8` e `CE1` a `CE27`).
 * **Injeção Silenciosa:** Anexamos com sucesso as planilhas faltantes `Arq_3` e `Arq_3B` ao consolidado `Enade_2017_Ifes.xlsx`, habilitando nativamente o painel de "Questões Específicas" também para 2017.
 
+### 28. Saneamento dos Microdados do Questionário do Estudante e Demográficos de 2017 (15/06/2026)
+* **Diagnóstico de Inconsistência:** Identificamos que as abas de microdados demográficos (`Arq_5`, `Arq_6`, `Arq_8`, `Arq_14`) e do Questionário do Estudante (`Arq_4`, `Arq_10`, `Arq_11`, etc.) de 2017 estavam corrompidas no arquivo consolidado. O script original de ETL havia copiado apenas os primeiros 877 registros da base nacional sem aplicar o filtro de cursos do IFES, resultando em dados vazios/inconsistentes no dashboard.
+* **Script de Correção Massiva:** Desenvolvemos o script `fix_microdados_2017.py` para reprocessar a planilha massiva `Enade 2017.xlsm` (566MB), extraindo de forma correta e filtrando apenas os estudantes pertencentes aos códigos de curso (`CO_CURSO`) legítimos do IFES.
+* **Atualização e Saneamento:** Executamos a extração para substituir as 13 abas afetadas (`Arq_4`, `Arq_5`, `Arq_6`, `Arq_8`, `Arq_10`, `Arq_11`, `Arq_14`, `Arq_16`, `Arq_17`, `Arq_21`, `Arq_29`, `Arq_31`, `Arq_32`) dentro do arquivo consolidado `Enade_2017_Ifes.xlsx`, corrigindo definitivamente as análises demográficas e de percepção discente do ano de 2017.
+* **Nota sobre Cache:** Orientamos a necessidade de limpar o cache do Streamlit ("Clear Cache" no menu superior) para forçar o recarregamento dos novos dados corrigidos na memória da aplicação.
+
 ---
 ## 🎯 Próximos Passos (Lista de Tarefas Pendentes)
 * `[x]` **Análise de Componente Específico:** Implementado para 2018-2022.
