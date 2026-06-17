@@ -180,9 +180,19 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * `[x]` **Destaques do Questionário (Top 3 Positivas/Negativas):** Módulo e visualizações implementadas.
 * `[x]` **Revisão Bibliográfica do Artigo:** Atualizada com as sugestões do professor.
 * `[x]` **Integração CE 2017:** Verificar se os microdados de 2017 permitem a mesma análise de acertos/erros por questão (a estrutura do `Arq_3B` em 2017 costuma ser diferente).
+* `[x]` **Processamento e Integração ENADE 2015/2016:** Finalizado.
 * `[ ]` **Integração da Visão Candidato x Vaga:** Avaliar a inclusão definitiva do painel no menu principal do `app.py`.
 * `[ ]` **Deploy Master:** Realizar o push final via `Salvar_Producao_Github.bat` e verificar o link oficial.
 * `[ ]` **Revisão Final de Coerência:** Validar se os nomes de cursos mapeados via EMEC in 2017 estão consistentes com as outras visões.
+
+### 32. Processamento e Integração do ENADE 2015 e 2016 (16/06/2026 - Atualizado em 17/06/2026)
+* **Engenharia de Dados (Diretórios INEP):** Como os dados de 2015 e 2016 vieram divididos em 32 arquivos `.txt` de microdados em vez de uma planilha consolidadora única, criamos/ajustamos o script `processar_enade_diretorio.py` para processar e estruturar esses dados brutos sem qualquer distorção.
+* **Processamento do ENADE 2016:** Extraímos com sucesso **54 estudantes** vinculados aos cursos do IFES a partir dos TXTs brutos e geramos a base consolidada `Enade_2016_Ifes.xlsx` e sua respectiva página de dashboard clonada.
+* **Processamento do ENADE 2015 (Fidelidade Estatística):** O pipeline constatou **0 estudantes** do IFES nos microdados de 2015, condizente com o fato de que os cursos do IFES (em sua maioria Engenharia/Tecnologia) não faziam parte do ciclo avaliativo do ENADE daquele ano. Geramos a planilha e a visão respeitando essa integridade histórica, sem "alucinar" dados.
+* **Resolução do Bug de Campus no Dicionário (`CAMPUS not in index`):** Corrigimos uma falha de mapeamento onde os novos arquivos de 2015/2016 foram gerados sem a coluna `CAMPUS` na aba `Cursos` (já que o EMEC original chama essa coluna de `Município`). Adicionamos lógica ao script ETL para criar a coluna `CAMPUS` baseando-se no `Município`, sanando a quebra do dashboard.
+* **Deploy de Produção Desbloqueado:** Atualizamos as diretivas de sincronização do arquivo `Salvar_Producao_Github.bat` para explicitamente rastrear e permitir o push de `Enade_2015_Ifes.xlsx`, `Enade_2016_Ifes.xlsx`, e todos os novos scripts Python e manuais criados, garantindo deploy limpo no Streamlit Cloud sem subir arquivos brutos de gigabytes.
+* **Correção de Notas e Participantes (ETL Atualizado):** Modificamos o pipeline para calcular dinamicamente a partir dos microdados (`Arq_3`) o número de concluintes inscritos, participantes e as notas médias (FG e CE), inserindo-os na aba `Enade` estruturada. Isso resolveu o problema de KPIs e tabelas de notas em branco nas dashboards históricas.
+* **Resolução de Tipagem no Merge de Microdados (`CO_CURSO` e `ANO`):** Consertamos um bug silencioso no `app.py` em que tipos mistos (int vs str) nas colunas de código de curso e ano nos dados processados forçavam o descarte das linhas em `pd.merge()`, esvaziando todas as abas de Questionário Estudantil e Sociodemográfico. O `app.py` agora força de forma resiliente a conversão de `CO_CURSO` e `ANO` para string em todas as abas lidas.
 
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*
 

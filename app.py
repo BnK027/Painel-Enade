@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import os
 import base64
+import re
 
 # --- Caminho base e imagens pré-carregadas ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -163,34 +164,50 @@ def load_microdata():
     for file in files:
         try:
             df_cursos = pd.read_excel(file, sheet_name='Cursos')
+            df_cursos['CO_CURSO'] = df_cursos['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
+            
+            if 'CAMPUS' not in df_cursos.columns:
+                df_cursos['CAMPUS'] = 'Desconhecido'
+
+            curso_map = df_cursos[['CO_CURSO', 'CAMPUS']].copy()
+            # Adiciona a coluna ANO vinda do nome do arquivo
+            ano_match = re.search(r'20\d{2}', file)
+            file_ano = ano_match.group(0) if ano_match else ''
+            curso_map['ANO'] = str(file_ano)
             df_enade = pd.read_excel(file, sheet_name='Enade')
             xls = pd.ExcelFile(file)
             
+            df_enade['Código do Curso'] = df_enade['Código do Curso'].astype(str).str.replace(r'\.0$', '', regex=True)
+            
             # Map CO_CURSO to their actual Names and Campus
-            curso_map = pd.merge(df_cursos[['CO_CURSO', 'CAMPUS']], df_enade[['Código do Curso', 'Área de Avaliação', 'Ano']], left_on='CO_CURSO', right_on='Código do Curso', how='inner')
-            curso_map = curso_map.rename(columns={'Área de Avaliação': 'NOME DO CURSO', 'CAMPUS': 'CAMPUS', 'Ano': 'ANO'})
+            curso_map = pd.merge(curso_map, df_enade[['Código do Curso', 'Área de Avaliação']], left_on='CO_CURSO', right_on='Código do Curso', how='inner')
+            curso_map = curso_map.rename(columns={'Área de Avaliação': 'NOME DO CURSO'})
             
             # Aba Arq_5 (Sexo)
             if 'Arq_5' in xls.sheet_names:
                 df_temp = pd.read_excel(xls, sheet_name='Arq_5')
+                df_temp['CO_CURSO'] = df_temp['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
                 if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
                 df_sexo = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_sexo.empty: all_sexo.append(df_sexo)
             # Aba Arq_6 (Idade)
             if 'Arq_6' in xls.sheet_names:
                 df_temp = pd.read_excel(xls, sheet_name='Arq_6')
+                df_temp['CO_CURSO'] = df_temp['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
                 if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
                 df_idade = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_idade.empty: all_idade.append(df_idade)
             # Aba Arq_8 (Cor/Raça - QE_I02)
             if 'Arq_8' in xls.sheet_names:
                 df_temp = pd.read_excel(xls, sheet_name='Arq_8')
+                df_temp['CO_CURSO'] = df_temp['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
                 if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
                 df_raca = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_raca.empty: all_raca.append(df_raca)
             # Aba Arq_14 (Renda Familiar - QE_I08)
             if 'Arq_14' in xls.sheet_names:
                 df_temp = pd.read_excel(xls, sheet_name='Arq_14')
+                df_temp['CO_CURSO'] = df_temp['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
                 if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
                 df_renda = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_renda.empty: all_renda.append(df_renda)
@@ -199,6 +216,7 @@ def load_microdata():
                                 [all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43]):
                 if arq in xls.sheet_names:
                     df_arq_temp = pd.read_excel(xls, sheet_name=arq)
+                    df_arq_temp['CO_CURSO'] = df_arq_temp['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
                     if 'ANO' in df_arq_temp.columns: df_arq_temp = df_arq_temp.drop(columns=['ANO'])
                     df_temp = pd.merge(df_arq_temp, curso_map, on='CO_CURSO', how='inner')
                     if not df_temp.empty: lst.append(df_temp)
@@ -206,17 +224,20 @@ def load_microdata():
             # Arq_3B: respostas por questão do CE (CE1..CE27) + gabarito por aluno
             if 'Arq_3B' in xls.sheet_names:
                 df_temp = pd.read_excel(xls, sheet_name='Arq_3B')
+                df_temp['CO_CURSO'] = df_temp['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
                 if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
                 df_3b = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_3b.empty: all_ce_respostas.append(df_3b)
             # Arq_3: gabarito final (DS_VT_GAB_OCE_FIN) por aluno
             if 'Arq_3' in xls.sheet_names:
                 df_temp = pd.read_excel(xls, sheet_name='Arq_3')
+                df_temp['CO_CURSO'] = df_temp['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
                 if 'ANO' in df_temp.columns: df_temp = df_temp.drop(columns=['ANO'])
                 df_3 = pd.merge(df_temp, curso_map, on='CO_CURSO', how='inner')
                 if not df_3.empty: all_ce_gabarito.append(df_3)
                 
         except Exception as e:
+            print(f"Erro no load_microdata para {file}: {e}")
             continue
             
     return {

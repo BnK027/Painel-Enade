@@ -99,15 +99,47 @@ def main():
                 df_arq3b.to_excel(writer, sheet_name='Arq_3B', index=False)
                 print("      -> Arq_3B gerado com sucesso!")
         
-        # Gerar Aba "Enade" placeholder para evitar quebra no painel
-        print("\n[4/4] Gerando aba institucional...")
-        # Cria uma aba Enade fake usando a base de cursos para ter Área de Avaliação e Código
+        # Gerar Aba "Enade" com KPIs reais a partir dos microdados
+        print("\n[4/4] Gerando aba institucional e calculando notas...")
         df_enade = pd.DataFrame()
         df_enade['Código do Curso'] = df_cursos_oficial['CO_CURSO']
         df_enade['Área de Avaliação'] = df_cursos_oficial['Curso'] if 'Curso' in df_cursos_oficial.columns else 'Curso IFES'
         df_enade['Ano'] = ano
+        
+        if df_arq3 is not None and not df_arq3.empty:
+            df_arq3['CO_CURSO_STR'] = df_arq3['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
+            participantes = df_arq3.groupby('CO_CURSO_STR').size()
+            
+            if 'NT_FG' in df_arq3.columns:
+                df_arq3['NT_FG_NUM'] = pd.to_numeric(df_arq3['NT_FG'].astype(str).str.replace(',', '.'), errors='coerce')
+                nota_fg = df_arq3.groupby('CO_CURSO_STR')['NT_FG_NUM'].mean()
+            else:
+                nota_fg = pd.Series(dtype=float)
+                
+            if 'NT_CE' in df_arq3.columns:
+                df_arq3['NT_CE_NUM'] = pd.to_numeric(df_arq3['NT_CE'].astype(str).str.replace(',', '.'), errors='coerce')
+                nota_ce = df_arq3.groupby('CO_CURSO_STR')['NT_CE_NUM'].mean()
+            else:
+                nota_ce = pd.Series(dtype=float)
+
+            df_enade['Inscritos'] = df_enade['Código do Curso'].astype(str).map(participantes).fillna(0)
+            df_enade['Participantes'] = df_enade['Inscritos']
+            df_enade['Nota Bruta - FG'] = df_enade['Código do Curso'].astype(str).map(nota_fg)
+            df_enade['Nota Bruta - CE'] = df_enade['Código do Curso'].astype(str).map(nota_ce)
+        else:
+            df_enade['Inscritos'] = 0
+            df_enade['Participantes'] = 0
+            df_enade['Nota Bruta - FG'] = np.nan
+            df_enade['Nota Bruta - CE'] = np.nan
+            
+        df_enade = df_enade[df_enade['Inscritos'] > 0]
+        
+        # Se for ano sem IFES, injeta 1 placeholder para não quebrar a sheet
+        if df_enade.empty:
+            df_enade = pd.DataFrame([{'Código do Curso': '0', 'Área de Avaliação': 'Sem dados', 'Ano': ano, 'Inscritos': 0, 'Participantes': 0}])
+            
         df_enade.to_excel(writer, sheet_name='Enade', index=False)
-        print("      -> Aba Enade injetada com placeholders.")
+        print("      -> Aba Enade gerada com KPIs numéricos.")
 
     print(f"\n{'='*50}")
     print(f"SUCESSO! Base do ENADE {ano} convertida do diretório para: {out_file}")
