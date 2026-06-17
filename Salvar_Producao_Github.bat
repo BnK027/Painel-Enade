@@ -43,7 +43,12 @@ if "%comment%"=="" (
     set comment=Atualizacao Producao - %d% %t%
 )
 
-git commit -m "%comment%"
+git diff --cached --quiet
+if errorlevel 1 (
+    git commit -m "%comment%"
+) else (
+    echo Nenhuma modificacao nos arquivos de producao foi detectada nesta versao.
+)
 
 echo.
 echo Enviando para a nuvem (GitHub)...
