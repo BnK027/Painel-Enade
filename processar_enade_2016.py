@@ -117,6 +117,27 @@ def main():
             else:
                 print("       Aviso: Coluna DS_VT_ACE_OCE não encontrada em Arq_3.")
 
+        # Construir Arq_43 (Questionário Socioeconômico Parte 1)
+        print("\n[5/6] Construindo Arq_43 (Questionário Estudante)...")
+        df_arq43 = pd.DataFrame()
+        
+        # Pega a base de CO_CURSO da primeira aba (Arq_7) para garantir alinhamento
+        primeiro_arq = pd.read_excel(xls_raw, sheet_name='microdados2016_arq7')
+        primeiro_arq = primeiro_arq[primeiro_arq['CO_CURSO'].isin(ifes_cursos)].copy()
+        df_arq43['CO_CURSO'] = primeiro_arq['CO_CURSO'].values
+        
+        for i in range(7, 33):
+            nome_aba_bruta = f'microdados2016_arq{i}'
+            if nome_aba_bruta in abas_brutas:
+                df_temp = pd.read_excel(xls_raw, sheet_name=nome_aba_bruta)
+                df_temp = df_temp[df_temp['CO_CURSO'].isin(ifes_cursos)].copy()
+                qe_cols = [c for c in df_temp.columns if 'QE_' in str(c)]
+                for col in qe_cols:
+                    df_arq43[col] = df_temp[col].values
+                    
+        df_arq43.to_excel(writer, sheet_name='Arq_43', index=False)
+        print("      -> Arq_43 gerado com sucesso!")
+
     print(f"\n[6/6] Limpeza...")
     if os.path.exists(raw_file):
         os.remove(raw_file)

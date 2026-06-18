@@ -215,6 +215,7 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 ### 36. Processamento e Integração do ENADE 2016 (18/06/2026)
 * **Engenharia de Dados (Filtro Dinâmico por IES):** Assim como em 2023, o usuário forneceu uma versão `.xlsm` unificada para 2016. Criamos o `processar_enade_2016.py`, que realizou a leitura do `Enade 2016.xlsm` (198MB), mapeando o IFES na aba `microdados2016_arq1` (`CO_IES: 1808`) para extrair os `CO_CURSO`.
 * **Extração de Notas Oficiais:** Extraímos as notas e avaliações oficias (Conceito Enade, Notas Brutas) diretamente da aba `Enade` presente no arquivo fonte, cruzando-as com os cursos do IFES identificados.
+* **Reconstrução do Questionário do Estudante (`Arq_43`):** Em 2016, as respostas do questionário não vieram consolidadas. As perguntas `QE_I01` a `QE_I26` estavam pulverizadas individualmente de `Arq_7` a `Arq_32`. Criamos uma lógica para concatenar dinamicamente essas colunas e formar a aba sintética `Arq_43`, alimentando nativamente o módulo de ranking do dashboard.
 * **Mapeamento Flexível no Dashboard:** Atualizamos o `rename_dict` no `app.py` para compatibilizar a nomenclatura do Inep em 2016 (ex: `'Área de Enquadramento'` para `'NOME DO CURSO'`).
 * **Integração no Dashboard e Deploy:** O ano foi incluído nas listas de carregamento em memória do `app.py` (`load_data` e `load_microdata`), a página `visao_2016.py` foi injetada no roteador, e os arquivos de 2016 foram mapeados no `Salvar_Producao_Github.bat`.
 
