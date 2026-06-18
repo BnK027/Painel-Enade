@@ -194,6 +194,9 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Correção de Notas e Participantes (ETL Atualizado):** Modificamos o pipeline para calcular dinamicamente a partir dos microdados (`Arq_3`) o número de concluintes inscritos, participantes e as notas médias (FG e CE), inserindo-os na aba `Enade` estruturada. Isso resolveu o problema de KPIs e tabelas de notas em branco nas dashboards históricas.
 * **Resolução de Tipagem no Merge de Microdados (`CO_CURSO` e `ANO`):** Consertamos um bug silencioso no `app.py` em que tipos mistos (int vs str) nas colunas de código de curso e ano nos dados processados forçavam o descarte das linhas em `pd.merge()`, esvaziando todas as abas de Questionário Estudantil e Sociodemográfico. O `app.py` agora força de forma resiliente a conversão de `CO_CURSO` e `ANO` para string em todas as abas lidas.
 
+
+### 33. Ajustes Finais no Painel e Scripts de Backup (17/06/2026)
+* **Correção no Script de Backup (`Salvar_Producao_Github.bat`):** O script gerava avisos confusos e listava todos os arquivos não monitorados em vermelho quando rodado sem que houvesse mudanças pendentes de produção. Refatoramos a lógica usando `git diff --cached --quiet` para checar se há modificações em cache de forma limpa, evitando exibir erros do Git.
+* **Sincronização Final de Tipos (Int vs Str):** A conversão para string que havia sido feita na `load_microdata()` conflitava com a `load_data()`, cujas chaves continuavam como inteiros. Isso esvaziava os gráficos de perfil de estudantes e questionários em anos anteriores. Corrigimos o `app.py` para sincronizar os tipos e restabelecer a integração de dados para todos os ENADEs do painel.
+
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*
-
-
