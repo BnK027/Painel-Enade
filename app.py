@@ -434,14 +434,18 @@ def show_home():
         else:
             # Ordena os anos para ficarem em ordem cronológica
             anos_disponiveis.sort()
-            cols = st.columns(len(anos_disponiveis))
             
-            for idx, ano in enumerate(anos_disponiveis):
-                with cols[idx]:
-                    if st.button(f"📅 {ano}", use_container_width=True, type="primary"):
-                        st.session_state.ano_selecionado = ano
-                        st.session_state.page = f'visao_{ano}'
-                        st.rerun()
+            # Limita a 4 colunas por linha para não espremer botões em telas menores (celular)
+            max_cols = 4
+            for i in range(0, len(anos_disponiveis), max_cols):
+                chunk = anos_disponiveis[i:i + max_cols]
+                cols = st.columns(max_cols)
+                for j, ano in enumerate(chunk):
+                    with cols[j]:
+                        if st.button(f"📅 {ano}", use_container_width=True, type="primary"):
+                            st.session_state.ano_selecionado = ano
+                            st.session_state.page = f'visao_{ano}'
+                            st.rerun()
                         
     st.markdown("<br><br>", unsafe_allow_html=True)
     with st.expander("📊 Consultar Tabela Geral: Todos os Cursos e Anos Disponíveis", expanded=False):
