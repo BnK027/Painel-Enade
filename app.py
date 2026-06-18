@@ -190,8 +190,16 @@ def load_microdata():
             df_enade['Código do Curso'] = df_enade['Código do Curso'].astype(str).str.replace(r'\.0$', '', regex=True)
             
             # Map CO_CURSO to their actual Names and Campus
-            curso_map = pd.merge(curso_map, df_enade[['Código do Curso', 'Área de Avaliação']], left_on='CO_CURSO', right_on='Código do Curso', how='inner')
-            curso_map = curso_map.rename(columns={'Área de Avaliação': 'NOME DO CURSO'})
+            if 'Área de Avaliação' in df_enade.columns:
+                area_col = 'Área de Avaliação'
+            elif 'Área de Enquadramento' in df_enade.columns:
+                area_col = 'Área de Enquadramento'
+            else:
+                area_col = None
+                
+            if area_col:
+                curso_map = pd.merge(curso_map, df_enade[['Código do Curso', area_col]], left_on='CO_CURSO', right_on='Código do Curso', how='inner')
+                curso_map = curso_map.rename(columns={area_col: 'NOME DO CURSO'})
             
             # Aba Arq_5 (Sexo)
             if 'Arq_5' in xls.sheet_names:
