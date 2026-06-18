@@ -129,6 +129,9 @@ def load_data():
         col_nota_fg = next((c for c in df_enade.columns if 'Bruta' in str(c) and 'FG' in str(c)), None)
         col_nota_ce = next((c for c in df_enade.columns if 'Bruta' in str(c) and 'CE' in str(c)), None)
         
+        df_enade['Código do Curso'] = df_enade['Código do Curso'].astype(str).str.replace(r'\.0$', '', regex=True)
+        df_cursos['CO_CURSO'] = df_cursos['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True)
+        
         df_merged = pd.merge(df_enade, df_cursos[['CO_CURSO', 'CAMPUS']], left_on='Código do Curso', right_on='CO_CURSO', how='left')
         
         rename_dict = {
@@ -145,6 +148,9 @@ def load_data():
         if col_nota_ce: rename_dict[col_nota_ce] = 'NOTA_CE'
             
         df_final = df_merged.rename(columns=rename_dict)
+        if 'ANO' in df_final.columns:
+            df_final['ANO'] = df_final['ANO'].astype(str).str.replace(r'\.0$', '', regex=True)
+            
         cols_to_keep = ['NOME DO CURSO', 'CAMPUS', 'MUNICÍPIO', 'ANO', 'ENADE CONTÍNUO', 'ENADE FAIXA', 'MODALIDADE', 'INSCRITOS', 'PRESENTES', 'NOTA_FG', 'NOTA_CE', 'CO_CURSO']
         cols_to_keep = [c for c in cols_to_keep if c in df_final.columns]
         all_dfs.append(df_final[cols_to_keep])
