@@ -117,7 +117,9 @@ st.markdown("""
 # 3. Data Loading
 @st.cache_data
 def load_data():
-    files = ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']
+    import os
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    files = [os.path.join(base_dir, f) for f in ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']]
     all_dfs = []
     
     for file in files:
@@ -162,7 +164,9 @@ def load_data():
 
 @st.cache_data
 def load_microdata():
-    files = ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']
+    import os
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    files = [os.path.join(base_dir, f) for f in ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']]
     all_sexo, all_idade, all_raca, all_renda = [], [], [], []
     all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43 = [], [], [], [], [], [], [], [], [], []
     all_ce_respostas, all_ce_gabarito = [], []
