@@ -181,6 +181,7 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * `[x]` **Revisão Bibliográfica do Artigo:** Atualizada com as sugestões do professor.
 * `[x]` **Integração CE 2017:** Verificar se os microdados de 2017 permitem a mesma análise de acertos/erros por questão (a estrutura do `Arq_3B` em 2017 costuma ser diferente).
 * `[x]` **Processamento e Integração ENADE 2015/2016:** Finalizado.
+* `[x]` **Processamento e Integração ENADE 2023:** Extraído, consolidado e integrado ao dashboard.
 * `[ ]` **Integração da Visão Candidato x Vaga:** Avaliar a inclusão definitiva do painel no menu principal do `app.py`.
 * `[ ]` **Deploy Master:** Realizar o push final via `Salvar_Producao_Github.bat` e verificar o link oficial.
 * `[ ]` **Revisão Final de Coerência:** Validar se os nomes de cursos mapeados via EMEC in 2017 estão consistentes com as outras visões.
@@ -198,5 +199,15 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 ### 33. Ajustes Finais no Painel e Scripts de Backup (17/06/2026)
 * **Correção no Script de Backup (`Salvar_Producao_Github.bat`):** O script gerava avisos confusos e listava todos os arquivos não monitorados em vermelho quando rodado sem que houvesse mudanças pendentes de produção. Refatoramos a lógica usando `git diff --cached --quiet` para checar se há modificações em cache de forma limpa, evitando exibir erros do Git.
 * **Sincronização Final de Tipos (Int vs Str):** A conversão para string que havia sido feita na `load_microdata()` conflitava com a `load_data()`, cujas chaves continuavam como inteiros. Isso esvaziava os gráficos de perfil de estudantes e questionários em anos anteriores. Corrigimos o `app.py` para sincronizar os tipos e restabelecer a integração de dados para todos os ENADEs do painel.
+
+### 34. Remoção Temporária de 2015 e 2016 (17/06/2026)
+* **Desativação Provisória:** O usuário optou por realizar a consolidação dos dados brutos de 2015 e 2016 diretamente no formato XLSX unificado de antemão. Removemos temporariamente as referências desses dois anos de `load_data()`, `load_microdata()` e das diretivas de roteamento de tela no `app.py`. A aplicação voltou a operar de forma estável com o bloco de anos de 2017 a 2022.
+
+### 35. Processamento e Integração do ENADE 2023 (18/06/2026)
+* **Engenharia de Dados (Filtro Dinâmico por IES):** Processamos o arquivo bruto massivo `Enade 2023.xlsm` (343MB). Como esta edição não trazia a aba consolidada `Enade`, mapeamos o IFES (`CO_IES: 1808`) diretamente na aba `microdados2023_arq1` para extrair os códigos de curso (`CO_CURSO`) legítimos. Usamos essa lista para filtrar as 32 abas de microdados (`Arq_1` a `Arq_32`).
+* **Enriquecimento e Agregação de Notas:** Calculamos dinamicamente as estatísticas de participação e desempenho a partir dos microdados estudantis (`Arq_3`), gravando na aba principal `Enade` as colunas `Nº de Concluintes Inscritos`, `Nº  de Concluintes Participantes` (presentes com `TP_PRES == 555`), `Nota Bruta - FG` e `Nota Bruta - CE` (médias dos presentes). Isso evitou KPIs vazios no painel.
+* **Mapeamento de Nomes e Campi:** Realizamos o cruzamento com o dicionário oficial `Dados Cursos EMEC finalizado.xlsx` para obter os nomes reais e campi de cada curso de 2023.
+* **Integração no Dashboard:** Criamos a página de visualização correspondente (`views/visao_2023.py`) e atualizamos o roteador e as funções `load_data()` e `load_microdata()` no `app.py`.
+* **Validação:** Rodamos um script de testes mockados para verificar a consistência estrutural do dashboard e o carregamento dos microdados integrados de 2023, validando o funcionamento sem falhas.
 
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*

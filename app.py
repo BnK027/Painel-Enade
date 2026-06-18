@@ -117,7 +117,7 @@ st.markdown("""
 # 3. Data Loading
 @st.cache_data
 def load_data():
-    files = ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
+    files = ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']
     all_dfs = []
     
     for file in files:
@@ -162,7 +162,7 @@ def load_data():
 
 @st.cache_data
 def load_microdata():
-    files = ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx']
+    files = ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']
     all_sexo, all_idade, all_raca, all_renda = [], [], [], []
     all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43 = [], [], [], [], [], [], [], [], [], []
     all_ce_respostas, all_ce_gabarito = [], []
@@ -514,3 +514,7 @@ elif st.session_state.page == 'visao_2022':
     show_splash('2022')
     from views.visao_2022 import render_visao_2022
     render_visao_2022(data, microdados, render_filters, render_page_header)
+elif st.session_state.page == 'visao_2023':
+    show_splash('2023')
+    from views.visao_2023 import render_visao_2023
+    render_visao_2023(data, microdados, render_filters, render_page_header)
