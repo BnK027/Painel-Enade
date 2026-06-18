@@ -25,6 +25,8 @@ git add Enade_2018_Ifes.xlsx
 git add Enade_2019_Ifes.xlsx
 git add Enade_2021_Ifes.xlsx
 git add Enade_2022_Ifes.xlsx
+git add Enade_2023_Ifes.xlsx
+git add processar_enade_2023.py
 git add processar_novo_enade.py
 git add processar_novo_enade_txt.py
 git add processar_enade_diretorio.py
