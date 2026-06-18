@@ -20,6 +20,7 @@ git add ifes-horizontal-cor.png
 git add ifes-vertical-cor.png
 git add Enade_2015_Ifes.xlsx
 git add Enade_2016_Ifes.xlsx
+git add processar_enade_2016.py
 git add Enade_2017_Ifes.xlsx
 git add Enade_2018_Ifes.xlsx
 git add Enade_2019_Ifes.xlsx

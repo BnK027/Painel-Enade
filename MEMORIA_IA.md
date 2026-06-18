@@ -212,4 +212,10 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Resiliência de Caminhos (Resolução de FileNotFound):** Atualizamos as funções de leitura no `app.py` para usar caminhos absolutos gerados dinamicamente via `os.path.abspath(__file__)`. Isso evita erros de carregamento quando a aplicação Streamlit é iniciada a partir de caminhos relativos incorretos.
 * **Ajuste no Deploy do Streamlit Cloud:** Atualizamos o arquivo `Salvar_Producao_Github.bat` para rastrear explicitamente as planilhas e scripts do ciclo 2023 (`Enade_2023_Ifes.xlsx` e `processar_enade_2023.py`), corrigindo a ausência de dados do servidor em nuvem que impedia a inicialização do painel no ambiente remoto.
 
+### 36. Processamento e Integração do ENADE 2016 (18/06/2026)
+* **Engenharia de Dados (Filtro Dinâmico por IES):** Assim como em 2023, o usuário forneceu uma versão `.xlsm` unificada para 2016. Criamos o `processar_enade_2016.py`, que realizou a leitura do `Enade 2016.xlsm` (198MB), mapeando o IFES na aba `microdados2016_arq1` (`CO_IES: 1808`) para extrair os `CO_CURSO`.
+* **Extração de Notas Oficiais:** Extraímos as notas e avaliações oficias (Conceito Enade, Notas Brutas) diretamente da aba `Enade` presente no arquivo fonte, cruzando-as com os cursos do IFES identificados.
+* **Mapeamento Flexível no Dashboard:** Atualizamos o `rename_dict` no `app.py` para compatibilizar a nomenclatura do Inep em 2016 (ex: `'Área de Enquadramento'` para `'NOME DO CURSO'`).
+* **Integração no Dashboard e Deploy:** O ano foi incluído nas listas de carregamento em memória do `app.py` (`load_data` e `load_microdata`), a página `visao_2016.py` foi injetada no roteador, e os arquivos de 2016 foram mapeados no `Salvar_Producao_Github.bat`.
+
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*

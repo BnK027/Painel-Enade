@@ -119,7 +119,7 @@ st.markdown("""
 def load_data():
     import os
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    files = [os.path.join(base_dir, f) for f in ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']]
+    files = [os.path.join(base_dir, f) for f in ['Enade_2016_Ifes.xlsx', 'Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']]
     all_dfs = []
     
     for file in files:
@@ -137,7 +137,7 @@ def load_data():
         df_merged = pd.merge(df_enade, df_cursos[['CO_CURSO', 'CAMPUS']], left_on='Código do Curso', right_on='CO_CURSO', how='left')
         
         rename_dict = {
-            'Área de Avaliação': 'NOME DO CURSO', 'CAMPUS': 'CAMPUS',
+            'Área de Avaliação': 'NOME DO CURSO', 'Área de Enquadramento': 'NOME DO CURSO', 'CAMPUS': 'CAMPUS',
             'Município do Curso': 'MUNICÍPIO', 'Município do Curso**': 'MUNICÍPIO',
             'Ano': 'ANO', 'Conceito Enade (Contínuo)': 'ENADE CONTÍNUO',
             'Conceito Enade (Faixa)': 'ENADE FAIXA', 'Modalidade de Ensino': 'MODALIDADE',
@@ -166,7 +166,7 @@ def load_data():
 def load_microdata():
     import os
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    files = [os.path.join(base_dir, f) for f in ['Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']]
+    files = [os.path.join(base_dir, f) for f in ['Enade_2016_Ifes.xlsx', 'Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']]
     all_sexo, all_idade, all_raca, all_renda = [], [], [], []
     all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43 = [], [], [], [], [], [], [], [], [], []
     all_ce_respostas, all_ce_gabarito = [], []
@@ -498,6 +498,10 @@ def show_splash(ano):
 if st.session_state.page == 'home':
     st.session_state.splash_shown = None   # reseta ao voltar para home
     show_home()
+elif st.session_state.page == 'visao_2016':
+    show_splash('2016')
+    from views.visao_2016 import render_visao_2016
+    render_visao_2016(data, microdados, render_filters, render_page_header)
 elif st.session_state.page == 'visao_2017':
     show_splash('2017')
     from views.visao_2017 import render_visao_2017
