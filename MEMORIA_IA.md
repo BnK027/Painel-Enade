@@ -219,4 +219,9 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Mapeamento Flexível no Dashboard:** Atualizamos o `rename_dict` no `app.py` para compatibilizar a nomenclatura do Inep em 2016 (ex: `'Área de Enquadramento'` para `'NOME DO CURSO'`).
 * **Integração no Dashboard e Deploy:** O ano foi incluído nas listas de carregamento em memória do `app.py` (`load_data` e `load_microdata`), a página `visao_2016.py` foi injetada no roteador, e os arquivos de 2016 foram mapeados no `Salvar_Producao_Github.bat`.
 
+### 37. Resolução do Bug de Sincronia de Filtros no Streamlit (18/06/2026)
+* **Diagnóstico de Inércia de Filtros ("Não filtra de primeira"):** Identificamos um bug clássico de concorrência de estado no Streamlit. Quando o usuário selecionava um Campus ou Curso, a interface mostrava a escolha, mas as métricas (KPIs como "Inscritos: 367") continuavam exibindo os totais acumulados da série histórica ou do ano inteiro. Isso ocorria porque a mutação inline de chaves do `st.session_state` durante a renderização fazia com que o Streamlit descartasse a interação do usuário na primeira execução.
+* **Refatoração Resiliente via Callbacks:** Atualizamos a função `render_filters()` no `app.py` para separar o estado interno de renderização dos widgets (`_campus_ui` e `_curso_ui`) do estado persistente de dados (`filtro_campus` e `filtro_curso`).
+* **Sincronização Segura:** Implementamos funções de callback (`on_campus_change` e `on_curso_change`) que sincronizam os estados de forma limpa antes do rerun do Streamlit. Isso garantiu que os filtros funcionem de forma instantânea e consistente a partir do primeiro clique, atualizando dinamicamente todos os KPIs e gráficos subsequentes.
+
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*
