@@ -289,12 +289,14 @@ def get_options(df, column):
     options.sort()
     return ['Todos'] + [str(opt) for opt in options]
 
-# --- Helper de Filtros Global ---
 def render_filters(source_data, ano_fixo=None):
     st.markdown('<div class="fade-in" style="margin-top: 1rem; margin-bottom: 1rem;"><span style="background: linear-gradient(135deg, #1a5722, #32A041); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(50,160,65,0.3);">⚙️ FILTROS DE PESQUISA</span></div>', unsafe_allow_html=True)
     
-    curr_campus = st.session_state.get('filtro_campus', [])
-    curr_curso = st.session_state.get('filtro_curso', 'Todos')
+    if 'filtro_campus' not in st.session_state: st.session_state.filtro_campus = []
+    if 'filtro_curso' not in st.session_state: st.session_state.filtro_curso = 'Todos'
+
+    curr_campus = st.session_state.filtro_campus
+    curr_curso = st.session_state.filtro_curso
 
     def get_filtered_for(exclude_key):
         df = source_data.copy()
@@ -317,15 +319,29 @@ def render_filters(source_data, ano_fixo=None):
     with col_a:
         st.markdown('<div class="filter-header">Campus</div>', unsafe_allow_html=True)
         campus_options = get_options(get_filtered_for('CAMPUS'), 'CAMPUS')
+        
         valid_campi = [c for c in curr_campus if c in campus_options]
-        if valid_campi != curr_campus: st.session_state['filtro_campus'] = valid_campi
-        selected_campus = st.multiselect("Selecione os Campi", campus_options[1:], placeholder="Todos", label_visibility="collapsed", key='filtro_campus')
+        if valid_campi != curr_campus: 
+            st.session_state.filtro_campus = valid_campi
+            curr_campus = valid_campi
+            
+        def on_campus_change():
+            st.session_state.filtro_campus = st.session_state._campus_ui
+            
+        st.multiselect("Selecione os Campi", campus_options[1:], default=curr_campus, placeholder="Todos", label_visibility="collapsed", key='_campus_ui', on_change=on_campus_change)
         
     with col_b:
         st.markdown('<div class="filter-header">Curso</div>', unsafe_allow_html=True)
         curso_options = get_options(get_filtered_for('NOME DO CURSO'), 'NOME DO CURSO')
-        if curr_curso not in curso_options: st.session_state['filtro_curso'] = 'Todos'
-        selected_curso = st.selectbox("Selecione o Curso", curso_options, label_visibility="collapsed", key='filtro_curso')
+        
+        if curr_curso not in curso_options: 
+            st.session_state.filtro_curso = 'Todos'
+            curr_curso = 'Todos'
+            
+        def on_curso_change():
+            st.session_state.filtro_curso = st.session_state._curso_ui
+            
+        st.selectbox("Selecione o Curso", curso_options, index=curso_options.index(curr_curso) if curr_curso in curso_options else 0, label_visibility="collapsed", key='_curso_ui', on_change=on_curso_change)
 
     return get_filtered_for(None)
 
