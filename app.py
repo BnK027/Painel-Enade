@@ -126,6 +126,13 @@ def load_data():
         df_enade = pd.read_excel(file, sheet_name='Enade')
         df_cursos = pd.read_excel(file, sheet_name='Cursos')
         
+        # Padronizar nomes de CAMPUS para evitar duplicatas (ex: "Colatina" e "Campus Colatina")
+        if 'CAMPUS' in df_cursos.columns:
+            df_cursos['CAMPUS'] = df_cursos['CAMPUS'].apply(
+                lambda c: 'Cefor' if str(c).strip() in ['Cefor', 'Vários municípios', 'Vários Municípios']
+                else (str(c).strip() if str(c).strip().startswith('Campus') or str(c).strip() == 'Desconhecido' else f"Campus {str(c).strip()}")
+            )
+        
         col_inscritos = next((c for c in df_enade.columns if 'Inscrito' in str(c)), None)
         col_participantes = next((c for c in df_enade.columns if 'Participante' in str(c)), None)
         col_nota_fg = next((c for c in df_enade.columns if 'Bruta' in str(c) and 'FG' in str(c)), None)
@@ -178,6 +185,12 @@ def load_microdata():
             
             if 'CAMPUS' not in df_cursos.columns:
                 df_cursos['CAMPUS'] = 'Desconhecido'
+            else:
+                # Padronizar nomes de CAMPUS
+                df_cursos['CAMPUS'] = df_cursos['CAMPUS'].apply(
+                    lambda c: 'Cefor' if str(c).strip() in ['Cefor', 'Vários municípios', 'Vários Municípios']
+                    else (str(c).strip() if str(c).strip().startswith('Campus') or str(c).strip() == 'Desconhecido' else f"Campus {str(c).strip()}")
+                )
 
             curso_map = df_cursos[['CO_CURSO', 'CAMPUS']].copy()
             # Adiciona a coluna ANO vinda do nome do arquivo
