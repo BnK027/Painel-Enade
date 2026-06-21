@@ -433,16 +433,22 @@ def show_home():
 <div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #103d6d, #205c9e); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; margin-right: 15px; box-shadow: 0 4px 10px rgba(16,61,109,0.2);">W</div>
 <div>
 <p style="margin: 0; font-size: 0.75rem; color: #103d6d; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Orientador</p>
+<div style="display: flex; align-items: center; gap: 8px;">
 <p style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 800; letter-spacing: -0.5px;">Prof. Wagner Teixeira da Costa</p>
-<p style="margin: 0; font-size: 0.85rem; color: #555; font-weight: 500;">✉️ wagnercosta@ifes.edu.br</p>
+<a href="http://lattes.cnpq.br/5878028929272559" target="_blank" title="Acessar Currículo Lattes" style="text-decoration: none; background: rgba(16, 61, 109, 0.1); color: #103d6d; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(16, 61, 109, 0.2);">🎓 Lattes</a>
+</div>
+<p style="margin: 0; font-size: 0.85rem; color: #555; font-weight: 500; margin-top: 2px;">✉️ wagnercosta@ifes.edu.br</p>
 </div>
 </div>
 <div style="display: flex; align-items: center; padding: 10px; border-radius: 12px; transition: all 0.3s; background: linear-gradient(to right, rgba(44, 140, 68, 0.03), transparent);">
 <div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #2c8c44, #3bb358); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; margin-right: 15px; box-shadow: 0 4px 10px rgba(44,140,68,0.2);">M</div>
 <div>
 <p style="margin: 0; font-size: 0.75rem; color: #2c8c44; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Aluno Desenvolvedor</p>
+<div style="display: flex; align-items: center; gap: 8px;">
 <p style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 800; letter-spacing: -0.5px;">Matheus Ferreira Tissianel Benincá</p>
-<p style="margin: 0; font-size: 0.85rem; color: #555; font-weight: 500;">✉️ mathe.ninca@gmail.com</p>
+<a href="http://lattes.cnpq.br/1551351232675358" target="_blank" title="Acessar Currículo Lattes" style="text-decoration: none; background: rgba(44, 140, 68, 0.1); color: #2c8c44; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(44, 140, 68, 0.2);">🎓 Lattes</a>
+</div>
+<p style="margin: 0; font-size: 0.85rem; color: #555; font-weight: 500; margin-top: 2px;">✉️ mathe.ninca@gmail.com</p>
 </div>
 </div>
 </div>''', unsafe_allow_html=True)
