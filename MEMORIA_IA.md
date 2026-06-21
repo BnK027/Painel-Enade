@@ -224,4 +224,14 @@ O maior avanço técnico e de Engenharia de Dados do projeto até agora. Constru
 * **Refatoração Resiliente via Callbacks:** Atualizamos a função `render_filters()` no `app.py` para separar o estado interno de renderização dos widgets (`_campus_ui` e `_curso_ui`) do estado persistente de dados (`filtro_campus` e `filtro_curso`).
 * **Sincronização Segura:** Implementamos funções de callback (`on_campus_change` e `on_curso_change`) que sincronizam os estados de forma limpa antes do rerun do Streamlit. Isso garantiu que os filtros funcionem de forma instantânea e consistente a partir do primeiro clique, atualizando dinamicamente todos os KPIs e gráficos subsequentes.
 
+### 38. Normalização Avançada de Nomenclatura e Ajustes Finos de UI/Contatos (21/06/2026)
+* **Higienização e Normalização (Campi e Cursos):** 
+  - Limpamos os prefixos redundantes "Campus " nos nomes das unidades utilizando regex nos pipelines de carregamento do `app.py`.
+  - Mapeamos os cursos usando o dicionário EMEC oficial e anexamos o grau do curso (ex: "- Bacharelado") no nome para evitar fusão de códigos de cursos que compartilham nomes mas têm graus acadêmicos diferentes.
+  - Refatoramos a exibição do seletor de "Componente Específico" para explicitar `[Nome do Curso] - [Campus] (Código [CO_CURSO])`, facilitando a diferenciação visual das ofertas.
+* **Ajuste Léxico de Métricas:** Alteramos todas as ocorrências visuais e filtros de "Campi" para o singular "Campus" no painel principal e nos sub-rótulos.
+* **Assinatura e Links dos Desenvolvedores:**
+  - Adicionamos os e-mails de contato oficiais no rodapé do painel acompanhados do ícone de carta: `✉️ wagnercosta@ifes.edu.br` e `✉️ mathe.ninca@gmail.com`.
+  - Adicionamos um link minimalista sem botões/bolhas para o currículo Lattes de cada desenvolvedor (`🎓 Lattes`) alinhado horizontalmente na frente de seus respectivos nomes.
+
 *(Este arquivo continuará sendo atualizado a cada nova funcionalidade implementada)*
