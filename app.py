@@ -122,11 +122,15 @@ def load_data():
     files = [os.path.join(base_dir, f) for f in ['Enade_2016_Ifes.xlsx', 'Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']]
     all_dfs = []
     
-    # Carrega Dicionário Oficial do EMEC para padronizar NOME DO CURSO
+    # Carrega Dicionário Oficial do EMEC para padronizar NOME DO CURSO com o Grau (ex: - Bacharelado)
     emec_map = {}
     try:
         emec_df = pd.read_excel(os.path.join(base_dir, 'Dados Cursos EMEC finalizado.xlsx'))
-        emec_map = dict(zip(emec_df['Código'].astype(str).str.strip(), emec_df['Curso'].astype(str).str.strip()))
+        emec_df['Grau'] = emec_df['Grau'].fillna('')
+        emec_map = dict(zip(
+            emec_df['Código'].astype(str).str.strip(), 
+            emec_df.apply(lambda row: f"{str(row['Curso']).strip()} - {str(row['Grau']).strip()}" if str(row['Grau']).strip() else str(row['Curso']).strip(), axis=1)
+        ))
     except Exception:
         pass
     
@@ -192,11 +196,15 @@ def load_microdata():
     all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43 = [], [], [], [], [], [], [], [], [], []
     all_ce_respostas, all_ce_gabarito = [], []
     
-    # Carrega Dicionário Oficial do EMEC para padronizar NOME DO CURSO
+    # Carrega Dicionário Oficial do EMEC para padronizar NOME DO CURSO com o Grau (ex: - Bacharelado)
     emec_map = {}
     try:
         emec_df = pd.read_excel(os.path.join(base_dir, 'Dados Cursos EMEC finalizado.xlsx'))
-        emec_map = dict(zip(emec_df['Código'].astype(str).str.strip(), emec_df['Curso'].astype(str).str.strip()))
+        emec_df['Grau'] = emec_df['Grau'].fillna('')
+        emec_map = dict(zip(
+            emec_df['Código'].astype(str).str.strip(), 
+            emec_df.apply(lambda row: f"{str(row['Curso']).strip()} - {str(row['Grau']).strip()}" if str(row['Grau']).strip() else str(row['Curso']).strip(), axis=1)
+        ))
     except Exception:
         pass
         
