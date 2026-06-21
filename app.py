@@ -375,7 +375,7 @@ def render_filters(source_data, ano_fixo=None):
         def on_campus_change():
             st.session_state.filtro_campus = st.session_state._campus_ui
             
-        st.multiselect("Selecione os Campi", campus_options[1:], default=curr_campus, placeholder="Todos", label_visibility="collapsed", key='_campus_ui', on_change=on_campus_change)
+        st.multiselect("Selecione os Campus", campus_options[1:], default=curr_campus, placeholder="Todos", label_visibility="collapsed", key='_campus_ui', on_change=on_campus_change)
         
     with col_b:
         st.markdown('<div class="filter-header">Curso</div>', unsafe_allow_html=True)
@@ -468,7 +468,7 @@ def show_home():
             </div>''', unsafe_allow_html=True)
         with col_k2:
             st.markdown(f'''<div class="kpi-card" style="padding: 15px; border-left-color: #f39c12;">
-                <p class="kpi-title" style="font-size: 0.75rem; margin-bottom: 5px;">Campi</p>
+                <p class="kpi-title" style="font-size: 0.75rem; margin-bottom: 5px;">Campus</p>
                 <p class="kpi-value" style="font-size: 2rem;">{total_campi}</p>
             </div>''', unsafe_allow_html=True)
         
