@@ -75,10 +75,14 @@ def main():
         
         df_arq3 = None
         for aba in abas_arq:
-            df_temp = pd.read_excel(xls_raw, sheet_name=aba)
+            # Força a leitura de Arq_3 como string para evitar que o Pandas converta zeros à esquerda em notação científica (1.0e+25)
+            if aba.lower() == 'microdados2023_arq3':
+                df_temp = pd.read_excel(xls_raw, sheet_name=aba, dtype=str)
+            else:
+                df_temp = pd.read_excel(xls_raw, sheet_name=aba)
             
             if 'CO_CURSO' in df_temp.columns:
-                df_temp = df_temp[df_temp['CO_CURSO'].isin(ifes_cursos)].copy()
+                df_temp = df_temp[df_temp['CO_CURSO'].astype(str).str.replace(r'\.0$', '', regex=True).isin(ifes_cursos.astype(str))].copy()
             
             if len(df_temp) == 0:
                 continue
@@ -107,9 +111,15 @@ def main():
                     df_arq3b[col] = df_arq3[col]
             
             if 'DS_VT_ACE_OCE' in df_arq3.columns:
-                s_oce = df_arq3['DS_VT_ACE_OCE'].astype(str).str.replace(r'\.0$', '', regex=True)
-                s_oce = s_oce.apply(lambda x: x if x != 'nan' else '')
-                for i in range(27):
+                # O gabarito de 2023 tem 29 questões de Componente Específico em vez de 27.
+                # Converte para string com segurança
+                s_oce = df_arq3['DS_VT_ACE_OCE'].fillna('').astype(str).str.replace(r'\.0$', '', regex=True)
+                s_oce = s_oce.str.replace('nan', '', case=False).str.replace('NaN', '', case=False)
+                
+                # Preenche com zeros à esquerda caso o Pandas tenha removido ao ler como número inicialmente
+                s_oce = s_oce.apply(lambda x: str(x).zfill(29) if len(str(x)) > 0 and len(str(x)) < 29 else str(x))
+                
+                for i in range(29):
                     df_arq3b[f'CE{i+1}'] = pd.to_numeric(s_oce.str[i:i+1], errors='coerce')
                 
                 df_arq3b.to_excel(writer, sheet_name='Arq_3B', index=False)
