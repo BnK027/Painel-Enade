@@ -41,9 +41,9 @@ def render_tab_quest_especifico(microdados, filtered_data):
         return
 
     # --- Selector de Curso (obrigatório para CE não misturar cursos) ---
-    cursos_disponiveis = df_ce[['CO_CURSO', 'NOME DO CURSO']].drop_duplicates()
+    cursos_disponiveis = df_ce[['CO_CURSO', 'NOME DO CURSO', 'CAMPUS']].drop_duplicates()
     opcoes_curso = {
-        f"{row['NOME DO CURSO']} (Código {row['CO_CURSO']})": row['CO_CURSO']
+        f"{row['NOME DO CURSO']} - {row['CAMPUS']} (Código {row['CO_CURSO']})": row['CO_CURSO']
         for _, row in cursos_disponiveis.iterrows()
     }
 
