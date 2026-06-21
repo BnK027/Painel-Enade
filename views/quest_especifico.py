@@ -32,11 +32,11 @@ def render_tab_quest_especifico(microdados, filtered_data):
         st.info("Nenhum dado de questões CE disponível para o filtro selecionado.")
         return
 
-    # Colunas de questões CE
-    ce_cols = [c for c in df_ce.columns if str(c).startswith('CE') and str(c)[2:].isdigit()]
-    ce_cols.sort(key=lambda x: int(x[2:]))
+    # --- Colunas de questões CE (Somente as que existem nos arquivos originais) ---
+    ce_cols_all = [c for c in df_ce.columns if str(c).startswith('CE') and str(c)[2:].isdigit()]
+    ce_cols_all.sort(key=lambda x: int(x[2:]))
 
-    if not ce_cols:
+    if not ce_cols_all:
         st.warning("Colunas de questões CE não encontradas nos dados.")
         return
 
@@ -68,6 +68,14 @@ def render_tab_quest_especifico(microdados, filtered_data):
     df_curso = df_ce[df_ce['CO_CURSO'] == curso_co].copy()
     nome_curso = curso_selecionado_label.split(" (Código")[0]
     total_alunos = len(df_curso)
+
+    # Oculta colunas CE que são inteiramente NaN/nulas para este curso/ano
+    # (Ex: CE28 e CE29 não devem aparecer em 2022)
+    ce_cols = [q for q in ce_cols_all if df_curso[q].notna().any() and not (df_curso[q].astype(str).str.strip() == '').all()]
+
+    if not ce_cols:
+        st.info("Nenhuma resposta válida para o Componente Específico encontrada.")
+        return
 
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #f0f7f1, #e8f5ea); border-radius: 16px;
