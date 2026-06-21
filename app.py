@@ -138,11 +138,11 @@ def load_data():
         df_enade = pd.read_excel(file, sheet_name='Enade')
         df_cursos = pd.read_excel(file, sheet_name='Cursos')
         
-        # Padronizar nomes de CAMPUS para evitar duplicatas (ex: "Colatina" e "Campus Colatina")
+        # Padronizar nomes de CAMPUS para evitar duplicatas e remover a palavra "Campus"
         if 'CAMPUS' in df_cursos.columns:
             df_cursos['CAMPUS'] = df_cursos['CAMPUS'].apply(
                 lambda c: 'Cefor' if str(c).strip() in ['Cefor', 'Vários municípios', 'Vários Municípios']
-                else (str(c).strip() if str(c).strip().startswith('Campus') or str(c).strip() == 'Desconhecido' else f"Campus {str(c).strip()}")
+                else (str(c).strip() if str(c).strip() == 'Desconhecido' else re.sub(r'(?i)^Campus\s+', '', str(c).strip()))
             )
         
         col_inscritos = next((c for c in df_enade.columns if 'Inscrito' in str(c)), None)
@@ -216,10 +216,10 @@ def load_microdata():
             if 'CAMPUS' not in df_cursos.columns:
                 df_cursos['CAMPUS'] = 'Desconhecido'
             else:
-                # Padronizar nomes de CAMPUS
+                # Padronizar nomes de CAMPUS para evitar duplicatas e remover a palavra "Campus"
                 df_cursos['CAMPUS'] = df_cursos['CAMPUS'].apply(
                     lambda c: 'Cefor' if str(c).strip() in ['Cefor', 'Vários municípios', 'Vários Municípios']
-                    else (str(c).strip() if str(c).strip().startswith('Campus') or str(c).strip() == 'Desconhecido' else f"Campus {str(c).strip()}")
+                    else (str(c).strip() if str(c).strip() == 'Desconhecido' else re.sub(r'(?i)^Campus\s+', '', str(c).strip()))
                 )
 
             curso_map = df_cursos[['CO_CURSO', 'CAMPUS']].copy()
