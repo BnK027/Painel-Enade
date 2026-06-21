@@ -122,6 +122,14 @@ def load_data():
     files = [os.path.join(base_dir, f) for f in ['Enade_2016_Ifes.xlsx', 'Enade_2017_Ifes.xlsx', 'Enade_2018_Ifes.xlsx', 'Enade_2019_Ifes.xlsx', 'Enade_2021_Ifes.xlsx', 'Enade_2022_Ifes.xlsx', 'Enade_2023_Ifes.xlsx']]
     all_dfs = []
     
+    # Carrega Dicionário Oficial do EMEC para padronizar NOME DO CURSO
+    emec_map = {}
+    try:
+        emec_df = pd.read_excel(os.path.join(base_dir, 'Dados Cursos EMEC finalizado.xlsx'))
+        emec_map = dict(zip(emec_df['Código'].astype(str).str.strip(), emec_df['Curso'].astype(str).str.strip()))
+    except Exception:
+        pass
+    
     for file in files:
         df_enade = pd.read_excel(file, sheet_name='Enade')
         df_cursos = pd.read_excel(file, sheet_name='Cursos')
@@ -160,6 +168,12 @@ def load_data():
         if 'ANO' in df_final.columns:
             df_final['ANO'] = df_final['ANO'].astype(str).str.replace(r'\.0$', '', regex=True)
             
+        # Unificar nomenclaturas de cursos usando a base oficial EMEC
+        if 'NOME DO CURSO' in df_final.columns and 'CO_CURSO' in df_final.columns:
+            df_final['NOME DO CURSO'] = df_final.apply(
+                lambda row: emec_map.get(str(row['CO_CURSO']).strip(), str(row['NOME DO CURSO']).strip()), axis=1
+            )
+            
         cols_to_keep = ['NOME DO CURSO', 'CAMPUS', 'MUNICÍPIO', 'ANO', 'ENADE CONTÍNUO', 'ENADE FAIXA', 'MODALIDADE', 'INSCRITOS', 'PRESENTES', 'NOTA_FG', 'NOTA_CE', 'CO_CURSO']
         cols_to_keep = [c for c in cols_to_keep if c in df_final.columns]
         all_dfs.append(df_final[cols_to_keep])
@@ -178,6 +192,14 @@ def load_microdata():
     all_pai, all_mae, all_trab, all_bolsa, all_cota, all_estudo, all_motiv_c, all_motiv_i, all_arq4, all_arq43 = [], [], [], [], [], [], [], [], [], []
     all_ce_respostas, all_ce_gabarito = [], []
     
+    # Carrega Dicionário Oficial do EMEC para padronizar NOME DO CURSO
+    emec_map = {}
+    try:
+        emec_df = pd.read_excel(os.path.join(base_dir, 'Dados Cursos EMEC finalizado.xlsx'))
+        emec_map = dict(zip(emec_df['Código'].astype(str).str.strip(), emec_df['Curso'].astype(str).str.strip()))
+    except Exception:
+        pass
+        
     for file in files:
         try:
             df_cursos = pd.read_excel(file, sheet_name='Cursos')
@@ -213,6 +235,10 @@ def load_microdata():
             if area_col:
                 curso_map = pd.merge(curso_map, df_enade[['Código do Curso', area_col]], left_on='CO_CURSO', right_on='Código do Curso', how='inner')
                 curso_map = curso_map.rename(columns={area_col: 'NOME DO CURSO'})
+                # Unificar nomenclaturas de cursos usando a base oficial EMEC
+                curso_map['NOME DO CURSO'] = curso_map.apply(
+                    lambda row: emec_map.get(str(row['CO_CURSO']).strip(), str(row['NOME DO CURSO']).strip()), axis=1
+                )
             
             # Aba Arq_5 (Sexo)
             if 'Arq_5' in xls.sheet_names:
