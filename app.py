@@ -434,6 +434,7 @@ def show_home():
 <div>
 <p style="margin: 0; font-size: 0.75rem; color: #103d6d; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Orientador</p>
 <p style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 800; letter-spacing: -0.5px;">Prof. Wagner Teixeira da Costa</p>
+<p style="margin: 0; font-size: 0.85rem; color: #555; font-weight: 500;">wagnercosta@ifes.edu.br</p>
 </div>
 </div>
 <div style="display: flex; align-items: center; padding: 10px; border-radius: 12px; transition: all 0.3s; background: linear-gradient(to right, rgba(44, 140, 68, 0.03), transparent);">
@@ -441,6 +442,7 @@ def show_home():
 <div>
 <p style="margin: 0; font-size: 0.75rem; color: #2c8c44; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Aluno Desenvolvedor</p>
 <p style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 800; letter-spacing: -0.5px;">Matheus Ferreira Tissianel Benincá</p>
+<p style="margin: 0; font-size: 0.85rem; color: #555; font-weight: 500;">mathe.ninca@gmail.com</p>
 </div>
 </div>
 </div>''', unsafe_allow_html=True)
